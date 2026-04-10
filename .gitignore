@@ -38,9 +38,5 @@ Thumbs.db
 next-env.d.ts
 
 #claude 
-claude/
 .claude/
-# i wanna ignore the claude folder but not the .claude folder, so i can keep my local claude config in there without it being committed to git
-# if i just ignore the claude folder, then the .claude folder will also be ignored, which is not what i want
-claude/*
-!.claude/
+
