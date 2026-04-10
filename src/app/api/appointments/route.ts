@@ -129,13 +129,20 @@ export async function GET() {
       clientId: session.user.role === "ADMIN" ? undefined : session.user.id,
     },
     include: {
+      client: { select: { name: true, email: true } },
       service: { select: { name: true } },
       stylist: { include: { user: { select: { name: true } } } },
       payment: { select: { status: true, amount: true } },
     },
     orderBy: { scheduledAt: "desc" },
-    take: 50,
+    take: 100,
   });
 
-  return NextResponse.json({ appointments });
+  const serialized = appointments.map((a) => ({
+    ...a,
+    totalPrice: parseFloat(a.totalPrice.toString()),
+    depositAmount: parseFloat(a.depositAmount.toString()),
+  }));
+
+  return NextResponse.json({ appointments: serialized });
 }
