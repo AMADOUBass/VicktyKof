@@ -36,6 +36,7 @@ interface Props {
   };
   appointments: Appointment[];
   stats: { completedTotal: number; completedThisMonth: number; upcomingCount: number; portfolioCount: number };
+  defaultTab?: "agenda" | "portfolio";
 }
 
 function getInitials(name: string | null) {
@@ -43,8 +44,8 @@ function getInitials(name: string | null) {
   return name.split(" ").map((n) => n[0]).join("").toUpperCase().slice(0, 2);
 }
 
-export function PortalClient({ stylist, appointments, stats }: Props) {
-  const [tab, setTab] = useState<"agenda" | "portfolio">("agenda");
+export function PortalClient({ stylist, appointments, stats, defaultTab = "agenda" }: Props) {
+  const [tab, setTab] = useState<"agenda" | "portfolio">(defaultTab);
   const [portfolio, setPortfolio] = useState(stylist.portfolio);
   const [showAddPhoto, setShowAddPhoto] = useState(false);
   const [photoForm, setPhotoForm] = useState({ url: "", caption: "", tags: "" });

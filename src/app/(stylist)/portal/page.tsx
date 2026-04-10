@@ -3,7 +3,14 @@ import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { PortalClient } from "@/components/portal/PortalClient";
 
-export default async function PortalPage() {
+export default async function PortalPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ tab?: string }>;
+}) {
+  const { tab } = await searchParams;
+  const defaultTab = tab === "portfolio" ? "portfolio" : "agenda";
+
   const session = await auth();
   if (!session) redirect("/login?callbackUrl=/portal");
 
@@ -76,5 +83,5 @@ export default async function PortalPage() {
     },
   };
 
-  return <PortalClient {...serialized} />;
+  return <PortalClient {...serialized} defaultTab={defaultTab} />;
 }

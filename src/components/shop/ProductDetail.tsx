@@ -208,7 +208,7 @@ export function ProductDetail({ product }: { product: Product }) {
                       {formatPrice(parseFloat(product.memberPrice.toString()))}
                     </span>
                   </span>
-                  <Link href="/membership" className="text-brand-gold underline ml-1">
+                  <Link href="/contact" className="text-brand-gold underline ml-1">
                     Devenir membre
                   </Link>
                 </div>

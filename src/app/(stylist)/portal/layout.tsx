@@ -19,8 +19,8 @@ export default async function PortalLayout({ children }: { children: React.React
         <nav className="flex items-center gap-0.5 sm:gap-1 ml-auto">
           {[
             { href: "/portal", label: "Aperçu", icon: LayoutDashboard },
-            { href: "/portal/agenda", label: "Agenda", icon: Calendar },
-            { href: "/portal/portfolio", label: "Portfolio", icon: ImageIcon },
+            { href: "/portal?tab=agenda", label: "Agenda", icon: Calendar },
+            { href: "/portal?tab=portfolio", label: "Portfolio", icon: ImageIcon },
           ].map(({ href, label, icon: Icon }) => (
             <Link
               key={href}

@@ -6,7 +6,7 @@ import { usePathname } from "next/navigation";
 import { signOut } from "next-auth/react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
-  LayoutDashboard, Calendar, Package, Users, Scissors, Image, Settings, LogOut, Menu, X,
+  LayoutDashboard, Calendar, Package, Users, Scissors, Image, LogOut, Menu, X,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -17,7 +17,6 @@ const navItems = [
   { href: "/dashboard/users",        label: "Clientes",      icon: Users },
   { href: "/dashboard/stylists",     label: "Stylistes",     icon: Scissors },
   { href: "/dashboard/gallery",      label: "Galerie",       icon: Image },
-  { href: "/dashboard/settings",     label: "Paramètres",    icon: Settings },
 ];
 
 function NavContent({ onClose }: { onClose?: () => void }) {
