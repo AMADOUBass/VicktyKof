@@ -1,0 +1,21 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(grep -E \"\\\\.\\(json|ts|js|css|prisma\\)$|^d\")",
+      "Bash(npx tsc:*)",
+      "Bash(npm install:*)",
+      "Bash(npx prisma:*)",
+      "Bash(npm run:*)",
+      "Bash(node -e \"const p = require\\('./node_modules/@prisma/client'\\); console.log\\(Object.keys\\(p\\)\\)\")",
+      "Bash(ls c:/Dev/VicktyKof/.env*)",
+      "Bash(sed -n '310,335p' c:/Dev/VicktyKof/node_modules/@prisma/client/src/runtime/getPrismaClient.ts)",
+      "Bash(sed -n '310,335p' c:/Dev/VicktyKof/node_modules/@prisma/client/runtime/library.js)"
+    ],
+    "additionalDirectories": [
+      "C:\\Users\\cegep garneau\\OneDrive - Cégep Garneau\\VicktyKof\\src\\app\\(public)\\shop\\[slug]",
+      "c:\\Dev\\VicktyKof\\src\\app\\api\\products\\[id]",
+      "c:\\Dev\\VicktyKof\\src\\app\\api\\gallery",
+      "c:\\Dev\\VicktyKof\\src\\app\\api\\stylists\\[id]\\portfolio"
+    ]
+  }
+}

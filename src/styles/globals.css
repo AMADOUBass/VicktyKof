@@ -1,0 +1,99 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --font-playfair: 'Playfair Display', serif;
+    --font-inter: 'Inter', sans-serif;
+  }
+
+  * {
+    @apply border-brand-charcoal;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply bg-brand-black text-brand-beige font-sans antialiased;
+  }
+
+  ::selection {
+    @apply bg-brand-gold text-brand-black;
+  }
+
+  /* Custom scrollbar */
+  ::-webkit-scrollbar {
+    width: 6px;
+  }
+  ::-webkit-scrollbar-track {
+    @apply bg-brand-charcoal;
+  }
+  ::-webkit-scrollbar-thumb {
+    @apply bg-brand-gold rounded-full;
+  }
+}
+
+@layer components {
+  .btn-primary {
+    @apply inline-flex items-center justify-center gap-2 px-6 py-3 bg-brand-gold text-brand-black font-semibold rounded-lg
+           transition-all duration-300 hover:bg-brand-gold-light hover:shadow-gold active:scale-95;
+  }
+
+  .btn-outline {
+    @apply inline-flex items-center justify-center gap-2 px-6 py-3 border border-brand-gold text-brand-gold font-semibold rounded-lg
+           transition-all duration-300 hover:bg-brand-gold hover:text-brand-black active:scale-95;
+  }
+
+  .btn-ghost {
+    @apply inline-flex items-center justify-center gap-2 px-4 py-2 text-brand-beige font-medium rounded-lg
+           transition-all duration-300 hover:bg-brand-charcoal active:scale-95;
+  }
+
+  .card {
+    @apply bg-brand-charcoal border border-white/5 rounded-xl p-6;
+  }
+
+  .card-hover {
+    @apply card transition-all duration-300 hover:border-brand-gold/30 hover:shadow-gold;
+  }
+
+  .input {
+    @apply w-full bg-brand-charcoal border border-white/10 rounded-lg px-4 py-3 text-brand-beige
+           placeholder:text-brand-muted outline-none transition-all duration-200
+           focus:border-brand-gold focus:ring-1 focus:ring-brand-gold/30;
+  }
+
+  .label {
+    @apply block text-sm font-medium text-brand-beige/80 mb-1.5;
+  }
+
+  .section-title {
+    @apply font-display text-3xl md:text-4xl lg:text-5xl font-bold text-brand-beige;
+  }
+
+  .gold-text {
+    @apply text-brand-gold font-display;
+  }
+
+  .divider-gold {
+    @apply w-16 h-0.5 bg-gold-gradient mx-auto my-4;
+  }
+
+  .glass {
+    @apply bg-white/5 backdrop-blur-sm border border-white/10;
+  }
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+
+  .animate-delay-100 { animation-delay: 100ms; }
+  .animate-delay-200 { animation-delay: 200ms; }
+  .animate-delay-300 { animation-delay: 300ms; }
+  .animate-delay-400 { animation-delay: 400ms; }
+}
