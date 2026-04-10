@@ -33,21 +33,12 @@ function LoginForm() {
       return;
     }
 
-    // Fetch session to know the role for redirect
-    const { getSession } = await import("next-auth/react");
-    const session = await getSession();
-    const role = session?.user?.role;
-
+    // Redirect to server-side post-login page which reads the role from the JWT
     if (callbackUrl && callbackUrl !== "/") {
-      router.push(callbackUrl);
-    } else if (role === "ADMIN") {
-      router.push("/dashboard");
-    } else if (role === "STYLIST") {
-      router.push("/portal");
+      window.location.href = callbackUrl;
     } else {
-      router.push("/account");
+      window.location.href = "/post-login";
     }
-    router.refresh();
   };
 
   const handleGoogle = () => signIn("google", { callbackUrl });
