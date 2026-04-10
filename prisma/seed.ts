@@ -9,7 +9,8 @@ import { PrismaPg } from "@prisma/adapter-pg";
 import bcrypt from "bcryptjs";
 import { config } from "dotenv";
 
-config(); // load .env so DATABASE_URL is available
+config({ path: ".env.local" }); // load .env.local first (Neon URL)
+config();                        // fallback to .env
 
 const adapter = new PrismaPg({ connectionString: process.env.DATABASE_URL! });
 const prisma = new PrismaClient({ adapter });
@@ -61,6 +62,7 @@ async function main() {
       email: "vicky@vicktykof.com",
       name: "Vicky Koffi",
       phone: "418-555-0100",
+      emailVerified: new Date(),
       passwordHash: await bcrypt.hash("VickyAdmin2024!", 12),
       role: "ADMIN",
       isMember: true,
@@ -75,6 +77,7 @@ async function main() {
       email: "naomi@vicktykof.com",
       name: "Naomi Traoré",
       phone: "418-555-0101",
+      emailVerified: new Date(),
       passwordHash: await bcrypt.hash("Naomi2024!", 12),
       role: "STYLIST",
       isMember: true,
@@ -89,6 +92,7 @@ async function main() {
       email: "sarra@vicktykof.com",
       name: "Sarra Diallo",
       phone: "418-555-0102",
+      emailVerified: new Date(),
       passwordHash: await bcrypt.hash("Sarra2024!", 12),
       role: "STYLIST",
       isMember: true,
@@ -103,6 +107,7 @@ async function main() {
       email: "miriam@vicktykof.com",
       name: "Miriam Osei",
       phone: "418-555-0103",
+      emailVerified: new Date(),
       passwordHash: await bcrypt.hash("Miriam2024!", 12),
       role: "STYLIST",
       isMember: false,
@@ -117,6 +122,7 @@ async function main() {
       email: "aissatou@gmail.com",
       name: "Aissatou Ba",
       phone: "418-555-0200",
+      emailVerified: new Date(),
       passwordHash: await bcrypt.hash("Cliente2024!", 12),
       role: "CLIENT",
       isMember: true,
@@ -131,6 +137,7 @@ async function main() {
       email: "fatoumata@outlook.com",
       name: "Fatoumata Coulibaly",
       phone: "418-555-0201",
+      emailVerified: new Date(),
       passwordHash: await bcrypt.hash("Cliente2024!", 12),
       role: "CLIENT",
       isMember: false,
@@ -143,6 +150,7 @@ async function main() {
       email: "aminata@gmail.com",
       name: "Aminata Konaté",
       phone: "418-555-0202",
+      emailVerified: new Date(),
       passwordHash: await bcrypt.hash("Cliente2024!", 12),
       role: "CLIENT",
       isMember: true,
@@ -156,6 +164,7 @@ async function main() {
       email: "rokia@gmail.com",
       name: "Rokia Sanogo",
       phone: "418-555-0203",
+      emailVerified: new Date(),
       passwordHash: await bcrypt.hash("Cliente2024!", 12),
       role: "CLIENT",
       isMember: false,
