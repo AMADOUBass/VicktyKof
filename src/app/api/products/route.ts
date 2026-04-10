@@ -13,35 +13,36 @@ export async function GET(req: NextRequest) {
 
   const session = await auth();
   const isMember = session?.user.isMember ?? false;
+  const isAdmin = session?.user.role === "ADMIN";
+
+  const where = {
+    // Admins see all products (including inactive), public only active
+    ...(isAdmin ? {} : { isActive: true }),
+    ...(category ? { category: { slug: category } } : {}),
+    ...(featured ? { isFeatured: true } : {}),
+    // Hide member-only products from non-members (unless admin)
+    ...(!isMember && !isAdmin ? { isMemberOnly: false } : {}),
+  };
 
   const products = await prisma.product.findMany({
-    where: {
-      isActive: true,
-      ...(category ? { category: { slug: category } } : {}),
-      ...(featured ? { isFeatured: true } : {}),
-      // Hide member-only products from non-members
-      ...(isMember ? {} : { isMemberOnly: false }),
-    },
+    where,
     include: {
-      category: { select: { name: true, slug: true } },
+      category: { select: { id: true, name: true, slug: true } },
     },
     orderBy: [{ isFeatured: "desc" }, { createdAt: "desc" }],
     skip: (page - 1) * limit,
     take: limit,
   });
 
-  const total = await prisma.product.count({
-    where: {
-      isActive: true,
-      ...(category ? { category: { slug: category } } : {}),
-      ...(isMember ? {} : { isMemberOnly: false }),
-    },
-  });
+  const total = await prisma.product.count({ where });
 
-  // Apply member pricing
+  // Serialize Decimal fields + apply member pricing
   const enriched = products.map((p) => ({
     ...p,
-    displayPrice: isMember && p.memberPrice ? p.memberPrice : p.price,
+    price: parseFloat(p.price.toString()),
+    comparePrice: p.comparePrice ? parseFloat(p.comparePrice.toString()) : null,
+    memberPrice: p.memberPrice ? parseFloat(p.memberPrice.toString()) : null,
+    displayPrice: parseFloat((isMember && p.memberPrice ? p.memberPrice : p.price).toString()),
     isMemberDiscount: isMember && !!p.memberPrice,
   }));
 
@@ -56,8 +57,9 @@ const createSchema = z.object({
   price: z.number().positive(),
   comparePrice: z.number().positive().optional(),
   stock: z.number().int().min(0),
+  sku: z.string().optional(),
   categoryId: z.string().cuid(),
-  images: z.array(z.string().url()).min(1),
+  images: z.array(z.string()).default([]),
   isFeatured: z.boolean().default(false),
   isMemberOnly: z.boolean().default(false),
   memberPrice: z.number().positive().optional(),

@@ -36,7 +36,7 @@ interface Product {
   isMemberOnly: boolean;
   memberPrice: number | null;
   isActive: boolean;
-  category: { name: string; slug: string };
+  category: { id: string; name: string; slug: string };
 }
 
 interface FormData {
@@ -101,9 +101,9 @@ export default function AdminProductsPage() {
         const seen = new Set<string>();
         const cats: Category[] = [];
         for (const p of pData.products ?? []) {
-          if (!seen.has(p.category.slug)) {
-            seen.add(p.category.slug);
-            cats.push({ id: p.category.slug, name: p.category.name, slug: p.category.slug });
+          if (!seen.has(p.category.id)) {
+            seen.add(p.category.id);
+            cats.push({ id: p.category.id, name: p.category.name, slug: p.category.slug });
           }
         }
         setCategories(cats);
@@ -139,7 +139,7 @@ export default function AdminProductsPage() {
       isFeatured: product.isFeatured,
       isMemberOnly: product.isMemberOnly,
       memberPrice: product.memberPrice?.toString() ?? "",
-      categoryId: product.category.slug,
+      categoryId: product.category.id,
     });
     setShowForm(true);
   }

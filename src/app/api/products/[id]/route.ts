@@ -45,7 +45,7 @@ const updateSchema = z.object({
   comparePrice: z.number().positive().nullable().optional(),
   stock: z.number().int().min(0).optional(),
   sku: z.string().optional(),
-  images: z.array(z.string().url()).optional(),
+  images: z.array(z.string()).optional(),
   isFeatured: z.boolean().optional(),
   isMemberOnly: z.boolean().optional(),
   memberPrice: z.number().positive().nullable().optional(),

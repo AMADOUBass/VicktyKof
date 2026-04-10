@@ -14,8 +14,10 @@ export async function GET(req: NextRequest) {
         : {}),
     },
     include: {
-      user: { select: { name: true, image: true } },
+      user: { select: { name: true, email: true, image: true } },
+      availability: { orderBy: { dayOfWeek: "asc" } },
       portfolio: { take: 3, orderBy: { createdAt: "desc" } },
+      _count: { select: { appointments: true } },
     },
     orderBy: { yearsExp: "desc" },
   });
