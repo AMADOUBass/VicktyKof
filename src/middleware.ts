@@ -1,39 +1,38 @@
-import { getToken } from "next-auth/jwt";
-import { NextResponse, type NextRequest } from "next/server";
+import NextAuth from "next-auth";
+import { authConfig } from "@/lib/auth.config";
+import { NextResponse } from "next/server";
+
+const { auth } = NextAuth(authConfig);
 
 const ADMIN_ROUTES = ["/dashboard"];
 const STYLIST_ROUTES = ["/portal"];
 const AUTH_REQUIRED = ["/booking", "/account"];
 
-export default async function middleware(req: NextRequest) {
+export default auth((req) => {
   const { pathname } = req.nextUrl;
-
-  const token = await getToken({
-    req,
-    secret: process.env.AUTH_SECRET,
-  });
+  const session = req.auth;
 
   const needsAuth = AUTH_REQUIRED.some((r) => pathname.startsWith(r));
-  if (needsAuth && !token) {
+  if (needsAuth && !session) {
     return NextResponse.redirect(
       new URL(`/login?callbackUrl=${encodeURIComponent(pathname)}`, req.url)
     );
   }
 
   if (ADMIN_ROUTES.some((r) => pathname.startsWith(r))) {
-    if (!token || token.role !== "ADMIN") {
+    if (!session || session.user?.role !== "ADMIN") {
       return NextResponse.redirect(new URL("/", req.url));
     }
   }
 
   if (STYLIST_ROUTES.some((r) => pathname.startsWith(r))) {
-    if (!token || !["STYLIST", "ADMIN"].includes(token.role as string)) {
+    if (!session || !["STYLIST", "ADMIN"].includes(session.user?.role ?? "")) {
       return NextResponse.redirect(new URL("/", req.url));
     }
   }
 
   return NextResponse.next();
-}
+});
 
 export const config = {
   matcher: [
