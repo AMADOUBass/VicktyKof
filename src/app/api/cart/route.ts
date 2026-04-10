@@ -78,17 +78,24 @@ export async function POST(req: NextRequest) {
     },
   });
 
-  const origin = req.headers.get("origin") ?? process.env.NEXTAUTH_URL ?? "http://localhost:3000";
+  const origin =
+    req.headers.get("origin") ??
+    process.env.NEXT_PUBLIC_APP_URL ??
+    "http://localhost:3000";
 
   const stripeSession = await createProductCheckout({
     orderId: order.id,
     lineItems: lineItems.map((li) => {
       const product = products.find((p) => p.id === li.productId)!;
+      const rawImage = product.images[0];
+      // Stripe requires absolute HTTPS URLs — skip local/relative paths
+      const imageUrl =
+        rawImage && rawImage.startsWith("http") ? rawImage : undefined;
       return {
         name: product.name,
         amountCents: Math.round(li.unitPrice * 100),
         quantity: li.quantity,
-        imageUrl: product.images[0] ?? undefined,
+        imageUrl,
       };
     }),
     clientEmail: session.user.email,
