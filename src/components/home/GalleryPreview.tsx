@@ -1,14 +1,18 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { motion } from "framer-motion";
 import { ArrowRight } from "lucide-react";
 
-// Placeholder grid — replace with real DB images
-const placeholders = Array.from({ length: 6 }, (_, i) => ({
-  id: i,
-  label: ["Starter Locs", "Retwist", "Interlocks", "Updo", "Braids", "Natural Style"][i] ?? "Style",
-}));
+const photos = [
+  { src: "/images/gallery/starter-locs.png", label: "Starter Locs",   span: true  },
+  { src: "/images/gallery/braids.png",        label: "Box Braids",     span: false },
+  { src: "/images/salon-interior.png",        label: "Notre Salon",    span: false },
+  { src: "/images/gallery/interlocks.png",    label: "Interlocks",     span: false },
+  { src: "/images/gallery/updo.png",          label: "Up-do",          span: false },
+  { src: "/images/salon-reception.png",       label: "Accueil",        span: false },
+];
 
 export function GalleryPreview() {
   return (
@@ -21,26 +25,28 @@ export function GalleryPreview() {
         </div>
 
         <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-          {placeholders.map((item, i) => (
+          {photos.map((photo, i) => (
             <motion.div
-              key={item.id}
+              key={photo.src}
               initial={{ opacity: 0, scale: 0.95 }}
               whileInView={{ opacity: 1, scale: 1 }}
               transition={{ duration: 0.4, delay: i * 0.08 }}
               viewport={{ once: true }}
               className={`relative overflow-hidden rounded-xl border border-white/5 group cursor-pointer
-                         ${i === 0 ? "md:row-span-2" : ""}`}
+                         ${photo.span ? "md:row-span-2" : ""}`}
             >
-              <div
-                className={`bg-gradient-to-br from-brand-charcoal to-brand-black flex items-center justify-center
-                           ${i === 0 ? "h-full min-h-[300px]" : "aspect-square"}`}
-              >
-                <span className="font-display text-brand-gold/30 text-lg italic">{item.label}</span>
+              <div className={photo.span ? "relative h-full min-h-[300px] md:min-h-[520px]" : "relative aspect-square"}>
+                <Image
+                  src={photo.src}
+                  alt={photo.label}
+                  fill
+                  className="object-cover transition-transform duration-500 group-hover:scale-105"
+                />
               </div>
               {/* Hover overlay */}
-              <div className="absolute inset-0 bg-brand-gold/0 group-hover:bg-brand-gold/10 transition-all duration-300 flex items-end p-4">
-                <span className="text-brand-gold font-medium text-sm opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                  {item.label}
+              <div className="absolute inset-0 bg-brand-black/0 group-hover:bg-brand-black/30 transition-all duration-300 flex items-end p-4">
+                <span className="text-brand-beige font-medium text-sm opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-brand-gold/80 px-3 py-1 rounded-full">
+                  {photo.label}
                 </span>
               </div>
             </motion.div>

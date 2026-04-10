@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { motion } from "framer-motion";
 import { ArrowRight } from "lucide-react";
 
@@ -10,18 +11,21 @@ const team = [
     title: "Fondatrice & Maître Loctician",
     specialties: ["Starter Locs", "Interlocks", "Retwist"],
     yearsExp: 15,
+    image: "/images/vicky-portrait.png",
   },
   {
-    name: "Styliste 2",
-    title: "Spécialiste Retwist & Styles Femmes",
-    specialties: ["Retwist", "Tresses", "Updo"],
+    name: "Naomi",
+    title: "Spécialiste Tresses & Styles",
+    specialties: ["Box Braids", "Updo", "Naturel"],
     yearsExp: 8,
+    image: "/images/team/naomi.svg",
   },
   {
-    name: "Styliste 3",
-    title: "Experte Interlocks",
-    specialties: ["Interlocks", "Loc Maintenance"],
-    yearsExp: 6,
+    name: "Sarra",
+    title: "Experte Retwist & Interlocks",
+    specialties: ["Retwist", "Interlocks", "Locs"],
+    yearsExp: 5,
+    image: "/images/team/sarra.svg",
   },
 ];
 
@@ -43,13 +47,16 @@ export function TeamPreview() {
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: i * 0.1 }}
               viewport={{ once: true }}
-              className="card-hover text-center"
+              className="card-hover text-center group"
             >
-              {/* Avatar */}
-              <div className="w-24 h-24 mx-auto mb-4 rounded-full bg-gradient-to-br from-brand-gold/20 to-brand-charcoal border-2 border-brand-gold/30 flex items-center justify-center">
-                <span className="font-display text-2xl text-brand-gold font-bold">
-                  {member.name[0]}
-                </span>
+              {/* Avatar photo */}
+              <div className="relative w-28 h-28 mx-auto mb-5 rounded-full overflow-hidden border-2 border-brand-gold/30 group-hover:border-brand-gold transition-colors duration-300">
+                <Image
+                  src={member.image}
+                  alt={member.name}
+                  fill
+                  className="object-cover object-top"
+                />
               </div>
 
               <h3 className="font-display text-xl font-semibold text-brand-beige">{member.name}</h3>

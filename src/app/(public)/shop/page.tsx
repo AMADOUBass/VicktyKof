@@ -29,7 +29,9 @@ export default async function ShopPage() {
 
         {/* Mobile & tablet: filters above grid. Desktop: sidebar + grid */}
         <div className="flex flex-col lg:flex-row gap-8">
-          <ShopFilters categories={categories} />
+          <Suspense fallback={<div className="w-48 h-10 rounded-xl bg-brand-charcoal animate-pulse" />}>
+            <ShopFilters categories={categories} />
+          </Suspense>
           <div className="flex-1 min-w-0">
             <Suspense fallback={
               <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 gap-4 sm:gap-6">

@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { motion } from "framer-motion";
 import { ArrowRight, Star, Calendar } from "lucide-react";
 
@@ -102,11 +103,16 @@ export function HeroSection() {
           transition={{ duration: 0.8, delay: 0.2 }}
           className="relative hidden lg:block"
         >
-          {/* Main image placeholder — replace with real salon photo */}
+          {/* Hero salon photo */}
           <div className="relative w-full aspect-[4/5] max-w-lg ml-auto rounded-2xl overflow-hidden border border-brand-gold/20">
-            <div className="absolute inset-0 bg-gradient-to-br from-brand-gold/10 to-brand-charcoal flex items-center justify-center">
-              <span className="font-display text-2xl text-brand-gold/40 italic">VicktyKof</span>
-            </div>
+            <Image
+              src="/images/hero-salon.png"
+              alt="Salon VicktyKof — ambiance et expertise"
+              fill
+              className="object-cover"
+              priority
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-brand-black/40 to-transparent" />
           </div>
 
           {/* Floating card — next appointment */}
@@ -131,7 +137,7 @@ export function HeroSection() {
                 <Star key={i} className="w-4 h-4 text-brand-gold fill-brand-gold" />
               ))}
             </div>
-            <p className="text-sm font-semibold text-brand-beige">5.0 / 5</p>
+            <p className="text-sm font-semibold text-brand-beige">4.7 / 5</p>
             <p className="text-xs text-brand-muted">Avis clients</p>
           </motion.div>
         </motion.div>

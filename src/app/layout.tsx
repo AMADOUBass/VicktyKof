@@ -2,8 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { Playfair_Display, Inter } from "next/font/google";
 import "@/styles/globals.css";
 import { Providers } from "@/components/layout/Providers";
-import { Navbar } from "@/components/layout/Navbar";
-import { Footer } from "@/components/layout/Footer";
+import { ConditionalShell } from "@/components/layout/ConditionalShell";
 import { Toaster } from "react-hot-toast";
 
 const playfair = Playfair_Display({
@@ -68,9 +67,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="fr" className={`${playfair.variable} ${inter.variable}`}>
       <body className="min-h-screen flex flex-col">
         <Providers>
-          <Navbar />
-          <main className="flex-1">{children}</main>
-          <Footer />
+          <ConditionalShell>{children}</ConditionalShell>
           <Toaster
             position="top-right"
             toastOptions={{

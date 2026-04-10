@@ -66,7 +66,7 @@ async function main() {
       isMember: true,
       memberSince: new Date("2020-01-01"),
       loyaltyPoints: 500,
-      image: "https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?w=300&q=80",
+      image: "/images/team/vicky.svg",
     },
   });
 
@@ -80,7 +80,7 @@ async function main() {
       isMember: true,
       memberSince: new Date("2021-03-15"),
       loyaltyPoints: 200,
-      image: "https://images.unsplash.com/photo-1508214751196-bcfd4ca60f91?w=300&q=80",
+      image: "/images/team/naomi.svg",
     },
   });
 
@@ -94,7 +94,7 @@ async function main() {
       isMember: true,
       memberSince: new Date("2022-06-01"),
       loyaltyPoints: 150,
-      image: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=300&q=80",
+      image: "/images/team/sarra.svg",
     },
   });
 
@@ -107,7 +107,7 @@ async function main() {
       role: "STYLIST",
       isMember: false,
       loyaltyPoints: 80,
-      image: "https://images.unsplash.com/photo-1587614387466-0a72ca909e16?w=300&q=80",
+      image: "/images/team/miriam.svg",
     },
   });
 
@@ -122,7 +122,7 @@ async function main() {
       isMember: true,
       memberSince: new Date("2023-01-10"),
       loyaltyPoints: 320,
-      image: "https://images.unsplash.com/photo-1520813792240-56fc4a3765a7?w=300&q=80",
+      image: "/images/team/aissatou.svg",
     },
   });
 
@@ -402,7 +402,7 @@ async function main() {
     name: "Crème Hydratante Locs VK", slug: "creme-hydratante-locs-vk",
     description: "Formule exclusive VicktyKof à base d'aloe vera et beurre de karité. Hydrate en profondeur, définit et donne de l'éclat à vos locs. Sans silicone ni paraben.",
     price: 28, comparePrice: 35, memberPrice: 22, stock: 45, sku: "VK-CHL-001",
-    images: ["https://images.unsplash.com/photo-1556228720-195a672e8a03?w=500&q=80"],
+    images: ["/images/products/shampoing-locs.svg"],
     categoryId: catSoins.id, isFeatured: true,
   }});
 
@@ -410,7 +410,7 @@ async function main() {
     name: "Shampoing Clarifiant Naturel", slug: "shampoing-clarifiant-naturel",
     description: "Nettoyage en douceur sans sulfates agressifs. Élimine les résidus, hydrate le cuir chevelu et prépare vos locs pour le retwist.",
     price: 22, memberPrice: 18, stock: 30, sku: "VK-SCN-002",
-    images: ["https://images.unsplash.com/photo-1556228578-8c89e6adf883?w=500&q=80"],
+    images: ["/images/products/apres-shampoing.svg"],
     categoryId: catSoins.id, isFeatured: false,
   }});
 
@@ -418,7 +418,7 @@ async function main() {
     name: "Spray Hydratant Quotidien", slug: "spray-hydratant-quotidien",
     description: "Spray léger à l'eau de rose et à l'huile de jojoba. Idéal le matin pour rafraîchir et hydrater vos locs sans les alourdir.",
     price: 18, stock: 60, sku: "VK-SHQ-003",
-    images: ["https://images.unsplash.com/photo-1571781926291-c477ebfd024b?w=500&q=80"],
+    images: ["/images/products/spray-refresh.svg"],
     categoryId: catSoins.id, isFeatured: true,
   }});
 
@@ -426,7 +426,7 @@ async function main() {
     name: "Cire de Palmier Naturelle", slug: "cire-palmier-naturelle",
     description: "Cire légère pour styler et définir vos locs sans résidu. À base de cire de palmier biologique certifiée.",
     price: 19, stock: 3, sku: "VK-CPN-004", // Stock faible pour démo admin
-    images: ["https://images.unsplash.com/photo-1571781926291-c477ebfd024b?w=500&q=80"],
+    images: ["/images/products/cire-palmier.svg"],
     categoryId: catSoins.id, isFeatured: false,
   }});
 
@@ -434,7 +434,7 @@ async function main() {
     name: "Huile de Ricin Extra-Pure", slug: "huile-ricin-extra-pure",
     description: "Huile de ricin 100% pure, pressée à froid. Stimule la croissance, renforce les locs et nourrit le cuir chevelu. Certifiée biologique.",
     price: 24, comparePrice: 30, memberPrice: 19, stock: 25, sku: "VK-HRP-005",
-    images: ["https://images.unsplash.com/photo-1608248543803-ba4f8c70ae0b?w=500&q=80"],
+    images: ["/images/products/huile-ricin.svg"],
     categoryId: catHuiles.id, isFeatured: true,
   }});
 
@@ -442,7 +442,7 @@ async function main() {
     name: "Beurre de Karité Brut", slug: "beurre-karite-brut",
     description: "Beurre de karité non raffiné d'origine africaine (Burkina Faso). Scelle l'hydratation, protège les pointes et adoucit vos locs.",
     price: 20, memberPrice: 16, stock: 35, sku: "VK-BKB-006",
-    images: ["https://images.unsplash.com/photo-1620916297397-a4a5402a3c6c?w=500&q=80"],
+    images: ["/images/products/beurre-karite.svg"],
     categoryId: catHuiles.id, isFeatured: false,
   }});
 
@@ -450,7 +450,7 @@ async function main() {
     name: "Synergie d'Huiles Essentielles Locs", slug: "synergie-huiles-essentielles-locs",
     description: "Mélange exclusif VicktyKof : tea tree, romarin et lavande. Purifie le cuir chevelu, réduit les démangeaisons et stimule la croissance.",
     price: 32, comparePrice: 40, memberPrice: 26, stock: 20, sku: "VK-SHE-007",
-    images: ["https://images.unsplash.com/photo-1608248543803-ba4f8c70ae0b?w=500&q=80"],
+    images: ["/images/products/huile-argan.svg"],
     categoryId: catHuiles.id, isFeatured: true,
   }});
 
@@ -458,7 +458,7 @@ async function main() {
     name: "Bonnet en Satin Luxe", slug: "bonnet-satin-luxe",
     description: "Bonnet de nuit en satin double couche, or et noir. Protège vos locs pendant le sommeil, réduit la friction et l'évaporation de l'humidité.",
     price: 16, memberPrice: 12, stock: 50, sku: "VK-BSL-008",
-    images: ["https://images.unsplash.com/photo-1576991170979-cc1d4a3d1f19?w=500&q=80"],
+    images: ["/images/products/bonnet-satin.svg"],
     categoryId: catAccessoires.id, isFeatured: false,
   }});
 
@@ -466,7 +466,7 @@ async function main() {
     name: "Kit Aiguilles à Interlocks Pro", slug: "kit-aiguilles-interlocks-pro",
     description: "Set professionnel de 3 aiguilles en acier inoxydable pour la technique interlocking. Tailles S, M, L avec pochette de rangement.",
     price: 18, stock: 40, sku: "VK-KAI-009",
-    images: ["https://images.unsplash.com/photo-1585236905559-4d282b32e3e0?w=500&q=80"],
+    images: ["/images/products/aiguille-interlocks.svg"],
     categoryId: catAccessoires.id, isFeatured: false,
   }});
 
@@ -474,7 +474,7 @@ async function main() {
     name: "Élastiques Sans Métal (200 pcs)", slug: "elastiques-sans-metal",
     description: "Élastiques doux en coton, sans métal. Parfaits pour attacher vos locs sans les endommager ni laisser de marques.",
     price: 8, stock: 100, sku: "VK-ESM-010",
-    images: ["https://images.unsplash.com/photo-1585236905559-4d282b32e3e0?w=500&q=80"],
+    images: ["/images/products/elastiques-satin.svg"],
     categoryId: catAccessoires.id, isFeatured: false,
   }});
 
@@ -482,7 +482,7 @@ async function main() {
     name: "Kit Starter Locs Complet", slug: "kit-starter-locs-complet",
     description: "Tout ce qu'il faut pour démarrer vos locs du bon pied : crème hydratante, shampoing, huile de ricin et bonnet. Valeur 90$. Livret de conseils inclus.",
     price: 68, comparePrice: 90, memberPrice: 55, stock: 15, sku: "VK-KSL-011",
-    images: ["https://images.unsplash.com/photo-1556228720-195a672e8a03?w=500&q=80"],
+    images: ["/images/products/coffret-entretien.svg"],
     categoryId: catKits.id, isFeatured: true,
   }});
 
@@ -490,7 +490,7 @@ async function main() {
     name: "Coffret Entretien Mensuel Membre", slug: "coffret-entretien-mensuel",
     description: "Coffret exclusif réservé aux membres VicktyKof : spray quotidien, beurre de karité et synergie d'huiles. Tout pour entretenir vos locs un mois.",
     price: 58, comparePrice: 70, memberPrice: 45, stock: 10, sku: "VK-CEM-012",
-    images: ["https://images.unsplash.com/photo-1607013251379-e6eecfffe234?w=500&q=80"],
+    images: ["/images/products/huile-coco.svg"],
     categoryId: catKits.id, isFeatured: true, isMemberOnly: true,
   }});
 
@@ -579,18 +579,18 @@ async function main() {
   // ── 10. Galerie ──────────────────────────────────────────────────────────────
 
   const galleryPhotos = [
-    { url: "https://images.unsplash.com/photo-1556760544-74068565f05c?w=800&q=80", caption: "Retwist en beauté — résultat final", altText: "Locs retwistées, résultat net et brillant", tags: ["locs", "retwist", "avant-après"], isFeatured: true },
-    { url: "https://images.unsplash.com/photo-1594744803329-e58b31de8bf5?w=800&q=80", caption: "Box braids longues — travail de Naomi", altText: "Box braids longues élaborées", tags: ["tresses", "box-braids", "naomi"], isFeatured: true },
-    { url: "https://images.unsplash.com/photo-1604480133435-25b86862d276?w=800&q=80", caption: "Starter locs — 3 mois après installation", altText: "Locs débutantes après 3 mois", tags: ["locs", "starter-locs", "résultat"], isFeatured: true },
-    { url: "https://images.unsplash.com/photo-1583334648893-7b3a3a5c0c0f?w=800&q=80", caption: "Style Up-do pour mariage", altText: "Coiffure de mariage élégante", tags: ["coiffure", "style", "mariage"], isFeatured: true },
-    { url: "https://images.unsplash.com/photo-1562887009-28b5a9e84c63?w=800&q=80", caption: "Interlocks précis — par Sarra", altText: "Technique interlocking professionnelle", tags: ["interlocks", "sarra", "précision"], isFeatured: false },
-    { url: "https://images.unsplash.com/photo-1614252235316-8c857d38b5f4?w=800&q=80", caption: "Locs matures — 5 ans de croissance", altText: "Locs longues et matures", tags: ["locs", "mature", "long"], isFeatured: false },
-    { url: "https://images.unsplash.com/photo-1508214751196-bcfd4ca60f91?w=800&q=80", caption: "Twist out naturel volumineux", altText: "Twist out sur cheveux naturels", tags: ["naturel", "twist-out", "volume"], isFeatured: true },
-    { url: "https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?w=800&q=80", caption: "VicktyKof — ambiance salon", altText: "Intérieur du salon VicktyKof", tags: ["salon", "ambiance"], isFeatured: false },
-    { url: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=800&q=80", caption: "Retwist + soin — locs brillantes", altText: "Locs après retwist et soin profond", tags: ["retwist", "soin", "brillance"], isFeatured: false },
-    { url: "https://images.unsplash.com/photo-1587614387466-0a72ca909e16?w=800&q=80", caption: "Cornrows traditionnelles", altText: "Tresses cornrows africaines", tags: ["tresses", "cornrows"], isFeatured: false },
-    { url: "https://images.unsplash.com/photo-1556228720-195a672e8a03?w=800&q=80", caption: "Nos produits artisanaux VicktyKof", altText: "Gamme de soins capillaires VicktyKof", tags: ["produits", "soins", "artisanal"], isFeatured: false },
-    { url: "https://images.unsplash.com/photo-1520813792240-56fc4a3765a7?w=800&q=80", caption: "Style afro — liberté et fierté", altText: "Afro naturel style", tags: ["naturel", "afro", "style"], isFeatured: true },
+    { url: "/images/gallery/retwist.svg",          caption: "Retwist en beauté — résultat final",      altText: "Locs retwistées, résultat net et brillant",        tags: ["locs", "retwist", "avant-après"],       isFeatured: true },
+    { url: "/images/gallery/box-braids.svg",        caption: "Box braids longues — travail de Naomi",  altText: "Box braids longues élaborées",                    tags: ["tresses", "box-braids", "naomi"],       isFeatured: true },
+    { url: "/images/gallery/starter-locs.svg",      caption: "Starter locs — 3 mois après installation", altText: "Locs débutantes après 3 mois",                tags: ["locs", "starter-locs", "résultat"],     isFeatured: true },
+    { url: "/images/gallery/coiffure-mariage.svg",  caption: "Style Up-do pour mariage",               altText: "Coiffure de mariage élégante",                    tags: ["coiffure", "style", "mariage"],         isFeatured: true },
+    { url: "/images/gallery/interlocks.svg",        caption: "Interlocks précis — par Sarra",          altText: "Technique interlocking professionnelle",           tags: ["interlocks", "sarra", "précision"],     isFeatured: false },
+    { url: "/images/gallery/locs-matures.svg",      caption: "Locs matures — 5 ans de croissance",    altText: "Locs longues et matures",                         tags: ["locs", "mature", "long"],               isFeatured: false },
+    { url: "/images/gallery/goddess-locs.svg",      caption: "Goddess locs — style bohème",            altText: "Goddess locs volumineuses",                       tags: ["goddess-locs", "style", "volume"],      isFeatured: true },
+    { url: "/images/gallery/protective-style.svg",  caption: "VicktyKof — protective style",           altText: "Protective style élaboré au salon VicktyKof",     tags: ["salon", "protective", "style"],         isFeatured: false },
+    { url: "/images/gallery/faux-locs.svg",         caption: "Faux locs bohème — résultat naturel",    altText: "Faux locs bohème après installation",             tags: ["faux-locs", "bohème", "naturel"],       isFeatured: false },
+    { url: "/images/gallery/updo.svg",              caption: "Up-do élégant — occasion spéciale",      altText: "Coiffure up-do pour occasion",                    tags: ["updo", "élégant", "occasion"],          isFeatured: false },
+    { url: "/images/gallery/locs-color.svg",        caption: "Locs colorés — nuances caramel",         altText: "Locs avec reflets caramel",                       tags: ["locs", "couleur", "caramel"],           isFeatured: false },
+    { url: "/images/gallery/braids.svg",            caption: "Style afro — liberté et fierté",         altText: "Tresses afro style naturel",                      tags: ["naturel", "afro", "tresses"],           isFeatured: true },
   ];
 
   for (const photo of galleryPhotos) {
@@ -603,24 +603,24 @@ async function main() {
 
   const portfolioData = [
     { stylistId: vickyStylist.id, photos: [
-      { url: "https://images.unsplash.com/photo-1556760544-74068565f05c?w=600&q=80", caption: "Retwist signature — ma spécialité", tags: ["retwist"] },
-      { url: "https://images.unsplash.com/photo-1604480133435-25b86862d276?w=600&q=80", caption: "Starter locs — installation 2024", tags: ["starter-locs"] },
-      { url: "https://images.unsplash.com/photo-1614252235316-8c857d38b5f4?w=600&q=80", caption: "Locs matures 5 ans", tags: ["locs", "mature"] },
-      { url: "https://images.unsplash.com/photo-1562887009-28b5a9e84c63?w=600&q=80", caption: "Interlocks — finition parfaite", tags: ["interlocks"] },
+      { url: "/images/portfolio/vicky-1.svg", caption: "Retwist signature — ma spécialité", tags: ["retwist"] },
+      { url: "/images/portfolio/vicky-2.svg", caption: "Starter locs — installation 2024",  tags: ["starter-locs"] },
+      { url: "/images/portfolio/vicky-3.svg", caption: "Locs matures 5 ans",                tags: ["locs", "mature"] },
+      { url: "/images/gallery/interlocks.svg", caption: "Interlocks — finition parfaite",   tags: ["interlocks"] },
     ]},
     { stylistId: naomiStylist.id, photos: [
-      { url: "https://images.unsplash.com/photo-1594744803329-e58b31de8bf5?w=600&q=80", caption: "Box braids — 6h de travail minutieux", tags: ["box-braids"] },
-      { url: "https://images.unsplash.com/photo-1583334648893-7b3a3a5c0c0f?w=600&q=80", caption: "Coiffure de mariage élaborée", tags: ["mariage"] },
-      { url: "https://images.unsplash.com/photo-1508214751196-bcfd4ca60f91?w=600&q=80", caption: "Twist out volumineux", tags: ["naturel", "twist"] },
+      { url: "/images/portfolio/naomi-1.svg", caption: "Box braids — 6h de travail minutieux", tags: ["box-braids"] },
+      { url: "/images/portfolio/naomi-2.svg", caption: "Coiffure de mariage élaborée",         tags: ["mariage"] },
+      { url: "/images/portfolio/naomi-3.svg", caption: "Goddess locs volumineuses",            tags: ["goddess-locs"] },
     ]},
     { stylistId: sarraStylist.id, photos: [
-      { url: "https://images.unsplash.com/photo-1562887009-28b5a9e84c63?w=600&q=80", caption: "Retwist précis — mon travail", tags: ["retwist"] },
-      { url: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=600&q=80", caption: "Soin + retwist — résultat brillant", tags: ["retwist", "soin"] },
-      { url: "https://images.unsplash.com/photo-1614252235316-8c857d38b5f4?w=600&q=80", caption: "Locs entretenues — 2 ans", tags: ["locs"] },
+      { url: "/images/portfolio/sarra-1.svg", caption: "Retwist précis — mon travail",      tags: ["retwist"] },
+      { url: "/images/portfolio/sarra-2.svg", caption: "Soin + retwist — résultat brillant",tags: ["retwist", "soin"] },
+      { url: "/images/portfolio/sarra-3.svg", caption: "Locs entretenues — 2 ans",          tags: ["locs"] },
     ]},
     { stylistId: miriamStylist.id, photos: [
-      { url: "https://images.unsplash.com/photo-1587614387466-0a72ca909e16?w=600&q=80", caption: "Cornrows africaines classiques", tags: ["cornrows"] },
-      { url: "https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?w=600&q=80", caption: "Style naturel — twist & go", tags: ["naturel"] },
+      { url: "/images/portfolio/miriam-1.svg", caption: "Tresses africaines classiques",    tags: ["tresses"] },
+      { url: "/images/portfolio/miriam-2.svg", caption: "Style naturel — protective style", tags: ["naturel"] },
     ]},
   ];
 
