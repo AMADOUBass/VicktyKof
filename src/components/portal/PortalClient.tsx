@@ -5,7 +5,7 @@ import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Calendar, CheckCircle2, TrendingUp, ImageIcon, Clock,
-  User, Phone, Mail, Plus, X, Trash2, Star,
+  User, Phone, Mail, Plus, X, Trash2, Star, Save, Edit3, Settings,
 } from "lucide-react";
 import { formatPrice } from "@/lib/utils";
 import toast from "react-hot-toast";
@@ -45,12 +45,32 @@ function getInitials(name: string | null) {
 }
 
 export function PortalClient({ stylist, appointments, stats, defaultTab = "agenda" }: Props) {
-  const [tab, setTab] = useState<"agenda" | "portfolio">(defaultTab);
+  const [tab, setTab] = useState<"agenda" | "portfolio" | "settings">(defaultTab as "agenda" | "portfolio" | "settings");
   const [portfolio, setPortfolio] = useState(stylist.portfolio);
   const [showAddPhoto, setShowAddPhoto] = useState(false);
   const [photoForm, setPhotoForm] = useState({ url: "", caption: "", tags: "" });
   const [saving, setSaving] = useState(false);
   const [expandedAppt, setExpandedAppt] = useState<string | null>(null);
+
+  // Editable availability
+  const [editAvailability, setEditAvailability] = useState(
+    DAY_LABELS.map((label, i) => {
+      const existing = stylist.availability.find((a) => a.dayOfWeek === i);
+      return {
+        dayOfWeek: i,
+        label,
+        isActive: existing?.isActive ?? false,
+        startTime: existing?.startTime ?? "09:00",
+        endTime: existing?.endTime ?? "17:00",
+      };
+    })
+  );
+  const [savingAvail, setSavingAvail] = useState(false);
+
+  // Editable profile
+  const [bio, setBio] = useState(stylist.bio ?? "");
+  const [yearsExp, setYearsExp] = useState(stylist.yearsExp);
+  const [savingProfile, setSavingProfile] = useState(false);
 
   async function addPortfolioPhoto() {
     if (!photoForm.url) { toast.error("URL requise"); return; }
@@ -95,6 +115,49 @@ export function PortalClient({ stylist, appointments, stats, defaultTab = "agend
     { label: "Services rendus", value: stats.completedTotal, icon: CheckCircle2, color: "text-green-400" },
     { label: "Photos portfolio", value: stats.portfolioCount, icon: ImageIcon, color: "text-purple-400" },
   ];
+
+  async function saveAvailability() {
+    setSavingAvail(true);
+    try {
+      const availability = editAvailability
+        .filter((a) => a.isActive)
+        .map(({ dayOfWeek, startTime, endTime }) => ({ dayOfWeek, startTime, endTime }));
+      const res = await fetch(`/api/stylists/${stylist.id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ availability }),
+      });
+      if (!res.ok) throw new Error();
+      toast.success("Disponibilités mises à jour");
+    } catch {
+      toast.error("Erreur lors de la sauvegarde");
+    } finally {
+      setSavingAvail(false);
+    }
+  }
+
+  async function saveProfile() {
+    setSavingProfile(true);
+    try {
+      const res = await fetch(`/api/stylists/${stylist.id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ bio: bio || undefined, yearsExp }),
+      });
+      if (!res.ok) throw new Error();
+      toast.success("Profil mis à jour");
+    } catch {
+      toast.error("Erreur lors de la sauvegarde");
+    } finally {
+      setSavingProfile(false);
+    }
+  }
+
+  function updateAvailDay(index: number, field: "isActive" | "startTime" | "endTime", value: string | boolean) {
+    setEditAvailability((prev) =>
+      prev.map((a, i) => (i === index ? { ...a, [field]: value } : a))
+    );
+  }
 
   return (
     <div className="space-y-8 pt-6">
@@ -152,16 +215,18 @@ export function PortalClient({ stylist, appointments, stats, defaultTab = "agend
       </div>
 
       {/* Tabs */}
-      <div className="flex gap-1 bg-brand-charcoal rounded-xl p-1 w-fit">
-        {(["agenda", "portfolio"] as const).map((t) => (
+      <div className="flex gap-1 bg-brand-charcoal rounded-xl p-1 w-fit overflow-x-auto">
+        {(["agenda", "portfolio", "settings"] as const).map((t) => (
           <button
             key={t}
             onClick={() => setTab(t)}
-            className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all ${
+            className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all whitespace-nowrap ${
               tab === t ? "bg-brand-gold text-brand-black" : "text-brand-muted hover:text-brand-beige"
             }`}
           >
-            {t === "agenda" ? <><Calendar className="w-4 h-4" />Agenda ({appointments.length})</> : <><ImageIcon className="w-4 h-4" />Portfolio ({portfolio.length})</>}
+            {t === "agenda" ? <><Calendar className="w-4 h-4" />Agenda ({appointments.length})</>
+              : t === "portfolio" ? <><ImageIcon className="w-4 h-4" />Portfolio ({portfolio.length})</>
+              : <><Settings className="w-4 h-4" />Mon profil</>}
           </button>
         ))}
       </div>
@@ -267,6 +332,110 @@ export function PortalClient({ stylist, appointments, stats, defaultTab = "agend
               ))}
             </div>
           )}
+        </motion.div>
+      )}
+
+      {/* Settings tab */}
+      {tab === "settings" && (
+        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-6">
+          {/* Edit availability */}
+          <div className="card space-y-4">
+            <div className="flex items-center justify-between">
+              <h2 className="font-semibold text-brand-beige flex items-center gap-2">
+                <Clock className="w-4 h-4 text-brand-gold" />
+                Modifier mes disponibilités
+              </h2>
+              <button onClick={saveAvailability} disabled={savingAvail} className="btn-primary text-sm gap-2 px-4 py-2">
+                {savingAvail ? <span className="w-3.5 h-3.5 border-2 border-brand-black/30 border-t-brand-black rounded-full animate-spin" /> : <Save className="w-3.5 h-3.5" />}
+                {savingAvail ? "Sauvegarde..." : "Sauvegarder"}
+              </button>
+            </div>
+            <div className="space-y-3">
+              {editAvailability.map((day, i) => (
+                <div key={day.dayOfWeek} className="flex items-center gap-4 p-3 rounded-lg bg-brand-black/40 border border-white/5">
+                  <label className="flex items-center gap-3 w-28">
+                    <input
+                      type="checkbox"
+                      checked={day.isActive}
+                      onChange={(e) => updateAvailDay(i, "isActive", e.target.checked)}
+                      className="w-4 h-4 accent-brand-gold rounded"
+                    />
+                    <span className={`text-sm font-medium ${day.isActive ? "text-brand-beige" : "text-brand-muted line-through"}`}>
+                      {day.label}
+                    </span>
+                  </label>
+                  {day.isActive ? (
+                    <div className="flex items-center gap-2">
+                      <input
+                        type="time"
+                        value={day.startTime}
+                        onChange={(e) => updateAvailDay(i, "startTime", e.target.value)}
+                        className="input py-1.5 px-3 w-32 text-sm"
+                      />
+                      <span className="text-brand-muted text-sm">à</span>
+                      <input
+                        type="time"
+                        value={day.endTime}
+                        onChange={(e) => updateAvailDay(i, "endTime", e.target.value)}
+                        className="input py-1.5 px-3 w-32 text-sm"
+                      />
+                    </div>
+                  ) : (
+                    <span className="text-sm text-red-400">Fermé</span>
+                  )}
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Edit profile / bio */}
+          <div className="card space-y-4">
+            <div className="flex items-center justify-between">
+              <h2 className="font-semibold text-brand-beige flex items-center gap-2">
+                <Edit3 className="w-4 h-4 text-brand-gold" />
+                Mon profil
+              </h2>
+              <button onClick={saveProfile} disabled={savingProfile} className="btn-primary text-sm gap-2 px-4 py-2">
+                {savingProfile ? <span className="w-3.5 h-3.5 border-2 border-brand-black/30 border-t-brand-black rounded-full animate-spin" /> : <Save className="w-3.5 h-3.5" />}
+                {savingProfile ? "Sauvegarde..." : "Sauvegarder"}
+              </button>
+            </div>
+            <div>
+              <label className="label">Bio / Présentation</label>
+              <textarea
+                className="input min-h-[120px] resize-y"
+                placeholder="Parlez de votre expérience, votre spécialité, votre passion..."
+                value={bio}
+                onChange={(e) => setBio(e.target.value)}
+              />
+              <p className="text-xs text-brand-muted mt-1">Cette bio sera visible par les clientes sur la page équipe.</p>
+            </div>
+            <div>
+              <label className="label">Années d&apos;expérience</label>
+              <input
+                type="number"
+                className="input w-32"
+                min={0}
+                max={50}
+                value={yearsExp}
+                onChange={(e) => setYearsExp(Number(e.target.value))}
+              />
+            </div>
+            <div>
+              <label className="label">Spécialités</label>
+              <div className="flex flex-wrap gap-2 mt-1">
+                {stylist.specialties.length > 0 ? (
+                  stylist.specialties.map((s) => (
+                    <span key={s} className="text-xs bg-brand-gold/10 text-brand-gold px-3 py-1 rounded-full">
+                      {SPECIALTY_LABELS[s]}
+                    </span>
+                  ))
+                ) : (
+                  <p className="text-sm text-brand-muted">Aucune spécialité définie. Contactez l&apos;admin pour les modifier.</p>
+                )}
+              </div>
+            </div>
+          </div>
         </motion.div>
       )}
 

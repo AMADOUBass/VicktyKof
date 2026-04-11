@@ -3,10 +3,13 @@
 import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { motion } from "framer-motion";
+import { useRouter } from "next/navigation";
+import { motion, AnimatePresence } from "framer-motion";
 import {
   Calendar, ShoppingBag, Crown, Clock, CheckCircle2, Package, ChevronRight,
+  Settings, X, AlertTriangle, Eye, EyeOff, Save, Phone, User,
 } from "lucide-react";
+import toast from "react-hot-toast";
 import { formatPrice } from "@/lib/utils";
 
 type AppointmentStatus = "PENDING" | "CONFIRMED" | "ACCEPTED" | "DECLINED" | "COMPLETED" | "CANCELLED" | "RESCHEDULED";
@@ -42,7 +45,8 @@ interface Order {
 }
 
 interface Props {
-  user: { name: string | null; email: string | null; image: string | null; isMember: boolean };
+  userId: string;
+  user: { name: string | null; email: string | null; image: string | null; isMember: boolean; phone: string | null };
   appointments: Appointment[];
   orders: Order[];
 }
@@ -79,8 +83,81 @@ function getInitials(name: string | null) {
   return name.split(" ").map((n) => n[0]).join("").toUpperCase().slice(0, 2);
 }
 
-export function AccountClient({ user, appointments, orders }: Props) {
-  const [tab, setTab] = useState<"appointments" | "orders">("appointments");
+export function AccountClient({ userId, user, appointments: initialAppointments, orders }: Props) {
+  const router = useRouter();
+  const [tab, setTab] = useState<"appointments" | "orders" | "profile">("appointments");
+  const [appointments, setAppointments] = useState(initialAppointments);
+
+  // Profile edit state
+  const [profileName, setProfileName] = useState(user.name ?? "");
+  const [profilePhone, setProfilePhone] = useState(user.phone ?? "");
+  const [currentPw, setCurrentPw] = useState("");
+  const [newPw, setNewPw] = useState("");
+  const [confirmPw, setConfirmPw] = useState("");
+  const [showPw, setShowPw] = useState(false);
+  const [savingProfile, setSavingProfile] = useState(false);
+
+  // Cancel appointment state
+  const [cancellingId, setCancellingId] = useState<string | null>(null);
+  const [cancelReason, setCancelReason] = useState("");
+  const [cancelLoading, setCancelLoading] = useState(false);
+
+  async function handleSaveProfile() {
+    setSavingProfile(true);
+    try {
+      const body: Record<string, string> = {};
+      if (profileName !== user.name) body.name = profileName;
+      if (profilePhone !== (user.phone ?? "")) body.phone = profilePhone || "";
+      if (newPw) {
+        if (newPw !== confirmPw) { toast.error("Les mots de passe ne correspondent pas"); setSavingProfile(false); return; }
+        if (newPw.length < 8) { toast.error("Minimum 8 caractères"); setSavingProfile(false); return; }
+        body.currentPassword = currentPw;
+        body.newPassword = newPw;
+      }
+      if (Object.keys(body).length === 0) { toast.success("Aucune modification"); setSavingProfile(false); return; }
+
+      const res = await fetch(`/api/users/${userId}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body),
+      });
+      if (!res.ok) {
+        const err = await res.json() as { error?: string };
+        throw new Error(err.error ?? "Erreur");
+      }
+      toast.success("Profil mis à jour");
+      setCurrentPw(""); setNewPw(""); setConfirmPw("");
+      router.refresh();
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Erreur");
+    } finally {
+      setSavingProfile(false);
+    }
+  }
+
+  async function handleCancelAppointment() {
+    if (!cancellingId || !cancelReason.trim()) { toast.error("Veuillez indiquer une raison"); return; }
+    setCancelLoading(true);
+    try {
+      const res = await fetch(`/api/appointments/${cancellingId}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ status: "CANCELLED", cancelReason: cancelReason.trim() }),
+      });
+      if (!res.ok) {
+        const err = await res.json() as { error?: string };
+        throw new Error(err.error ?? "Erreur");
+      }
+      toast.success("Rendez-vous annulé");
+      setAppointments((prev) => prev.map((a) => a.id === cancellingId ? { ...a, status: "CANCELLED" as AppointmentStatus } : a));
+      setCancellingId(null);
+      setCancelReason("");
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Erreur");
+    } finally {
+      setCancelLoading(false);
+    }
+  }
 
   const upcoming = appointments.filter(
     (a) => ["PENDING", "CONFIRMED", "ACCEPTED"].includes(a.status) && new Date(a.scheduledAt) >= new Date()
@@ -153,16 +230,16 @@ export function AccountClient({ user, appointments, orders }: Props) {
         </div>
 
         {/* Tabs */}
-        <div className="flex gap-1 bg-brand-charcoal rounded-xl p-1 mb-6 w-fit">
-          {(["appointments", "orders"] as const).map((t) => (
+        <div className="flex gap-1 bg-brand-charcoal rounded-xl p-1 mb-6 w-fit overflow-x-auto">
+          {(["appointments", "orders", "profile"] as const).map((t) => (
             <button
               key={t}
               onClick={() => setTab(t)}
-              className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all ${
+              className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all whitespace-nowrap ${
                 tab === t ? "bg-brand-gold text-brand-black" : "text-brand-muted hover:text-brand-beige"
               }`}
             >
-              {t === "appointments" ? <><Calendar className="w-4 h-4" />Rendez-vous</> : <><ShoppingBag className="w-4 h-4" />Commandes</>}
+              {t === "appointments" ? <><Calendar className="w-4 h-4" />Rendez-vous</> : t === "orders" ? <><ShoppingBag className="w-4 h-4" />Commandes</> : <><Settings className="w-4 h-4" />Mon profil</>}
             </button>
           ))}
         </div>
@@ -175,7 +252,7 @@ export function AccountClient({ user, appointments, orders }: Props) {
                 <h2 className="text-sm font-semibold text-brand-muted uppercase tracking-widest mb-3 flex items-center gap-2">
                   <Clock className="w-4 h-4 text-brand-gold" />À venir ({upcoming.length})
                 </h2>
-                <div className="space-y-3">{upcoming.map((a) => <ApptCard key={a.id} a={a} />)}</div>
+                <div className="space-y-3">{upcoming.map((a) => <ApptCard key={a.id} a={a} onCancel={(id) => setCancellingId(id)} />)}</div>
               </section>
             )}
             {past.length > 0 && (
@@ -207,14 +284,103 @@ export function AccountClient({ user, appointments, orders }: Props) {
             }
           </motion.div>
         )}
+
+        {/* Profile tab */}
+        {tab === "profile" && (
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-6 max-w-xl">
+            <div className="card space-y-4">
+              <h2 className="font-display text-xl font-semibold text-brand-beige flex items-center gap-2">
+                <User className="w-5 h-5 text-brand-gold" /> Informations personnelles
+              </h2>
+              <div>
+                <label className="label">Nom complet</label>
+                <input className="input" value={profileName} onChange={(e) => setProfileName(e.target.value)} />
+              </div>
+              <div>
+                <label className="label">Téléphone</label>
+                <div className="relative">
+                  <Phone className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-brand-muted" />
+                  <input className="input pl-10" placeholder="(581) 000-0000" value={profilePhone} onChange={(e) => setProfilePhone(e.target.value)} />
+                </div>
+              </div>
+              <div>
+                <label className="label">Email</label>
+                <input className="input opacity-60 cursor-not-allowed" value={user.email ?? ""} disabled />
+                <p className="text-xs text-brand-muted mt-1">L&apos;email ne peut pas être modifié.</p>
+              </div>
+            </div>
+
+            <div className="card space-y-4">
+              <h2 className="font-display text-xl font-semibold text-brand-beige">Changer le mot de passe</h2>
+              <p className="text-xs text-brand-muted">Laissez vide si vous ne souhaitez pas changer de mot de passe.</p>
+              <div>
+                <label className="label">Mot de passe actuel</label>
+                <input type="password" className="input" value={currentPw} onChange={(e) => setCurrentPw(e.target.value)} placeholder="••••••••" />
+              </div>
+              <div>
+                <label className="label">Nouveau mot de passe</label>
+                <div className="relative">
+                  <input type={showPw ? "text" : "password"} className="input pr-12" value={newPw} onChange={(e) => setNewPw(e.target.value)} placeholder="Min. 8 caractères" />
+                  <button type="button" onClick={() => setShowPw(!showPw)} className="absolute right-3 top-1/2 -translate-y-1/2 text-brand-muted hover:text-brand-gold">
+                    {showPw ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                  </button>
+                </div>
+              </div>
+              <div>
+                <label className="label">Confirmer</label>
+                <input type="password" className="input" value={confirmPw} onChange={(e) => setConfirmPw(e.target.value)} placeholder="••••••••" />
+              </div>
+            </div>
+
+            <button onClick={handleSaveProfile} disabled={savingProfile} className="btn-primary w-full gap-2">
+              {savingProfile ? <span className="w-4 h-4 border-2 border-brand-black/30 border-t-brand-black rounded-full animate-spin" /> : <Save className="w-4 h-4" />}
+              {savingProfile ? "Sauvegarde..." : "Sauvegarder les modifications"}
+            </button>
+          </motion.div>
+        )}
+
+        {/* Cancel appointment modal */}
+        <AnimatePresence>
+          {cancellingId && (
+            <motion.div
+              initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+              className="fixed inset-0 bg-brand-black/80 flex items-center justify-center z-50 p-4"
+              onClick={(e) => e.target === e.currentTarget && setCancellingId(null)}
+            >
+              <motion.div
+                initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.95 }}
+                className="bg-brand-charcoal rounded-2xl p-6 w-full max-w-md space-y-4"
+              >
+                <div className="flex items-center justify-between">
+                  <h2 className="font-display text-xl font-bold text-brand-beige flex items-center gap-2">
+                    <AlertTriangle className="w-5 h-5 text-red-400" /> Annuler le rendez-vous
+                  </h2>
+                  <button onClick={() => setCancellingId(null)} className="text-brand-muted hover:text-brand-beige"><X className="w-5 h-5" /></button>
+                </div>
+                <p className="text-sm text-brand-muted">Cette action est irréversible. Votre dépôt pourrait ne pas être remboursé selon les conditions d&apos;annulation.</p>
+                <div>
+                  <label className="label">Raison de l&apos;annulation *</label>
+                  <textarea className="input min-h-[80px] resize-none" placeholder="Indiquez la raison..." value={cancelReason} onChange={(e) => setCancelReason(e.target.value)} />
+                </div>
+                <div className="flex gap-3 pt-2">
+                  <button onClick={() => setCancellingId(null)} className="btn-outline flex-1">Garder le RDV</button>
+                  <button onClick={handleCancelAppointment} disabled={cancelLoading || !cancelReason.trim()} className="flex-1 inline-flex items-center justify-center gap-2 px-6 py-3 bg-red-500 text-white font-semibold rounded-lg transition-all duration-300 hover:bg-red-600 active:scale-95 disabled:opacity-50">
+                    {cancelLoading ? "Annulation..." : "Confirmer l'annulation"}
+                  </button>
+                </div>
+              </motion.div>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
     </div>
   );
 }
 
-function ApptCard({ a }: { a: Appointment }) {
+function ApptCard({ a, onCancel }: { a: Appointment; onCancel?: (id: string) => void }) {
   const s = APPT_STATUS[a.status];
   const date = new Date(a.scheduledAt);
+  const isCancellable = ["PENDING", "CONFIRMED", "ACCEPTED"].includes(a.status) && date >= new Date();
   return (
     <div className={`card flex flex-col sm:flex-row sm:items-center gap-4 ${date < new Date() && !["PENDING","CONFIRMED","ACCEPTED"].includes(a.status) ? "opacity-70" : ""}`}>
       <div className="w-12 h-12 bg-brand-gold/10 rounded-xl flex flex-col items-center justify-center text-brand-gold shrink-0">
@@ -231,9 +397,17 @@ function ApptCard({ a }: { a: Appointment }) {
         </p>
         {a.notes && <p className="text-xs text-brand-muted mt-1 italic truncate">Note : {a.notes}</p>}
       </div>
-      <div className="text-right shrink-0">
+      <div className="text-right shrink-0 space-y-1">
         <p className="font-semibold text-brand-beige">{formatPrice(a.totalPrice)}</p>
         <p className="text-xs text-brand-muted">Dépôt : {formatPrice(a.depositAmount)}</p>
+        {isCancellable && onCancel && (
+          <button
+            onClick={() => onCancel(a.id)}
+            className="text-xs text-red-400 hover:text-red-300 transition-colors mt-1 underline underline-offset-2"
+          >
+            Annuler
+          </button>
+        )}
       </div>
     </div>
   );

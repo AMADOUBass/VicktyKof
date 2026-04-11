@@ -33,12 +33,17 @@ export default async function AccountPage() {
 
   const { appointments, orders } = await getUserData(session.user.id);
 
+  // Fetch phone from DB since it's not in the session
+  const dbUser = await prisma.user.findUnique({ where: { id: session.user.id }, select: { phone: true } });
+
   const serialized = {
+    userId: session.user.id,
     user: {
       name: session.user.name ?? null,
       email: session.user.email ?? null,
       image: session.user.image ?? null,
       isMember: session.user.isMember,
+      phone: dbUser?.phone ?? null,
     },
     appointments: appointments.map((a) => ({
       id: a.id,

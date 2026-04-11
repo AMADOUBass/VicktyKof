@@ -44,16 +44,20 @@ export const metadata: Metadata = {
     title: "VicktyKof — Salon Spécialisé Locs & Coiffures Afro",
     description:
       "Salon de coiffure premium spécialisé en locs, interlocks et coiffures afro à Québec.",
-    images: [{ url: "/og-image.jpg", width: 1200, height: 630, alt: "VicktyKof Salon" }],
+    images: [{ url: "/og-image.png", width: 1200, height: 630, alt: "VicktyKof Salon" }],
   },
   twitter: {
     card: "summary_large_image",
     title: "VicktyKof — Salon Locs & Coiffures Afro",
     description: "Salon premium spécialisé en locs et coiffures afro à Québec.",
-    images: ["/og-image.jpg"],
+    images: ["/og-image.png"],
   },
   robots: { index: true, follow: true },
   metadataBase: new URL("https://vicktykof.com"),
+  icons: {
+    icon: "/favicon.png",
+    apple: "/favicon.png",
+  },
 };
 
 export const viewport: Viewport = {

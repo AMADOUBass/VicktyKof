@@ -11,7 +11,8 @@
       "Bash(sed -n '310,335p' c:/Dev/VicktyKof/node_modules/@prisma/client/src/runtime/getPrismaClient.ts)",
       "Bash(sed -n '310,335p' c:/Dev/VicktyKof/node_modules/@prisma/client/runtime/library.js)",
       "Bash(ls \"c:/Dev/VicktyKof/public/images/\"*.png)",
-      "Read(//c/Users/cegep garneau/AppData/Local/Temp/claude/c--Dev-VicktyKof/088bcd11-4355-4630-81f2-f01e86bede04/tasks/**)"
+      "Read(//c/Users/cegep garneau/AppData/Local/Temp/claude/c--Dev-VicktyKof/088bcd11-4355-4630-81f2-f01e86bede04/tasks/**)",
+      "Bash(echo \"EXIT:$?\")"
     ],
     "additionalDirectories": [
       "C:\\Users\\cegep garneau\\OneDrive - Cégep Garneau\\VicktyKof\\src\\app\\(public)\\shop\\[slug]",

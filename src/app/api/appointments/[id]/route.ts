@@ -19,7 +19,12 @@ const stylistSchema = z.object({
   adminNotes: z.string().optional(),
 });
 
-// PATCH /api/appointments/[id] — admin + stylist (limited)
+const clientSchema = z.object({
+  status: z.literal("CANCELLED"),
+  cancelReason: z.string().min(1, "Une raison est requise"),
+});
+
+// PATCH /api/appointments/[id] — admin + stylist (limited) + client (cancel only)
 export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const session = await auth();
   if (!session) {
@@ -28,22 +33,24 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
 
   const isAdmin = session.user.role === "ADMIN";
   const isStylist = session.user.role === "STYLIST";
+  const isClient = session.user.role === "CLIENT";
 
-  if (!isAdmin && !isStylist) {
+  if (!isAdmin && !isStylist && !isClient) {
     return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   }
 
   const { id } = await params;
   const body = await req.json() as unknown;
 
-  // Stylists can only mark their own appointments COMPLETED or CANCELLED
-  const schema = isAdmin ? adminSchema : stylistSchema;
+  // Pick the right schema based on role
+  const schema = isAdmin ? adminSchema : isStylist ? stylistSchema : clientSchema;
   const parsed = schema.safeParse(body);
   if (!parsed.success) {
     return NextResponse.json({ error: "Données invalides" }, { status: 400 });
   }
 
-  const { status, adminNotes } = parsed.data;
+  const { status } = parsed.data;
+  const adminNotes = "adminNotes" in parsed.data ? parsed.data.adminNotes : undefined;
   const cancelReason = "cancelReason" in parsed.data ? parsed.data.cancelReason : undefined;
 
   const appointment = await prisma.appointment.findUnique({
@@ -58,6 +65,16 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
 
   if (!appointment) {
     return NextResponse.json({ error: "Introuvable" }, { status: 404 });
+  }
+
+  // Client can only cancel their own appointments in a cancellable state
+  if (isClient) {
+    if (appointment.clientId !== session.user.id) {
+      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+    }
+    if (!["PENDING", "CONFIRMED", "ACCEPTED"].includes(appointment.status)) {
+      return NextResponse.json({ error: "Ce rendez-vous ne peut plus être annulé" }, { status: 400 });
+    }
   }
 
   // Stylist can only update their own appointments
