@@ -25,13 +25,15 @@ async function main() {
 
   const photos = await prisma.galleryPhoto.findMany({ orderBy: { createdAt: "asc" } });
 
-  for (let i = 0; i < photos.length; i++) {
+  let i = 0;
+  for (const photo of photos) {
     const imgUrl = images[i % images.length];
     await prisma.galleryPhoto.update({
-      where: { id: photos[i].id },
+      where: { id: photo.id },
       data: { url: imgUrl }
     });
-    console.log(`Updated photo ${photos[i].id} with ${imgUrl}`);
+    console.log(`Updated photo ${photo.id} with ${imgUrl}`);
+    i++;
   }
 
   console.log("Gallery DB Updated successfully.");
