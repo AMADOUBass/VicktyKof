@@ -32,6 +32,7 @@ import { signOut, useSession } from "next-auth/react";
 import toast from "react-hot-toast";
 import { formatPrice } from "@/lib/utils";
 import { UploadDropzone } from "@/lib/uploadthing";
+import { UserAvatar } from "@/components/ui/UserAvatar";
 
 type AppointmentStatus =
   | "PENDING"
@@ -370,14 +371,14 @@ export function AccountClient({
           animate={{ opacity: 1, y: 0 }}
           className="card flex flex-col sm:flex-row items-start sm:items-center gap-4 mb-8">
           <div
-            className="w-16 h-16 rounded-full bg-brand-gold/20 flex items-center justify-center text-brand-gold font-bold text-xl shrink-0 overflow-hidden relative group cursor-pointer"
+            className="relative group cursor-pointer"
             onClick={() => setTab("profile")}>
-            {avatarUrl ? (
-              <Image src={avatarUrl} alt="" fill className="object-cover" />
-            ) : (
-              getInitials(user.name)
-            )}
-            <div className="absolute inset-0 bg-brand-black/60 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity">
+            <UserAvatar 
+              src={avatarUrl} 
+              name={user.name} 
+              size="xl" 
+            />
+            <div className="absolute inset-0 bg-brand-black/60 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity rounded-full">
               <User className="w-6 h-6 text-brand-gold" />
             </div>
           </div>

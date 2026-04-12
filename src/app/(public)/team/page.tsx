@@ -3,6 +3,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 import { Calendar } from "lucide-react";
+import { UserAvatar } from "@/components/ui/UserAvatar";
 
 export const metadata: Metadata = {
   title: "L'équipe",
@@ -49,18 +50,13 @@ export default async function TeamPage() {
             {stylists.map((stylist) => (
               <div key={stylist.id} className="card-hover overflow-hidden">
                 {/* Avatar */}
-                <div className="relative h-64 -mx-6 -mt-6 mb-6 bg-gradient-to-br from-brand-gold/10 to-brand-black overflow-hidden">
-                  {stylist.avatarUrl ? (
-                    <Image src={stylist.avatarUrl} alt={stylist.user.name ?? ""} fill className="object-cover" />
-                  ) : (
-                    <div className="w-full h-full flex items-center justify-center">
-                      <div className="w-24 h-24 rounded-full bg-brand-gold/20 border-2 border-brand-gold/30 flex items-center justify-center">
-                        <span className="font-display text-4xl text-brand-gold font-bold">
-                          {stylist.user.name?.[0] ?? "?"}
-                        </span>
-                      </div>
-                    </div>
-                  )}
+                <div className="flex justify-center -mt-12 mb-6">
+                  <UserAvatar 
+                    src={stylist.user.image ?? stylist.avatarUrl} 
+                    name={stylist.user.name} 
+                    size="2xl" 
+                    className="w-32 h-32 border-4 border-brand-black shadow-2xl"
+                  />
                 </div>
 
                 <h2 className="font-display text-2xl font-semibold text-brand-beige">{stylist.user.name}</h2>

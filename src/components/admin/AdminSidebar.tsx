@@ -9,6 +9,7 @@ import {
   LayoutDashboard, Calendar, Package, Users, Scissors, Image, Settings, LogOut, Menu, X, ShoppingBag,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { UserAvatar } from "@/components/ui/UserAvatar";
 
 const navItems = [
   { href: "/dashboard",             label: "Vue d'ensemble", icon: LayoutDashboard, exact: true },
@@ -62,13 +63,11 @@ function NavContent({ onClose }: { onClose?: () => void }) {
       <div className="p-4 border-t border-white/5 space-y-3">
         {session?.user && (
           <div className="flex items-center gap-3 px-2">
-            <div className="w-10 h-10 bg-brand-gold/20 border border-brand-gold/40 rounded-full flex items-center justify-center text-brand-gold font-bold overflow-hidden shrink-0">
-              {session.user.image ? (
-                <img src={session.user.image} alt="" className="w-full h-full object-cover" />
-              ) : (
-                session.user.name?.[0]?.toUpperCase() ?? "A"
-              )}
-            </div>
+            <UserAvatar 
+              src={session.user.image} 
+              name={session.user.name} 
+              size="md" 
+            />
             <div className="flex-1 min-w-0">
               <p className="text-sm font-medium text-brand-beige truncate">{session.user.name}</p>
               <p className="text-xs text-brand-muted truncate">{session.user.email}</p>

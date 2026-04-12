@@ -8,6 +8,7 @@ import { ShoppingBag, Star, ChevronLeft, Minus, Plus, Crown, Tag, Package } from
 import { useCartStore } from "@/hooks/useCartStore";
 import { formatPrice } from "@/lib/utils";
 import toast from "react-hot-toast";
+import { UserAvatar } from "@/components/ui/UserAvatar";
 
 interface Review {
   id: string;
@@ -296,13 +297,11 @@ export function ProductDetail({ product }: { product: Product }) {
               {product.reviews.map((review) => (
                 <div key={review.id} className="card space-y-3">
                   <div className="flex items-center gap-3">
-                    <div className="w-9 h-9 rounded-full bg-brand-gold/20 flex items-center justify-center text-brand-gold font-bold text-sm shrink-0">
-                      {review.user.image ? (
-                        <Image src={review.user.image} alt="" width={36} height={36} className="rounded-full" />
-                      ) : (
-                        getInitials(review.user.name)
-                      )}
-                    </div>
+                    <UserAvatar 
+                      src={review.user.image} 
+                      name={review.user.name} 
+                      size="sm" 
+                    />
                     <div>
                       <p className="text-sm font-medium text-brand-beige">{review.user.name ?? "Cliente"}</p>
                       <StarRating rating={review.rating} />

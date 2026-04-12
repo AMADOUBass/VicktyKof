@@ -9,6 +9,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { ShoppingBag, Menu, X, User, LogOut, LayoutDashboard, ChevronDown, Scissors } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useCartStore } from "@/hooks/useCartStore";
+import { UserAvatar } from "@/components/ui/UserAvatar";
 
 const navLinks = [
   { href: "/", label: "Accueil" },
@@ -92,13 +93,11 @@ export function Navbar() {
                 onClick={() => setUserMenuOpen(!userMenuOpen)}
                 className="flex items-center gap-2 btn-ghost px-3 py-2 rounded-lg"
               >
-                <div className="w-8 h-8 bg-brand-gold/20 border border-brand-gold/40 rounded-full flex items-center justify-center text-brand-gold text-sm font-semibold overflow-hidden">
-                  {session.user.image ? (
-                    <Image src={session.user.image} alt="" width={32} height={32} className="object-cover w-full h-full" />
-                  ) : (
-                    session.user.name?.[0]?.toUpperCase() ?? "?"
-                  )}
-                </div>
+                <UserAvatar 
+                  src={session.user.image} 
+                  name={session.user.name} 
+                  size="sm" 
+                />
                 <ChevronDown className="w-4 h-4 text-brand-muted" />
               </button>
 
