@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { signOut } from "next-auth/react";
+import { signOut, useSession } from "next-auth/react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   LayoutDashboard, Calendar, Package, Users, Scissors, Image, Settings, LogOut, Menu, X,
@@ -22,6 +22,7 @@ const navItems = [
 
 function NavContent({ onClose }: { onClose?: () => void }) {
   const pathname = usePathname();
+  const { data: session } = useSession();
   return (
     <>
       {/* Logo */}
@@ -56,13 +57,28 @@ function NavContent({ onClose }: { onClose?: () => void }) {
         })}
       </nav>
 
-      {/* Logout */}
-      <div className="p-4 border-t border-white/5">
+      {/* User Info & Logout */}
+      <div className="p-4 border-t border-white/5 space-y-3">
+        {session?.user && (
+          <div className="flex items-center gap-3 px-2">
+            <div className="w-10 h-10 bg-brand-gold/20 border border-brand-gold/40 rounded-full flex items-center justify-center text-brand-gold font-bold overflow-hidden shrink-0">
+              {session.user.image ? (
+                <img src={session.user.image} alt="" className="w-full h-full object-cover" />
+              ) : (
+                session.user.name?.[0]?.toUpperCase() ?? "A"
+              )}
+            </div>
+            <div className="flex-1 min-w-0">
+              <p className="text-sm font-medium text-brand-beige truncate">{session.user.name}</p>
+              <p className="text-xs text-brand-muted truncate">{session.user.email}</p>
+            </div>
+          </div>
+        )}
         <button
           onClick={() => signOut({ callbackUrl: "/" })}
           className="flex items-center gap-3 w-full px-4 py-2.5 rounded-lg text-sm font-medium text-red-400 hover:bg-red-400/10 transition-colors"
         >
-          <LogOut className="w-4 h-4" />
+          <LogOut className="w-4 h-4 text-red-400" />
           Déconnexion
         </button>
       </div>
