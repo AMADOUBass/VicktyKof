@@ -35,7 +35,7 @@ export function AboutSection() {
           className="relative">
           <div className="relative aspect-[4/5] rounded-2xl overflow-hidden border border-brand-gold/20">
             <Image
-              src="/images/vicky-portrait.png"
+              src="/images/home/vicky-luxury.png"
               alt="Vicky Kof — Fondatrice & Maître Loctician"
               fill
               className="object-cover object-top"

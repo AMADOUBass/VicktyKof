@@ -135,7 +135,7 @@ export function HeroSection() {
           {/* Hero salon photo */}
           <div className="relative w-full aspect-[4/5] max-w-lg ml-auto rounded-2xl overflow-hidden border border-brand-gold/20">
             <Image
-              src="/images/hero-salon.png"
+              src="/images/home/hero-luxury.png"
               alt="Salon VicktyKof — ambiance et expertise"
               fill
               className="object-cover"

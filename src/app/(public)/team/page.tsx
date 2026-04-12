@@ -48,7 +48,7 @@ export default async function TeamPage() {
         ) : (
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
             {stylists.map((stylist) => (
-              <div key={stylist.id} className="card-hover overflow-hidden">
+              <div key={stylist.id} className="card-hover">
                 {/* Avatar */}
                 <div className="flex justify-center -mt-12 mb-6">
                   <UserAvatar 

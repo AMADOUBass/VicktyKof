@@ -1,8 +1,3 @@
-// =============================================
-// VicktyKof — Prisma Schema
-// PostgreSQL · Prisma 6
-// =============================================
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -11,9 +6,326 @@ datasource db {
   provider = "postgresql"
 }
 
-// ─────────────────────────────────────────────
-// ENUMS
-// ─────────────────────────────────────────────
+model User {
+  id            String        @id @default(cuid())
+  email         String        @unique
+  emailVerified DateTime?
+  name          String?
+  phone         String?
+  image         String?
+  passwordHash  String?
+  role          Role          @default(CLIENT)
+  isMember      Boolean       @default(false)
+  memberSince   DateTime?
+  loyaltyPoints Int           @default(0)
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+  accounts      Account[]
+  appointments  Appointment[] @relation("ClientAppointments")
+  cartItems     CartItem[]
+  orders        Order[]
+  reviews       Review[]
+  sessions      Session[]
+  stylist       Stylist?
+
+  @@map("users")
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
+  user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+  @@map("accounts")
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("sessions")
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+  @@map("verification_tokens")
+}
+
+model PasswordResetToken {
+  id        String   @id @default(cuid())
+  email     String
+  token     String   @unique
+  expires   DateTime
+  used      Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  @@map("password_reset_tokens")
+}
+
+model Stylist {
+  id           String           @id @default(cuid())
+  userId       String           @unique
+  bio          String?
+  yearsExp     Int              @default(0)
+  isActive     Boolean          @default(true)
+  avatarUrl    String?
+  specialties  Specialty[]
+  appointments Appointment[]
+  availability Availability[]
+  portfolio    PortfolioPhoto[]
+  services     StylistService[]
+  user         User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("stylists")
+}
+
+model Availability {
+  id        String  @id @default(cuid())
+  stylistId String
+  dayOfWeek Int
+  startTime String
+  endTime   String
+  isActive  Boolean @default(true)
+  stylist   Stylist @relation(fields: [stylistId], references: [id], onDelete: Cascade)
+
+  @@unique([stylistId, dayOfWeek])
+  @@map("availabilities")
+}
+
+model BlockedSlot {
+  id        String   @id @default(cuid())
+  stylistId String
+  date      DateTime @db.Date
+  startTime String
+  endTime   String
+  reason    String?
+
+  @@map("blocked_slots")
+}
+
+model Service {
+  id              String           @id @default(cuid())
+  name            String
+  slug            String           @unique
+  description     String?
+  durationMins    Int
+  basePrice       Decimal          @db.Decimal(10, 2)
+  depositPct      Int              @default(30)
+  category        String
+  imageUrl        String?
+  isActive        Boolean          @default(true)
+  createdAt       DateTime         @default(now())
+  appointments    Appointment[]
+  stylistServices StylistService[]
+
+  @@map("services")
+}
+
+model StylistService {
+  stylistId String
+  serviceId String
+  price     Decimal? @db.Decimal(10, 2)
+  service   Service  @relation(fields: [serviceId], references: [id], onDelete: Cascade)
+  stylist   Stylist  @relation(fields: [stylistId], references: [id], onDelete: Cascade)
+
+  @@id([stylistId, serviceId])
+  @@map("stylist_services")
+}
+
+model Appointment {
+  id              String            @id @default(cuid())
+  clientId        String
+  stylistId       String
+  serviceId       String
+  scheduledAt     DateTime
+  durationMins    Int
+  totalPrice      Decimal           @db.Decimal(10, 2)
+  depositAmount   Decimal           @db.Decimal(10, 2)
+  depositPct      Int
+  status          AppointmentStatus @default(PENDING)
+  notes           String?
+  adminNotes      String?
+  cancelReason    String?
+  rescheduleFrom  DateTime?
+  stripeSessionId String?
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime          @updatedAt
+  paymentMethod   String            @default("CARD")
+  client          User              @relation("ClientAppointments", fields: [clientId], references: [id])
+  service         Service           @relation(fields: [serviceId], references: [id])
+  stylist         Stylist           @relation(fields: [stylistId], references: [id])
+  payment         Payment?
+
+  @@map("appointments")
+}
+
+model Payment {
+  id              String        @id @default(cuid())
+  appointmentId   String?       @unique
+  orderId         String?       @unique
+  stripePaymentId String        @unique
+  amount          Decimal       @db.Decimal(10, 2)
+  currency        String        @default("cad")
+  status          PaymentStatus @default(PENDING)
+  metadata        Json?
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+  appointment     Appointment?  @relation(fields: [appointmentId], references: [id])
+  order           Order?        @relation(fields: [orderId], references: [id])
+
+  @@map("payments")
+}
+
+model ProductCategory {
+  id       String    @id @default(cuid())
+  name     String
+  slug     String    @unique
+  products Product[]
+
+  @@map("product_categories")
+}
+
+model Product {
+  id           String          @id @default(cuid())
+  name         String
+  slug         String          @unique
+  description  String?
+  price        Decimal         @db.Decimal(10, 2)
+  comparePrice Decimal?        @db.Decimal(10, 2)
+  stock        Int             @default(0)
+  sku          String?         @unique
+  images       String[]
+  categoryId   String
+  isFeatured   Boolean         @default(false)
+  isMemberOnly Boolean         @default(false)
+  memberPrice  Decimal?        @db.Decimal(10, 2)
+  isActive     Boolean         @default(true)
+  createdAt    DateTime        @default(now())
+  updatedAt    DateTime        @updatedAt
+  cartItems    CartItem[]
+  orderItems   OrderItem[]
+  category     ProductCategory @relation(fields: [categoryId], references: [id])
+  reviews      Review[]
+
+  @@map("products")
+}
+
+model CartItem {
+  id        String   @id @default(cuid())
+  userId    String
+  productId String
+  quantity  Int      @default(1)
+  createdAt DateTime @default(now())
+  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, productId])
+  @@map("cart_items")
+}
+
+model Order {
+  id              String      @id @default(cuid())
+  userId          String
+  status          OrderStatus @default(PENDING)
+  subtotal        Decimal     @db.Decimal(10, 2)
+  tax             Decimal     @db.Decimal(10, 2)
+  shipping        Decimal     @db.Decimal(10, 2)
+  total           Decimal     @db.Decimal(10, 2)
+  stripeSessionId String?
+  shippingAddress Json?
+  trackingNumber  String?
+  notes           String?
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+  paymentMethod   String      @default("CARD")
+  items           OrderItem[]
+  user            User        @relation(fields: [userId], references: [id])
+  payment         Payment?
+
+  @@map("orders")
+}
+
+model OrderItem {
+  id        String  @id @default(cuid())
+  orderId   String
+  productId String
+  quantity  Int
+  unitPrice Decimal @db.Decimal(10, 2)
+  total     Decimal @db.Decimal(10, 2)
+  order     Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  product   Product @relation(fields: [productId], references: [id])
+
+  @@map("order_items")
+}
+
+model GalleryPhoto {
+  id         String   @id @default(cuid())
+  url        String
+  caption    String?
+  altText    String?
+  tags       String[]
+  isFeatured Boolean  @default(false)
+  uploadedBy String
+  createdAt  DateTime @default(now())
+
+  @@map("gallery_photos")
+}
+
+model PortfolioPhoto {
+  id        String   @id @default(cuid())
+  stylistId String
+  url       String
+  caption   String?
+  tags      String[]
+  createdAt DateTime @default(now())
+  stylist   Stylist  @relation(fields: [stylistId], references: [id], onDelete: Cascade)
+
+  @@map("portfolio_photos")
+}
+
+model Review {
+  id        String   @id @default(cuid())
+  userId    String
+  productId String?
+  rating    Int
+  body      String?
+  isPublic  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  product   Product? @relation(fields: [productId], references: [id])
+  user      User     @relation(fields: [userId], references: [id])
+
+  @@map("reviews")
+}
+
+model EmailLog {
+  id       String   @id @default(cuid())
+  to       String
+  subject  String
+  template String
+  metadata Json?
+  sentAt   DateTime @default(now())
+  error    String?
+
+  @@map("email_logs")
+}
 
 enum Role {
   CLIENT
@@ -22,12 +334,12 @@ enum Role {
 }
 
 enum AppointmentStatus {
-  PENDING      // waiting for deposit payment
-  CONFIRMED    // deposit paid, awaiting admin confirmation
-  ACCEPTED     // admin confirmed
-  DECLINED     // admin declined
-  COMPLETED    // service done
-  CANCELLED    // cancelled by client or admin
+  PENDING
+  CONFIRMED
+  ACCEPTED
+  DECLINED
+  COMPLETED
+  CANCELLED
   RESCHEDULED
 }
 
@@ -56,377 +368,4 @@ enum Specialty {
   LOC_MAINTENANCE
   BRAIDING
   NATURAL_STYLES
-}
-
-// ─────────────────────────────────────────────
-// USER & AUTH
-// ─────────────────────────────────────────────
-
-model User {
-  id            String    @id @default(cuid())
-  email         String    @unique
-  emailVerified DateTime?
-  name          String?
-  phone         String?
-  image         String?
-  passwordHash  String?
-  role          Role      @default(CLIENT)
-  isMember      Boolean   @default(false)
-  memberSince   DateTime?
-  loyaltyPoints Int       @default(0)
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
-
-  // Relations
-  accounts     Account[]
-  sessions     Session[]
-  appointments Appointment[]   @relation("ClientAppointments")
-  orders       Order[]
-  reviews      Review[]
-  stylist      Stylist?
-  cartItems    CartItem[]
-
-  @@map("users")
-}
-
-model Account {
-  id                String  @id @default(cuid())
-  userId            String
-  type              String
-  provider          String
-  providerAccountId String
-  refresh_token     String? @db.Text
-  access_token      String? @db.Text
-  expires_at        Int?
-  token_type        String?
-  scope             String?
-  id_token          String? @db.Text
-  session_state     String?
-
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  @@unique([provider, providerAccountId])
-  @@map("accounts")
-}
-
-model Session {
-  id           String   @id @default(cuid())
-  sessionToken String   @unique
-  userId       String
-  expires      DateTime
-
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  @@map("sessions")
-}
-
-model VerificationToken {
-  identifier String
-  token      String   @unique
-  expires    DateTime
-
-  @@unique([identifier, token])
-  @@map("verification_tokens")
-}
-
-model PasswordResetToken {
-  id        String   @id @default(cuid())
-  email     String
-  token     String   @unique
-  expires   DateTime
-  used      Boolean  @default(false)
-  createdAt DateTime @default(now())
-
-  @@map("password_reset_tokens")
-}
-
-// ─────────────────────────────────────────────
-// STYLIST PROFILES
-// ─────────────────────────────────────────────
-
-model Stylist {
-  id          String      @id @default(cuid())
-  userId      String      @unique
-  bio         String?     @db.Text
-  yearsExp    Int         @default(0)
-  isActive    Boolean     @default(true)
-  avatarUrl   String?
-  specialties Specialty[]
-
-  user         User          @relation(fields: [userId], references: [id], onDelete: Cascade)
-  availability Availability[]
-  appointments Appointment[]
-  portfolio    PortfolioPhoto[]
-  services     StylistService[]
-
-  @@map("stylists")
-}
-
-model Availability {
-  id         String   @id @default(cuid())
-  stylistId  String
-  dayOfWeek  Int      // 0=Sun, 1=Mon, ..., 6=Sat
-  startTime  String   // "09:00"
-  endTime    String   // "18:00"
-  isActive   Boolean  @default(true)
-
-  stylist Stylist @relation(fields: [stylistId], references: [id], onDelete: Cascade)
-
-  @@unique([stylistId, dayOfWeek])
-  @@map("availabilities")
-}
-
-model BlockedSlot {
-  id        String   @id @default(cuid())
-  stylistId String
-  date      DateTime @db.Date
-  startTime String
-  endTime   String
-  reason    String?
-
-  @@map("blocked_slots")
-}
-
-// ─────────────────────────────────────────────
-// SERVICES
-// ─────────────────────────────────────────────
-
-model Service {
-  id           String      @id @default(cuid())
-  name         String
-  slug         String      @unique
-  description  String?     @db.Text
-  durationMins Int
-  basePrice    Decimal     @db.Decimal(10, 2)
-  depositPct   Int         @default(30)   // % required upfront
-  category     String
-  imageUrl     String?
-  isActive     Boolean     @default(true)
-  createdAt    DateTime    @default(now())
-
-  appointments   Appointment[]
-  stylistServices StylistService[]
-
-  @@map("services")
-}
-
-model StylistService {
-  stylistId String
-  serviceId String
-  price     Decimal? @db.Decimal(10, 2) // override base price
-
-  stylist Stylist  @relation(fields: [stylistId], references: [id], onDelete: Cascade)
-  service Service  @relation(fields: [serviceId], references: [id], onDelete: Cascade)
-
-  @@id([stylistId, serviceId])
-  @@map("stylist_services")
-}
-
-// ─────────────────────────────────────────────
-// APPOINTMENTS
-// ─────────────────────────────────────────────
-
-model Appointment {
-  id              String            @id @default(cuid())
-  clientId        String
-  stylistId       String
-  serviceId       String
-  scheduledAt     DateTime
-  durationMins    Int
-  totalPrice      Decimal           @db.Decimal(10, 2)
-  depositAmount   Decimal           @db.Decimal(10, 2)
-  depositPct      Int
-  status          AppointmentStatus @default(PENDING)
-  paymentMethod   String            @default("CARD") // CARD or INTERAC
-  notes           String?           @db.Text
-  adminNotes      String?           @db.Text
-  cancelReason    String?
-  rescheduleFrom  DateTime?
-  stripeSessionId String?
-  createdAt       DateTime          @default(now())
-  updatedAt       DateTime          @updatedAt
-
-  client   User    @relation("ClientAppointments", fields: [clientId], references: [id])
-  stylist  Stylist @relation(fields: [stylistId], references: [id])
-  service  Service @relation(fields: [serviceId], references: [id])
-  payment  Payment?
-
-  @@map("appointments")
-}
-
-// ─────────────────────────────────────────────
-// PAYMENTS
-// ─────────────────────────────────────────────
-
-model Payment {
-  id              String        @id @default(cuid())
-  appointmentId   String?       @unique
-  orderId         String?       @unique
-  stripePaymentId String        @unique
-  amount          Decimal       @db.Decimal(10, 2)
-  currency        String        @default("cad")
-  status          PaymentStatus @default(PENDING)
-  metadata        Json?
-  createdAt       DateTime      @default(now())
-  updatedAt       DateTime      @updatedAt
-
-  appointment Appointment? @relation(fields: [appointmentId], references: [id])
-  order       Order?       @relation(fields: [orderId], references: [id])
-
-  @@map("payments")
-}
-
-// ─────────────────────────────────────────────
-// E-COMMERCE
-// ─────────────────────────────────────────────
-
-model ProductCategory {
-  id       String    @id @default(cuid())
-  name     String
-  slug     String    @unique
-  products Product[]
-
-  @@map("product_categories")
-}
-
-model Product {
-  id           String   @id @default(cuid())
-  name         String
-  slug         String   @unique
-  description  String?  @db.Text
-  price        Decimal  @db.Decimal(10, 2)
-  comparePrice Decimal? @db.Decimal(10, 2)
-  stock        Int      @default(0)
-  sku          String?  @unique
-  images       String[] // array of URLs
-  categoryId   String
-  isFeatured   Boolean  @default(false)
-  isMemberOnly Boolean  @default(false)
-  memberPrice  Decimal? @db.Decimal(10, 2)
-  isActive     Boolean  @default(true)
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
-
-  category  ProductCategory @relation(fields: [categoryId], references: [id])
-  orderItems OrderItem[]
-  cartItems  CartItem[]
-  reviews    Review[]
-
-  @@map("products")
-}
-
-model CartItem {
-  id        String   @id @default(cuid())
-  userId    String
-  productId String
-  quantity  Int      @default(1)
-  createdAt DateTime @default(now())
-
-  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
-  product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
-
-  @@unique([userId, productId])
-  @@map("cart_items")
-}
-
-model Order {
-  id              String      @id @default(cuid())
-  userId          String
-  status          OrderStatus @default(PENDING)
-  paymentMethod   String      @default("CARD") // CARD or INTERAC
-  subtotal        Decimal     @db.Decimal(10, 2)
-  tax             Decimal     @db.Decimal(10, 2)
-  shipping        Decimal     @db.Decimal(10, 2)
-  total           Decimal     @db.Decimal(10, 2)
-  stripeSessionId String?
-  shippingAddress Json?
-  trackingNumber  String?
-  notes           String?
-  createdAt       DateTime    @default(now())
-  updatedAt       DateTime    @updatedAt
-
-  user      User        @relation(fields: [userId], references: [id])
-  items     OrderItem[]
-  payment   Payment?
-
-  @@map("orders")
-}
-
-model OrderItem {
-  id        String  @id @default(cuid())
-  orderId   String
-  productId String
-  quantity  Int
-  unitPrice Decimal @db.Decimal(10, 2)
-  total     Decimal @db.Decimal(10, 2)
-
-  order   Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
-  product Product @relation(fields: [productId], references: [id])
-
-  @@map("order_items")
-}
-
-// ─────────────────────────────────────────────
-// GALLERY
-// ─────────────────────────────────────────────
-
-model GalleryPhoto {
-  id          String   @id @default(cuid())
-  url         String
-  caption     String?
-  altText     String?
-  tags        String[]
-  isFeatured  Boolean  @default(false)
-  uploadedBy  String   // userId
-  createdAt   DateTime @default(now())
-
-  @@map("gallery_photos")
-}
-
-model PortfolioPhoto {
-  id        String   @id @default(cuid())
-  stylistId String
-  url       String
-  caption   String?
-  tags      String[]
-  createdAt DateTime @default(now())
-
-  stylist Stylist @relation(fields: [stylistId], references: [id], onDelete: Cascade)
-
-  @@map("portfolio_photos")
-}
-
-// ─────────────────────────────────────────────
-// REVIEWS
-// ─────────────────────────────────────────────
-
-model Review {
-  id        String   @id @default(cuid())
-  userId    String
-  productId String?
-  rating    Int      // 1-5
-  body      String?  @db.Text
-  isPublic  Boolean  @default(true)
-  createdAt DateTime @default(now())
-
-  user    User     @relation(fields: [userId], references: [id])
-  product Product? @relation(fields: [productId], references: [id])
-
-  @@map("reviews")
-}
-
-// ─────────────────────────────────────────────
-// NOTIFICATIONS / EMAIL LOG
-// ─────────────────────────────────────────────
-
-model EmailLog {
-  id        String   @id @default(cuid())
-  to        String
-  subject   String
-  template  String
-  metadata  Json?
-  sentAt    DateTime @default(now())
-  error     String?
-
-  @@map("email_logs")
 }

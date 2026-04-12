@@ -4,6 +4,8 @@ import Link from "next/link";
 import { motion } from "framer-motion";
 import { Scissors, RefreshCw, Crown, Sparkles, ArrowRight } from "lucide-react";
 
+import Image from "next/image";
+
 const services = [
   {
     icon: Crown,
@@ -11,6 +13,7 @@ const services = [
     description: "Création de locs depuis zéro avec différentes techniques adaptées à votre texture de cheveux.",
     duration: "3–5 h",
     price: "À partir de 150 CAD",
+    image: "/images/services/starter-locs.png",
   },
   {
     icon: RefreshCw,
@@ -18,6 +21,7 @@ const services = [
     description: "Entretien de vos locs pour un look soigné et une croissance saine. Recommandé toutes les 4–6 semaines.",
     duration: "1,5–3 h",
     price: "À partir de 80 CAD",
+    image: "/images/services/retwist.png",
   },
   {
     icon: Scissors,
@@ -25,6 +29,7 @@ const services = [
     description: "Technique de verrouillage des racines pour une tenue longue durée, idéale pour les cheveux fins.",
     duration: "2–4 h",
     price: "À partir de 100 CAD",
+    image: "/images/services/interlocks.png",
   },
   {
     icon: Sparkles,
@@ -32,6 +37,7 @@ const services = [
     description: "Tresses, updo's, styles protecteurs et coiffures afro naturelles pour toutes occasions.",
     duration: "1–4 h",
     price: "À partir de 60 CAD",
+    image: "/images/services/braids.png",
   },
 ];
 
@@ -70,13 +76,26 @@ export function ServicesSection() {
           {services.map((service) => {
             const Icon = service.icon;
             return (
-              <motion.div key={service.title} variants={cardVariants} className="card-hover group">
-                <div className="w-12 h-12 bg-brand-gold/10 border border-brand-gold/20 rounded-xl flex items-center justify-center mb-5 group-hover:bg-brand-gold/20 transition-colors">
-                  <Icon className="w-6 h-6 text-brand-gold" />
+              <motion.div key={service.title} variants={cardVariants} className="card-hover group flex flex-col h-full">
+                <div className="relative h-48 -mx-6 -mt-6 mb-6 overflow-hidden rounded-t-2xl">
+                  <Image
+                    src={service.image}
+                    alt={service.title}
+                    fill
+                    className="object-cover transition-transform duration-700 group-hover:scale-110"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-brand-black/80 via-transparent to-transparent opacity-60 group-hover:opacity-40 transition-opacity" />
+                  <div className="absolute top-4 left-4 w-10 h-10 bg-brand-black/60 backdrop-blur-md border border-brand-gold/20 rounded-xl flex items-center justify-center">
+                    <Icon className="w-5 h-5 text-brand-gold" />
+                  </div>
                 </div>
-                <h3 className="font-display text-xl font-semibold text-brand-beige mb-2">{service.title}</h3>
-                <p className="text-sm text-brand-muted leading-relaxed mb-4">{service.description}</p>
-                <div className="pt-4 border-t border-white/5">
+                
+                <div className="flex-1">
+                  <h3 className="font-display text-xl font-semibold text-brand-beige mb-2 group-hover:text-brand-gold transition-colors">{service.title}</h3>
+                  <p className="text-sm text-brand-muted leading-relaxed mb-4">{service.description}</p>
+                </div>
+
+                <div className="pt-4 border-t border-white/5 mt-auto">
                   <p className="text-xs text-brand-muted">Durée : {service.duration}</p>
                   <p className="text-sm font-semibold text-brand-gold mt-1">{service.price}</p>
                 </div>
