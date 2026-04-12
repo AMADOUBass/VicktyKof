@@ -86,6 +86,7 @@ interface Props {
     name: string | null;
     email: string | null;
     image: string | null;
+    role: string;
     isMember: boolean;
     phone: string | null;
     loyaltyPoints: number;
@@ -387,7 +388,7 @@ export function AccountClient({
               <h1 className="font-display text-2xl font-bold text-brand-beige">
                 {user.name ?? "Mon compte"}
               </h1>
-              {isMember && (
+              {isMember && user.role === "CLIENT" && (
                 <span className="inline-flex items-center gap-1 text-xs font-medium text-brand-gold bg-brand-gold/10 border border-brand-gold/20 px-2.5 py-0.5 rounded-full">
                   <Crown className="w-3 h-3" />
                   Membre VicktyKof
@@ -409,13 +410,15 @@ export function AccountClient({
               </p>
               <p className="text-xs text-brand-muted">Commandes</p>
             </div>
-            <div className="border-l border-brand-charcoal pl-4">
-              <p className="font-display text-2xl font-bold text-brand-gold flex items-center gap-1 justify-center">
-                <Gift className="w-4 h-4" />
-                {user.loyaltyPoints}
-              </p>
-              <p className="text-xs text-brand-muted">Points</p>
-            </div>
+            {user.role === "CLIENT" && (
+              <div className="border-l border-brand-charcoal pl-4">
+                <p className="font-display text-2xl font-bold text-brand-gold flex items-center gap-1 justify-center">
+                  <Gift className="w-4 h-4" />
+                  {user.loyaltyPoints}
+                </p>
+                <p className="text-xs text-brand-muted">Points</p>
+              </div>
+            )}
           </div>
         </motion.div>
 
@@ -725,7 +728,7 @@ export function AccountClient({
             </button>
 
             {/* Membership CTA */}
-            {!isMember && (
+            {!isMember && user.role === "CLIENT" && (
               <div className="card border border-brand-gold/20 bg-brand-gold/5">
                 <div className="flex items-start gap-4">
                   <div className="w-12 h-12 bg-brand-gold/10 rounded-xl flex items-center justify-center shrink-0">

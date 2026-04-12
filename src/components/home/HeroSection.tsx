@@ -13,7 +13,7 @@ function AnimatedCounter({ value, suffix = "" }: { value: number; suffix?: strin
     damping: 30,
     stiffness: 100,
   });
-  const isInView = useInView(ref, { once: true, margin: "-100px" });
+  const isInView = useInView(ref, { once: true, margin: "-20px" });
 
   useEffect(() => {
     if (isInView) {
@@ -29,7 +29,7 @@ function AnimatedCounter({ value, suffix = "" }: { value: number; suffix?: strin
     });
   }, [springValue, suffix]);
 
-  return <span ref={ref}>{suffix}</span>;
+  return <span ref={ref}>0{suffix}</span>;
 }
 
 export function HeroSection() {

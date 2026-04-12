@@ -58,6 +58,16 @@ export default function AdminStylistsPage() {
   const [editStylist, setEditStylist] = useState<Stylist | null>(null);
   const [form, setForm] = useState<FormData>({ bio: "", yearsExp: "0", specialties: [], availability: DEFAULT_AVAIL });
   const [saving, setSaving] = useState(false);
+  const [isAdding, setIsAdding] = useState(false);
+  const [addForm, setAddForm] = useState({ 
+    name: "", 
+    email: "", 
+    password: "", 
+    bio: "", 
+    yearsExp: "0", 
+    specialties: [] as Specialty[],
+    availability: DEFAULT_AVAIL
+  });
 
   const fetch_ = useCallback(async () => {
     setLoading(true);
@@ -116,6 +126,40 @@ export default function AdminStylistsPage() {
     }
   }
 
+  async function handleCreate() {
+    if (!addForm.name || !addForm.email || !addForm.password) {
+      toast.error("Veuillez remplir tous les champs obligatoires");
+      return;
+    }
+    setSaving(true);
+    try {
+      const res = await fetch("/api/stylists", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: addForm.name,
+          email: addForm.email,
+          password: addForm.password,
+          bio: addForm.bio || undefined,
+          yearsExp: parseInt(addForm.yearsExp, 10),
+          specialties: addForm.specialties,
+        }),
+      });
+      if (!res.ok) {
+        const err = await res.json() as { error?: string };
+        throw new Error(err.error || "Erreur lors de la création");
+      }
+      toast.success("Styliste créé avec succès");
+      setIsAdding(false);
+      setAddForm({ name: "", email: "", password: "", bio: "", yearsExp: "0", specialties: [], availability: DEFAULT_AVAIL });
+      void fetch_();
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Erreur");
+    } finally {
+      setSaving(false);
+    }
+  }
+
   function toggleSpecialty(s: Specialty) {
     setForm((f) => ({
       ...f,
@@ -125,9 +169,18 @@ export default function AdminStylistsPage() {
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="font-display text-3xl font-bold text-brand-beige">Stylistes</h1>
-        <p className="text-brand-muted mt-1">{stylists.length} membres de l'équipe</p>
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div>
+          <h1 className="font-display text-3xl font-bold text-brand-beige">Stylistes</h1>
+          <p className="text-brand-muted mt-1">{stylists.length} membres de l'équipe</p>
+        </div>
+        <button
+          onClick={() => setIsAdding(true)}
+          className="btn-primary w-fit flex items-center gap-2"
+        >
+          <Plus className="w-4 h-4" />
+          Ajouter un styliste
+        </button>
       </div>
 
       {loading ? (
@@ -200,6 +253,119 @@ export default function AdminStylistsPage() {
           ))}
         </div>
       )}
+
+      {/* Add modal */}
+      <AnimatePresence>
+        {isAdding && (
+          <motion.div
+            initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-brand-black/80 flex items-center justify-center z-50 p-4"
+            onClick={(e) => e.target === e.currentTarget && setIsAdding(false)}
+          >
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.95 }}
+              className="bg-brand-charcoal rounded-2xl p-6 w-full max-w-lg max-h-[90vh] overflow-y-auto space-y-4"
+            >
+              <div className="flex items-center justify-between">
+                <h2 className="font-display text-xl font-bold text-brand-beige">
+                  Ajouter un nouveau styliste
+                </h2>
+                <button onClick={() => setIsAdding(false)} className="text-brand-muted hover:text-brand-beige transition-colors">
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+
+              <div className="grid sm:grid-cols-2 gap-4">
+                <div>
+                  <label className="label">Nom complet *</label>
+                  <input
+                    className="input"
+                    value={addForm.name}
+                    onChange={(e) => setAddForm((f) => ({ ...f, name: e.target.value }))}
+                    placeholder="Ex: Vicky Kof"
+                  />
+                </div>
+                <div>
+                  <label className="label">Email *</label>
+                  <input
+                    className="input"
+                    type="email"
+                    value={addForm.email}
+                    onChange={(e) => setAddForm((f) => ({ ...f, email: e.target.value }))}
+                    placeholder="vicky@vicktykof.com"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="label">Mot de passe initial *</label>
+                <input
+                  className="input"
+                  type="password"
+                  value={addForm.password}
+                  onChange={(e) => setAddForm((f) => ({ ...f, password: e.target.value }))}
+                  placeholder="Min. 8 caractères"
+                />
+              </div>
+
+              <div className="grid sm:grid-cols-2 gap-4">
+                <div>
+                  <label className="label">Années d'expérience</label>
+                  <input
+                    type="number"
+                    min="0"
+                    className="input"
+                    value={addForm.yearsExp}
+                    onChange={(e) => setAddForm((f) => ({ ...f, yearsExp: e.target.value }))}
+                  />
+                </div>
+                <div>
+                  <label className="label">Spécialités</label>
+                  <div className="flex flex-wrap gap-1 mt-1">
+                    {ALL_SPECIALTIES.map((s) => (
+                      <button
+                        key={s}
+                        onClick={() => {
+                          setAddForm(f => ({
+                            ...f,
+                            specialties: f.specialties.includes(s) 
+                              ? f.specialties.filter(x => x !== s) 
+                              : [...f.specialties, s]
+                          }))
+                        }}
+                        className={`text-[10px] px-2 py-1 rounded-full border transition-colors ${
+                          addForm.specialties.includes(s)
+                            ? "bg-brand-gold text-brand-black border-brand-gold"
+                            : "border-brand-muted text-brand-muted"
+                        }`}
+                      >
+                        {SPECIALTY_LABELS[s]}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              </div>
+
+              <div>
+                <label className="label">Biographie</label>
+                <textarea
+                  className="input w-full h-20 resize-none text-sm"
+                  value={addForm.bio}
+                  onChange={(e) => setAddForm((f) => ({ ...f, bio: e.target.value }))}
+                  placeholder="Expertise, style préféré..."
+                />
+              </div>
+
+              <div className="flex gap-3 pt-4">
+                <button onClick={() => setIsAdding(false)} className="btn-outline flex-1">Annuler</button>
+                <button onClick={handleCreate} disabled={saving} className="btn-primary flex-1 disabled:opacity-60">
+                  {saving ? "Création..." : "Créer le compte"}
+                </button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* Edit modal */}
       <AnimatePresence>

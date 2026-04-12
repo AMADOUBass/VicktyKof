@@ -80,7 +80,7 @@ export function ServicesSection() {
           variants={containerVariants}
           initial="hidden"
           whileInView="visible"
-          viewport={{ once: true, margin: "-100px" }}
+          viewport={{ once: true, margin: "-50px" }}
           className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
           {services.map((service) => {
             const Icon = service.icon;
@@ -98,11 +98,11 @@ export function ServicesSection() {
                     className="object-cover transition-transform duration-700 group-hover:scale-110"
                   />
                   {/* Overlay for mobile (full) and desktop (bottom of image) */}
-                  <div className="absolute inset-0 bg-gradient-to-t from-brand-black via-brand-black/40 to-transparent sm:from-brand-black/80 sm:via-transparent group-hover:opacity-40 transition-opacity" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-brand-black via-brand-black/80 to-brand-black/20 sm:from-brand-black/80 sm:via-transparent group-hover:opacity-40 transition-opacity" />
 
                   {/* Icon badge */}
                   <div className="absolute top-4 left-4 w-10 h-10 bg-brand-black/60 backdrop-blur-md border border-brand-gold/20 rounded-xl flex items-center justify-center z-20">
-                    <Icon className="w-5 h-5 text-brand-gold" />
+                    <Icon className="w-5 h-5 sm:w-6 sm:h-6 text-brand-gold" />
                   </div>
                 </div>
 

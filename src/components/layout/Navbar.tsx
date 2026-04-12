@@ -36,6 +36,12 @@ export function Navbar() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
+  const isStaff = session?.user?.role === "ADMIN" || session?.user?.role === "STYLIST";
+  const filteredLinks = navLinks.filter(link => {
+    if (isStaff && link.href === "/booking") return false;
+    return true;
+  });
+
   return (
     <header
       className={cn(
@@ -53,7 +59,7 @@ export function Navbar() {
 
         {/* Desktop nav */}
         <ul className="hidden lg:flex items-center gap-8">
-          {navLinks.map((link) => (
+          {filteredLinks.map((link) => (
             <li key={link.href}>
               <Link
                 href={link.href}
@@ -76,15 +82,17 @@ export function Navbar() {
 
         {/* Desktop actions */}
         <div className="hidden lg:flex items-center gap-4">
-          {/* Cart */}
-          <Link href="/shop/cart" className="relative btn-ghost p-2">
-            <ShoppingBag className="w-5 h-5" />
-            {cartCount > 0 && (
-              <span className="absolute -top-1 -right-1 w-5 h-5 bg-brand-gold text-brand-black text-xs font-bold rounded-full flex items-center justify-center">
-                {cartCount}
-              </span>
-            )}
-          </Link>
+          {/* Cart (Hidden for staff) */}
+          {!isStaff && (
+            <Link href="/shop/cart" className="relative btn-ghost p-2">
+              <ShoppingBag className="w-5 h-5" />
+              {cartCount > 0 && (
+                <span className="absolute -top-1 -right-1 w-5 h-5 bg-brand-gold text-brand-black text-xs font-bold rounded-full flex items-center justify-center">
+                  {cartCount}
+                </span>
+              )}
+            </Link>
+          )}
 
           {/* Auth */}
           {session ? (
@@ -160,14 +168,16 @@ export function Navbar() {
 
         {/* Mobile: cart + hamburger */}
         <div className="lg:hidden flex items-center gap-2">
-          <Link href="/shop/cart" className="relative btn-ghost p-2" onClick={() => setMobileOpen(false)}>
-            <ShoppingBag className="w-5 h-5" />
-            {cartCount > 0 && (
-              <span className="absolute -top-1 -right-1 w-5 h-5 bg-brand-gold text-brand-black text-xs font-bold rounded-full flex items-center justify-center">
-                {cartCount}
-              </span>
-            )}
-          </Link>
+          {!isStaff && (
+            <Link href="/shop/cart" className="relative btn-ghost p-2" onClick={() => setMobileOpen(false)}>
+              <ShoppingBag className="w-5 h-5" />
+              {cartCount > 0 && (
+                <span className="absolute -top-1 -right-1 w-5 h-5 bg-brand-gold text-brand-black text-xs font-bold rounded-full flex items-center justify-center">
+                  {cartCount}
+                </span>
+              )}
+            </Link>
+          )}
           <button
             className="btn-ghost p-2 text-brand-gold"
             onClick={() => setMobileOpen(!mobileOpen)}
@@ -188,7 +198,7 @@ export function Navbar() {
             className="lg:hidden bg-brand-black/98 backdrop-blur-md border-t border-white/5 overflow-hidden"
           >
             <div className="px-4 py-6 space-y-1">
-              {navLinks.map((link) => (
+              {filteredLinks.map((link) => (
                 <Link
                   key={link.href}
                   href={link.href}

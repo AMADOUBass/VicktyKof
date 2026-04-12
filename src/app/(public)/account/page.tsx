@@ -30,7 +30,6 @@ async function getUserData(userId: string) {
 export default async function AccountPage() {
   const session = await auth();
   if (!session) redirect("/login?callbackUrl=/account");
-  if (session.user.role === "ADMIN") redirect("/dashboard");
 
   const { appointments, orders } = await getUserData(session.user.id);
 
@@ -43,6 +42,7 @@ export default async function AccountPage() {
       name: session.user.name ?? null,
       email: session.user.email ?? null,
       image: session.user.image ?? null,
+      role: session.user.role,
       isMember: session.user.isMember,
       phone: dbUser?.phone ?? null,
       loyaltyPoints: dbUser?.loyaltyPoints ?? 0,
