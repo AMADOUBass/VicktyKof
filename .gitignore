@@ -45,3 +45,7 @@ next-env.d.ts
 # Temporary files
 *.tmp
 *.log
+
+# Handover documents
+RECOMMANDATIONS_TECHNIQUES.*
+TODO_VICKTYKOF.md.*

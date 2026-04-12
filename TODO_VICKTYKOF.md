@@ -25,10 +25,18 @@ Ce document récapitule l'état d'avancement du projet.
 
 ## 4. Configuration Finale & Remise (À faire) 🚀
 
-- [ ] **EMAILS DE VICKY**
-  - [ ] Obtenir un "App Password" pour son compte Gmail.
-  - [ ] Mettre à jour les variables SMTP sur Vercel.
-  - [ ] Valider l'adresse email de réception finale pour Interac (Yahoo ou Gmail ?).
+- [ ] CONFIGURATION GOOGLE AUTH (Production)
+    - [ ] **Google Cloud Console** :
+        - [ ] Ajouter `https://vicktykof.com` aux **Authorized Origins**.
+        - [ ] Ajouter `https://vicktykof.com/api/auth/callback/google` aux **Authorized Redirect URIs**.
+    - [ ] **Variables d'Environnement Vercel** :
+        - [ ] `AUTH_GOOGLE_ID`
+        - [ ] `AUTH_GOOGLE_SECRET`
+        - [ ] `AUTH_SECRET` (Clé de sécurité générée)
+- [ ] CONFIGURATION EMAILS CLIENT (A faire avec Vicky)
+    - [ ] Obtenir un "App Password" pour son compte Gmail (si 2FA activé)
+    - [ ] Mettre à jour les variables SMTP_USER et SMTP_PASS dans Vercel
+    - [ ] Valider l'adresse email de réception des virements Interac (Yahoo ou Gmail ?).
 - [ ] **LANCEMENT LIVE**
   - [ ] Configurer les clés Stripe "Live" dans Vercel.
   - [ ] Connecter le domaine final `vicktykof.com`.
