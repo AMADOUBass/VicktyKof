@@ -45,13 +45,13 @@ export const metadata: Metadata = {
     title: "VicktyKof — Salon Spécialisé Locs & Coiffures Afro",
     description:
       "Salon de coiffure premium spécialisé en locs, interlocks et coiffures afro à Québec.",
-    images: [{ url: "/og-image.png", width: 1200, height: 630, alt: "VicktyKof Salon" }],
+    images: [{ url: "/og-image-premium.png", width: 1200, height: 630, alt: "VicktyKof Salon" }],
   },
   twitter: {
     card: "summary_large_image",
     title: "VicktyKof — Salon Locs & Coiffures Afro",
     description: "Salon premium spécialisé en locs et coiffures afro à Québec.",
-    images: ["/og-image.png"],
+    images: ["/og-image-premium.png"],
   },
   robots: { index: true, follow: true },
   metadataBase: new URL("https://vicktykof.com"),
@@ -69,6 +69,43 @@ export const metadata: Metadata = {
   },
 };
 
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@type": "HairSalon",
+  "name": "VicktyKof",
+  "image": "https://vicktykof.com/og-image-premium.png",
+  "@id": "https://vicktykof.com",
+  "url": "https://vicktykof.com",
+  "telephone": "+15817457409",
+  "address": {
+    "@type": "PostalAddress",
+    "streetAddress": "2177 rue du Carrousel",
+    "addressLocality": "Qu\u00e9bec",
+    "addressRegion": "QC",
+    "postalCode": "G2B 5B5",
+    "addressCountry": "CA"
+  },
+  "geo": {
+    "@type": "GeoCoordinates",
+    "latitude": 46.8139,
+    "longitude": -71.2082
+  },
+  "openingHoursSpecification": [
+    {
+      "@type": "OpeningHoursSpecification",
+      "dayOfWeek": ["Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"],
+      "opens": "09:00",
+      "closes": "18:00"
+    }
+  ],
+  "sameAs": [
+    "https://www.facebook.com/Victykofhairbeauty/",
+    "https://www.instagram.com/vicktykof_beaute_locks_quebec/",
+    "https://www.tiktok.com/@vicktykof"
+  ],
+  "priceRange": "$$"
+};
+
 export const viewport: Viewport = {
   themeColor: "#C9A84C",
   width: "device-width",
@@ -81,6 +118,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="fr" className={`${cormorant.variable} ${outfit.variable}`}>
       <body className="min-h-screen flex flex-col">
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        />
         <Providers>
           <ConditionalShell>{children}</ConditionalShell>
           <WhatsAppButton />

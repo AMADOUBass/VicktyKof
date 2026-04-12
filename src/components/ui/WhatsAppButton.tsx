@@ -6,7 +6,7 @@ import { MessageCircle } from "lucide-react";
 export function WhatsAppButton() {
   // Use the verified phone number (581) 745-7409
   const phoneNumber = "15817457409";
-  const message = "Bonjour VicktyKof, je souhaiterais obtenir plus d'informations.";
+  const message = "Bonjour Vicky ! J'aimerais avoir des informations sur vos services ou prendre un rendez-vous coiffure.";
   const url = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`;
 
   return (

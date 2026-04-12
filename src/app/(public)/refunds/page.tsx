@@ -49,7 +49,7 @@ export default function RefundsPage() {
           <section className="card">
             <h2 className="font-display text-xl font-semibold text-brand-gold mb-3">Comment demander un remboursement</h2>
             <p>Contactez-nous par email à{" "}
-              <a href="mailto:vicktykoff@gmail.com" className="text-brand-gold hover:underline">vicktykoff@gmail.com</a>
+              <a href="mailto:victykoff@gmail.com" className="text-brand-gold hover:underline">victykoff@gmail.com</a>
               {" "}avec votre numéro de réservation ou de commande. Nous traitons toutes les demandes sous 48h.
             </p>
           </section>

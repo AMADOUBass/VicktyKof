@@ -41,7 +41,7 @@ export function GalleryPreview() {
         <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
           {loading ? (
              [...Array(5)].map((_, i) => (
-               <div key={i} className={`bg-brand-charcoal animate-pulse rounded-xl ${i === 0 ? "md:row-span-2 min-h-[520px]" : "aspect-square"}`} />
+               <div key={i} className={`bg-brand-charcoal animate-pulse rounded-xl ${i === 0 ? "col-span-2 md:col-span-1 md:row-span-2 min-h-[300px] md:min-h-[520px]" : "aspect-square"}`} />
              ))
           ) : photos.length === 0 ? (
             <p className="col-span-full text-center text-brand-muted py-12">Aucune création à afficher pour le moment.</p>
@@ -56,7 +56,7 @@ export function GalleryPreview() {
                   transition={{ duration: 0.4, delay: i * 0.08 }}
                   viewport={{ once: true }}
                   className={`relative overflow-hidden rounded-xl border border-white/5 group cursor-pointer
-                             ${isFirst ? "md:row-span-2" : ""}`}>
+                             ${isFirst ? "col-span-2 md:col-span-1 md:row-span-2" : ""}`}>
                   <div
                     className={
                       isFirst

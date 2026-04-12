@@ -1,16 +1,12 @@
-import type { MetadataRoute } from "next";
-
-const BASE_URL = process.env.NEXT_PUBLIC_APP_URL ?? "https://vicktykof.com";
-
+import { MetadataRoute } from 'next'
+ 
 export default function robots(): MetadataRoute.Robots {
   return {
-    rules: [
-      {
-        userAgent: "*",
-        allow: "/",
-        disallow: ["/dashboard/", "/portal/", "/api/", "/post-login"],
-      },
-    ],
-    sitemap: `${BASE_URL}/sitemap.xml`,
-  };
+    rules: {
+      userAgent: '*',
+      allow: '/',
+      disallow: ['/admin/', '/api/'],
+    },
+    sitemap: 'https://vicktykof.com/sitemap.xml',
+  }
 }

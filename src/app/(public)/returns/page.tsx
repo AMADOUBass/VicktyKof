@@ -20,7 +20,7 @@ export default function ReturnsPage() {
             </p>
             <h3 className="font-semibold text-brand-beige mt-4 mb-2">Procédure :</h3>
             <ol className="list-decimal list-inside space-y-1">
-              <li>Contactez-nous à vicktykoff@gmail.com avec votre numéro de commande</li>
+              <li>Contactez-nous à victykoff@gmail.com avec votre numéro de commande</li>
               <li>Attendez notre confirmation de retour sous 48h</li>
               <li>Expédiez le produit à vos frais à notre adresse</li>
               <li>Remboursement sous 5-10 jours ouvrables après réception</li>

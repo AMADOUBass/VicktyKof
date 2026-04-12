@@ -34,7 +34,7 @@ export default function SettingsPage() {
 
   // General settings
   const [salonName, setSalonName] = useState("VicktyKof");
-  const [salonEmail, setSalonEmail] = useState("vicktykoff@gmail.com");
+  const [salonEmail, setSalonEmail] = useState("victykoff@gmail.com");
   const [salonPhone, setSalonPhone] = useState("(581) 745-7409");
   const [salonAddress, setSalonAddress] = useState("2177 rue du Carrousel, Québec, QC G2B 5B5");
 
@@ -52,6 +52,20 @@ export default function SettingsPage() {
   const [emailOnCancel, setEmailOnCancel] = useState(true);
   const [emailReminder, setEmailReminder] = useState(true);
   const [reminderHours, setReminderHours] = useState(24);
+  const [testLoading, setTestLoading] = useState(false);
+
+  const handleTestEmail = async () => {
+    setTestLoading(true);
+    try {
+      const res = await fetch("/api/admin/test-email", { method: "POST" });
+      if (!res.ok) throw new Error("Erreur SMTP");
+      toast.success("Email de test envoyé à bassoumamadou00@gmail.com");
+    } catch (err) {
+      toast.error("Erreur d'envoi. Vérifiez vos paramètres SMTP dans le fichier .env");
+    } finally {
+      setTestLoading(false);
+    }
+  };
 
   const handleSave = async () => {
     setSaving(true);
@@ -313,6 +327,29 @@ export default function SettingsPage() {
                     />
                   </div>
                 )}
+
+                <div className="pt-6 border-t border-white/5">
+                  <div className="flex items-center justify-between p-4 rounded-xl bg-brand-gold/5 border border-brand-gold/20">
+                    <div>
+                      <p className="text-sm font-semibold text-brand-gold">Vérifier la configuration SMTP</p>
+                      <p className="text-xs text-brand-muted mt-1">
+                        Envoyer un email de test à <strong>bassoumamadou00@gmail.com</strong> pour valider vos paramètres.
+                      </p>
+                    </div>
+                    <button
+                      onClick={handleTestEmail}
+                      disabled={testLoading}
+                      className="btn-primary py-2 px-4 text-xs gap-2"
+                    >
+                      {testLoading ? (
+                        <span className="w-3 h-3 border-2 border-brand-black/30 border-t-brand-black rounded-full animate-spin" />
+                      ) : (
+                        <Bell className="w-3 h-3" />
+                      )}
+                      Tester maintenant
+                    </button>
+                  </div>
+                </div>
               </div>
             </div>
           )}

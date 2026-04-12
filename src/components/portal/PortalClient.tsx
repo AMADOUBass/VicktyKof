@@ -361,7 +361,7 @@ export function PortalClient({ stylist, appointments: initialAppts, pastAppointm
                           onClick={(e) => { e.stopPropagation(); void markCompleted(appt.id); }}
                           className="inline-flex items-center gap-1.5 text-xs bg-green-400/10 text-green-400 px-3 py-1.5 rounded-lg hover:bg-green-400/20 transition-colors mt-1"
                         >
-                          <CheckSquare className="w-3.5 h-3.5" /> Marquer termin\u00e9
+                          <CheckSquare className="w-3.5 h-3.5" /> Marquer terminé
                         </button>
                       </motion.div>
                     )}

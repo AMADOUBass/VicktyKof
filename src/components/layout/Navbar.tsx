@@ -169,7 +169,7 @@ export function Navbar() {
             )}
           </Link>
           <button
-            className="btn-ghost p-2"
+            className="btn-ghost p-2 text-brand-gold"
             onClick={() => setMobileOpen(!mobileOpen)}
             aria-label="Menu"
           >

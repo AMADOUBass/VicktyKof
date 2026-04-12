@@ -3,8 +3,8 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { motion } from "framer-motion";
-import { ArrowRight } from "lucide-react";
-import { UserAvatar } from "../ui/UserAvatar";
+import Image from "next/image";
+import { ArrowRight, User } from "lucide-react";
 
 interface Stylist {
   id: string;
@@ -53,31 +53,44 @@ export function TeamPreview() {
                 whileInView={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: i * 0.1 }}
                 viewport={{ once: true }}
-                className="card-hover text-center group"
+                className="card-hover p-0 overflow-hidden group flex flex-col h-full"
               >
-                {/* Avatar photo */}
-                <div className="flex justify-center mb-5">
-                  <UserAvatar 
-                    src={member.user.image} 
-                    name={member.user.name} 
-                    size="2xl" 
-                    className="group-hover:scale-105 transition-transform duration-500"
-                  />
+                {/* Portrait photo */}
+                <div className="relative w-full aspect-[3/4] overflow-hidden bg-brand-charcoal flex items-center justify-center">
+                  {member.user.image ? (
+                    <Image 
+                      src={member.user.image} 
+                      alt={member.user.name || "Member"} 
+                      fill
+                      className="object-cover transition-transform duration-700 group-hover:scale-110"
+                    />
+                  ) : (
+                    <User className="w-20 h-20 text-brand-gold/20" />
+                  )}
+                  <div className="absolute inset-0 bg-gradient-to-t from-brand-black/80 via-transparent to-transparent opacity-60 group-hover:opacity-40 transition-opacity" />
+                  
+                  {/* Years Exp Badge */}
+                  <div className="absolute top-4 right-4 bg-brand-black/60 backdrop-blur-md border border-brand-gold/20 px-3 py-1 rounded-full z-10">
+                    <p className="text-[10px] text-brand-gold font-medium">{member.yearsExp} ans d&apos;exp.</p>
+                  </div>
                 </div>
 
-                <h3 className="font-display text-xl font-semibold text-brand-beige">{member.user.name}</h3>
-                <p className="text-sm text-brand-gold mt-1">Expert Styliste</p>
-                <p className="text-xs text-brand-muted mt-1">{member.yearsExp} ans d&apos;expérience</p>
-
-                <div className="flex flex-wrap gap-2 justify-center mt-4">
-                  {member.specialties.slice(0, 3).map((s) => (
-                    <span
-                      key={s}
-                      className="text-[10px] bg-brand-gold/10 border border-brand-gold/20 text-brand-gold px-2 py-0.5 rounded-full"
-                    >
-                      {s.replace("_", " ")}
-                    </span>
-                  ))}
+                <div className="p-6 text-center flex-1 flex flex-col">
+                  <h3 className="font-display text-xl sm:text-2xl font-semibold text-brand-beige group-hover:text-brand-gold transition-colors">
+                    {member.user.name}
+                  </h3>
+                  <p className="text-sm text-brand-gold/80 mt-1 uppercase tracking-widest font-medium">Expert Styliste</p>
+                  
+                  <div className="flex flex-wrap gap-2 justify-center mt-5 mb-2">
+                    {member.specialties.slice(0, 3).map((s) => (
+                      <span
+                        key={s}
+                        className="text-[10px] bg-brand-gold/5 border border-brand-gold/20 text-brand-gold px-2.5 py-1 rounded-full"
+                      >
+                        {s.replace("_", " ")}
+                      </span>
+                    ))}
+                  </div>
                 </div>
               </motion.div>
             ))

@@ -48,8 +48,8 @@ export default function PrivacyPage() {
             <p>
               Conformément à la loi 25 du Québec (LPRPDE), vous avez le droit d&apos;accéder,
               corriger ou supprimer vos données personnelles. Pour exercer ces droits, contactez-nous à{" "}
-              <a href="mailto:vicktykoff@gmail.com" className="text-brand-gold hover:underline">
-                vicktykoff@gmail.com
+              <a href="mailto:victykoff@gmail.com" className="text-brand-gold hover:underline">
+                victykoff@gmail.com
               </a>.
             </p>
           </section>
@@ -66,7 +66,7 @@ export default function PrivacyPage() {
             <h2 className="font-display text-xl font-semibold text-brand-gold mb-3">6. Contact</h2>
             <p>
               VicktyKof · 2177 rue du Carrousel, Québec G2B 5B5<br />
-              Email : vicktykoff@gmail.com · Tél : (581) 745-7409
+              Email : victykoff@gmail.com · Tél : (581) 745-7409
             </p>
           </section>
         </div>

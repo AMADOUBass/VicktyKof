@@ -736,9 +736,9 @@ export function AccountClient({
                       Devenir membre VicktyKof
                     </h3>
                     <p className="text-sm text-brand-muted mt-1">
-                      Acc\u00e9dez \u00e0 des prix exclusifs sur les produits,
-                      des offres sp\u00e9ciales et une exp\u00e9rience
-                      personnalis\u00e9e. C&apos;est gratuit !
+                      Accédez à des prix exclusifs sur les produits,
+                      des offres spéciales et une expérience
+                      personnalisée. C&apos;est gratuit !
                     </p>
                     <button
                       onClick={handleActivateMembership}

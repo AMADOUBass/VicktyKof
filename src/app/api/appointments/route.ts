@@ -133,6 +133,23 @@ export async function POST(req: NextRequest) {
   });
 
   if (paymentMethod === "INTERAC") {
+    const { formatPrice } = await import("@/lib/utils");
+    const { sendEmail } = await import("@/lib/email");
+    const { format } = await import("date-fns");
+    const { fr } = await import("date-fns/locale");
+
+    await sendEmail({
+      to: session.user.email!,
+      template: "appointment_pending_interac",
+      data: {
+        clientName: session.user.name ?? "Cliente",
+        serviceName: service.name,
+        stylistName: appointment.stylist.user.name ?? "Styliste",
+        appointmentDate: format(appointment.scheduledAt, "EEEE d MMMM yyyy 'à' HH:mm", { locale: fr }),
+        depositAmount: formatPrice(parseFloat(appointment.depositAmount.toString())),
+      },
+    });
+
     return NextResponse.json({ success: true, appointmentId: appointment.id });
   }
 

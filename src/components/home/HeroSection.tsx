@@ -29,7 +29,7 @@ function AnimatedCounter({ value, suffix = "" }: { value: number; suffix?: strin
     });
   }, [springValue, suffix]);
 
-  return <span ref={ref}>0{suffix}</span>;
+  return <span ref={ref}>{suffix}</span>;
 }
 
 export function HeroSection() {
@@ -108,7 +108,7 @@ export function HeroSection() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.4 }}
-            className="mt-12 sm:mt-16 flex flex-wrap gap-6 sm:gap-10"
+            className="mt-12 sm:mt-16 grid grid-cols-2 sm:flex sm:flex-wrap gap-8 sm:gap-10"
           >
             {[
               { value: 15, suffix: "+", label: "Années d'expérience" },

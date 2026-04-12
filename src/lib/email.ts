@@ -12,6 +12,7 @@ const transporter = nodemailer.createTransport({
 });
 
 type EmailTemplate =
+  | "appointment_pending_interac"
   | "appointment_confirmed"
   | "appointment_accepted"
   | "appointment_declined"
@@ -44,6 +45,34 @@ const templates: Record<EmailTemplate, (data: Record<string, string | number>) =
         <p>Notre équipe va confirmer votre rendez-vous sous peu. Vous recevrez un email de confirmation.</p>
         <hr style="border-color:#333;margin:32px 0;">
         <p style="font-size:12px;color:#6B6B6B;">2177 rue du Carrousel, Québec G2B 5B5 · (581) 745-7409</p>
+      </div>
+    `,
+  }),
+  appointment_pending_interac: (d) => ({
+    subject: "VicktyKof — En attente de votre virement Interac ⌛",
+    html: `
+      <div style="font-family:sans-serif;max-width:600px;margin:0 auto;background:#0A0A0A;color:#F5EDD6;padding:40px;border-radius:12px;border:1px solid #C9A84C33;">
+        <h1 style="color:#C9A84C;font-size:24px;margin-bottom:8px;">VicktyKof</h1>
+        <p style="color:#6B6B6B;font-size:12px;margin-bottom:32px;">Action requise pour confirmer votre RDV</p>
+        
+        <h2>Presque terminé !</h2>
+        <p>Bonjour <strong>${d.clientName}</strong>,</p>
+        <p>Nous avons bien reçu votre demande de réservation. Pour la valider, veuillez effectuer votre virement Interac :</p>
+        
+        <div style="background:#1A1A1A;border:1px solid #C9A84C33;border-radius:8px;padding:20px;margin:24px 0;">
+          <p style="margin:4px 0;"><strong>Montant du d\u00e9p\u00f4t :</strong> <span style="color:#C9A84C;font-size:18px;">${d.depositAmount} CAD</span></p>
+          <p style="margin:4px 0;"><strong>Email pour le virement :</strong> <strong style="color:#F5EDD6;">VictyKof@yahoo.fr</strong></p>
+          <p style="margin:4px 0;font-size:12px;color:#6B6B6B;">(Veuillez inclure votre nom dans les notes du virement)</p>
+        </div>
+
+        <div style="font-size:14px;color:#brand-muted;">
+          <p><strong>D\u00e9tails du RDV :</strong></p>
+          <p>${d.serviceName} avec ${d.stylistName}<br>${d.appointmentDate}</p>
+        </div>
+
+        <p style="margin-top:24px;">Une fois le virement reçu, vous recevrez un email de confirmation finale.</p>
+        <hr style="border-color:#333;margin:32px 0;">
+        <p style="font-size:12px;color:#6B6B6B;">2177 rue du Carrousel, Québec G2B 5B5</p>
       </div>
     `,
   }),

@@ -37,6 +37,11 @@ Thumbs.db
 *.tsbuildinfo
 next-env.d.ts
 
-#claude 
+# AI Assistants
 .claude/
+.gemini/
+.antigravity/
 
+# Temporary files
+*.tmp
+*.log

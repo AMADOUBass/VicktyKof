@@ -7,7 +7,7 @@ import { ScrollReveal } from "@/components/ui/ScrollReveal";
 
 export const metadata: Metadata = {
   title: "Boutique",
-  description: "Achetez nos produits capillaires premium pour locs et cheveux afro. Kits, huiles, accessoires.",
+  description: "Découvrez nos produits capillaires premium : huiles, brosses et accessoires pour l'entretien de vos locs à Québec.",
 };
 
 export default async function ShopPage() {

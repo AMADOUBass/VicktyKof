@@ -81,7 +81,7 @@ export function AboutSection() {
             l&apos;excellence et le soin capillaire naturel.
           </p>
 
-          <div className="grid grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             {values.map((v) => {
               const Icon = v.icon;
               return (

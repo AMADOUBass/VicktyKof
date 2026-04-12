@@ -24,19 +24,19 @@ export function CTASection() {
             ou appelez-nous directement.
           </p>
 
-          <div className="flex flex-wrap gap-4 justify-center">
-            <Link href="/booking" className="btn-primary text-base px-8 py-4 gap-2">
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <Link href="/booking" className="btn-primary w-full sm:w-auto text-base px-8 py-4 gap-2">
               <Calendar className="w-5 h-5" />
               Réserver en ligne
             </Link>
-            <a href="tel:+15817457409" className="btn-outline text-base px-8 py-4 gap-2">
+            <a href="tel:+15817457409" className="btn-outline w-full sm:w-auto text-base px-8 py-4 gap-2">
               <Phone className="w-5 h-5" />
               (581) 745-7409
             </a>
           </div>
 
           <p className="mt-8 text-xs text-brand-muted">
-            2177 rue du Carrousel, Québec, G2B 5B5 · vicktykoff@gmail.com
+            2177 rue du Carrousel, Québec, G2B 5B5 · victykoff@gmail.com
           </p>
         </motion.div>
       </div>

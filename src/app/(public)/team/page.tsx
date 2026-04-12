@@ -6,7 +6,7 @@ import { Calendar } from "lucide-react";
 import { UserAvatar } from "@/components/ui/UserAvatar";
 
 export const metadata: Metadata = {
-  title: "L'équipe",
+  title: "L'Équipe",
   description: "Rencontrez les stylistes expertes de VicktyKof. Spécialistes en locs, interlocks et coiffures afro à Québec.",
 };
 

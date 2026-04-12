@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VicktyKof — Recommandations Techniques</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --gold: #C9A84C;
+            --black: #0A0A0A;
+            --charcoal: #1A1A1A;
+            --beige: #F5EDD6;
+            --muted: #6B6B6B;
+        }
+
+        @media print {
+            body { background: white !important; color: black !important; padding: 20px !important; }
+            .card { border: 1px solid #ddd !important; background: white !important; page-break-inside: avoid; }
+            .no-print { display: none; }
+            h2 { color: black !important; border-left: 4px solid #C9A84C !important; }
+            .option-title, th { color: #8A6D1C !important; }
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--black);
+            color: var(--beige);
+            margin: 0;
+            padding: 40px;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            border-bottom: 2px solid var(--gold);
+            padding-bottom: 30px;
+            margin-bottom: 50px;
+        }
+
+        h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: 32px;
+            color: var(--gold);
+            margin: 0;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .subtitle {
+            color: var(--muted);
+            font-size: 14px;
+            margin-top: 10px;
+        }
+
+        h2 {
+            font-family: 'Playfair Display', serif;
+            color: var(--gold);
+            border-left: 4px solid var(--gold);
+            padding-left: 15px;
+            margin-top: 40px;
+        }
+
+        .card {
+            background: var(--charcoal);
+            border: 1px solid rgba(201, 168, 76, 0.2);
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 20px;
+        }
+
+        .option-title {
+            color: var(--gold);
+            font-weight: 600;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        th, td {
+            text-align: left;
+            padding: 12px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        th { color: var(--gold); font-size: 12px; text-transform: uppercase; }
+
+        .badge {
+            background: rgba(201, 168, 76, 0.1);
+            color: var(--gold);
+            padding: 4px 10px;
+            border-radius: 4px;
+            font-size: 12px;
+        }
+
+        .alert {
+            background: rgba(201, 168, 76, 0.05);
+            border: 1px dashed var(--gold);
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 20px;
+            font-size: 14px;
+        }
+
+        .footer {
+            margin-top: 60px;
+            text-align: center;
+            font-size: 12px;
+            color: var(--muted);
+        }
+
+        .btn-print {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: var(--gold);
+            color: var(--black);
+            border: none;
+            padding: 15px 25px;
+            border-radius: 50px;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+            z-index: 100;
+        }
+
+        ul.check-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        ul.check-list li {
+            margin-bottom: 15px;
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+        }
+
+        ul.check-list li::before {
+            content: '☐';
+            color: var(--gold);
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+
+    <button class="btn-print no-print" onclick="window.print()">🖨️ Imprimer en PDF</button>
+
+    <div class="container">
+        <header>
+            <h1>VicktyKof</h1>
+            <div class="subtitle">Guide de Pré-Lancement — Recommandations Techniques</div>
+        </header>
+
+        <section>
+            <h2>1. Gestion des Emails</h2>
+            <div class="card">
+                <div class="option-title">⭐ Option Recommandée : Gmail SMTP</div>
+                <p>Utilisation de l'adresse <strong>victykoff@gmail.com</strong> pour l'envoi des confirmations.</p>
+                <ul>
+                    <li><strong>Action :</strong> Activer la double authentification Google.</li>
+                    <li><strong>Livrable :</strong> Fournir un "Mot de passe d'application".</li>
+                </ul>
+                <div class="alert">
+                    <strong>📌 Décision Interac :</strong> Souhaitez-vous centraliser les paiements Interac sur cette adresse Gmail ou rester sur le Yahoo actuel ?
+                </div>
+            </div>
+        </section>
+
+        <section>
+            <h2>2. Services Tiers (Third-Party) & Propriété</h2>
+            <div class="card">
+                <ul class="check-list">
+                    <li><strong>Paiements (Stripe) :</strong> Le compte doit être au nom de l'entreprise. Avez-vous vos clés API Live ?</li>
+                    <li><strong>Domaine & Hébergement :</strong> Souhaitez-vous être propriétaire de l'abonnement annuel ou déléguer la gestion technique ?</li>
+                    <li><strong>Google My Business :</strong> Votre fiche est-elle à jour pour lier les avis clients directement sur le site ?</li>
+                    <li><strong>Stockage d'images (UploadThing) :</strong> Prévoir un compte pour héberger les photos de vos réalisations.</li>
+                    <li><strong>Statistiques :</strong> Souhaitez-vous installer Google Analytics pour suivre les visites sur le site ?</li>
+                </ul>
+            </div>
+        </section>
+
+        <section>
+            <h2>3. Questions Stratégiques & Décisions</h2>
+            <div class="card">
+                <ul class="check-list">
+                    <li><strong>Politique d'Annulation :</strong> Le délai de 24h avec perte du dépôt est-il définitif ?</li>
+                    <li><strong>Horaires & Stylistes :</strong> Doit-on ajuster les heures de disponibilité par défaut pour l'équipe ?</li>
+                    <li><strong>Gestion des Rendez-vous :</strong> Souhaitez-vous une formation sur le Dashboard pour gérer vos clients et stock de produits ?</li>
+                    <li><strong>Mise à jour Galerie :</strong> Avez-vous de nouvelles photos de coiffures récentes à ajouter pour le lancement ?</li>
+                </ul>
+            </div>
+        </section>
+
+        <section>
+            <h2>4. Informations de contact validées</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Type</th>
+                        <th>Valeur</th>
+                        <th>Statut</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Email Public</td>
+                        <td>victykoff@gmail.com</td>
+                        <td><span class="badge">Validé</span></td>
+                    </tr>
+                    <tr>
+                        <td>Téléphone</td>
+                        <td>(581) 745-7409</td>
+                        <td><span class="badge">Validé</span></td>
+                    </tr>
+                    <tr>
+                        <td>WhatsApp</td>
+                        <td>Connecté (Message auto OK)</td>
+                        <td><span class="badge">Validé</span></td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section>
+            <h2>5. Prochaines Étapes</h2>
+            <div class="card">
+                <ol>
+                    <li>Validation finale du rendu mobile (captures effectuées).</li>
+                    <li>Passage des clés de test aux clés de production.</li>
+                    <li>Lien du nom de domaine <strong>vicktykof.ca</strong>.</li>
+                </ol>
+            </div>
+        </section>
+
+        <div class="footer">
+            © 2024 VicktyKof — Document préparé pour la réunion de validation technique.
+        </div>
+    </div>
+
+</body>
+</html>
