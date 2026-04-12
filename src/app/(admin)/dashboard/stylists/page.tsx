@@ -6,6 +6,8 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Users, Plus, Pencil, X, Star, Calendar } from "lucide-react";
 import toast from "react-hot-toast";
 
+import { UserAvatar } from "@/components/ui/UserAvatar";
+
 type Specialty = "RETWIST" | "INTERLOCKS" | "WOMENS_STYLING" | "STARTER_LOCS" | "LOC_MAINTENANCE" | "BRAIDING" | "NATURAL_STYLES";
 
 const SPECIALTY_LABELS: Record<Specialty, string> = {
@@ -49,11 +51,6 @@ const DEFAULT_AVAIL = DAY_LABELS.map((_, i) => ({
   endTime: "18:00",
   enabled: i >= 1 && i <= 5, // Mon–Fri
 }));
-
-function getInitials(name: string | null) {
-  if (!name) return "?";
-  return name.split(" ").map((n) => n[0]).join("").toUpperCase().slice(0, 2);
-}
 
 export default function AdminStylistsPage() {
   const [stylists, setStylists] = useState<Stylist[]>([]);
@@ -147,11 +144,11 @@ export default function AdminStylistsPage() {
           {stylists.map((stylist) => (
             <motion.div key={stylist.id} initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="card space-y-4">
               <div className="flex items-start gap-3">
-                <div className="w-14 h-14 rounded-xl bg-brand-gold/10 flex items-center justify-center text-brand-gold font-bold text-lg overflow-hidden shrink-0">
-                  {stylist.avatarUrl || stylist.user.image
-                    ? <Image src={stylist.avatarUrl ?? stylist.user.image!} alt="" width={56} height={56} className="object-cover w-full h-full" />
-                    : getInitials(stylist.user.name)}
-                </div>
+                <UserAvatar 
+                  src={stylist.user.image ?? stylist.avatarUrl} 
+                  name={stylist.user.name} 
+                  size="md" 
+                />
                 <div className="flex-1 min-w-0">
                   <p className="font-semibold text-brand-beige">{stylist.user.name ?? "—"}</p>
                   <p className="text-xs text-brand-muted">{stylist.user.email}</p>

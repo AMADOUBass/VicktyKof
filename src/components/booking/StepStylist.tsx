@@ -5,6 +5,8 @@ import { ArrowLeft, ArrowRight, Star } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { BookingState } from "./BookingWizard";
 
+import { UserAvatar } from "../ui/UserAvatar";
+
 interface Props {
   booking: BookingState;
   updateBooking: (u: Partial<BookingState>) => void;
@@ -71,11 +73,11 @@ export function StepStylist({ booking, updateBooking, onNext, onBack }: Props) {
               )}
             >
               <div className="flex items-center gap-4 mb-3">
-                <div className="w-14 h-14 rounded-full bg-brand-gold/20 border-2 border-brand-gold/30 flex items-center justify-center flex-shrink-0">
-                  <span className="font-display text-xl text-brand-gold font-bold">
-                    {stylist.user.name?.[0] ?? "?"}
-                  </span>
-                </div>
+                <UserAvatar 
+                  src={stylist.user.image ?? stylist.avatarUrl} 
+                  name={stylist.user.name} 
+                  size="lg" 
+                />
                 <div>
                   <p className="font-semibold text-brand-beige">{stylist.user.name}</p>
                   <p className="text-xs text-brand-muted">{stylist.yearsExp} ans d&apos;expérience</p>
