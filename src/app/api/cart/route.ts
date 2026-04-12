@@ -60,24 +60,37 @@ export async function POST(req: NextRequest) {
   const tax = parseFloat((subtotal * 0.14975).toFixed(2)); // QC TPS+TVQ
   const total = parseFloat((subtotal + shipping + tax).toFixed(2));
 
-  const order = await prisma.order.create({
-    data: {
-      userId: session.user.id,
-      status: "PENDING",
-      paymentMethod,
-      subtotal,
-      tax,
-      shipping,
-      total,
-      items: {
-        create: lineItems.map((li) => ({
-          productId: li.productId,
-          quantity: li.quantity,
-          unitPrice: li.unitPrice,
-          total: parseFloat((li.unitPrice * li.quantity).toFixed(2)),
-        })),
+  const order = await prisma.$transaction(async (tx) => {
+    // 1. Create order
+    const o = await tx.order.create({
+      data: {
+        userId: session.user.id,
+        status: "PENDING",
+        paymentMethod,
+        subtotal,
+        tax,
+        shipping,
+        total,
+        items: {
+          create: lineItems.map((li) => ({
+            productId: li.productId,
+            quantity: li.quantity,
+            unitPrice: li.unitPrice,
+            total: parseFloat((li.unitPrice * li.quantity).toFixed(2)),
+          })),
+        },
       },
-    },
+    });
+
+    // 2. Decrement stock
+    for (const item of items) {
+      await tx.product.update({
+        where: { id: item.productId },
+        data: { stock: { decrement: item.quantity } },
+      });
+    }
+
+    return o;
   });
 
   if (paymentMethod === "INTERAC") {

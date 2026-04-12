@@ -9,7 +9,7 @@ import { format } from "date-fns";
 import { fr } from "date-fns/locale";
 
 const adminSchema = z.object({
-  status: z.enum(["ACCEPTED", "DECLINED", "CANCELLED", "COMPLETED"]),
+  status: z.enum(["ACCEPTED", "DECLINED", "CANCELLED", "COMPLETED", "CONFIRMED"]),
   adminNotes: z.string().optional(),
   cancelReason: z.string().optional(),
 });

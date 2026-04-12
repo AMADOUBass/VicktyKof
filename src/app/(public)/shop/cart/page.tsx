@@ -145,8 +145,9 @@ export default function CartPage() {
                         </button>
                         <span className="text-brand-beige text-sm font-medium w-5 text-center">{item.quantity}</span>
                         <button
-                          onClick={() => updateQuantity(item.id, item.quantity + 1)}
+                          onClick={() => updateQuantity(item.id, item.quantity + 1, item.stock)}
                           className="text-brand-muted hover:text-brand-beige transition-colors"
+                          disabled={item.quantity >= item.stock}
                         >
                           <Plus className="w-3.5 h-3.5" />
                         </button>
@@ -159,6 +160,12 @@ export default function CartPage() {
                         <Trash2 className="w-4 h-4" />
                       </button>
                     </div>
+
+                    {item.stock <= 5 && (
+                      <p className="text-[10px] text-yellow-400 mt-2">
+                        Seulement {item.stock} restants en stock
+                      </p>
+                    )}
                   </div>
 
                   {/* Line total */}

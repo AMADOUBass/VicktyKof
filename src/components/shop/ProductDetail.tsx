@@ -72,7 +72,8 @@ export function ProductDetail({ product }: { product: Product }) {
         price: parseFloat(product.displayPrice.toString()),
         image: product.images[0] ?? "",
         slug: product.slug,
-      });
+        stock: product.stock,
+      }, product.stock);
     }
     toast.success(`${product.name} ajouté au panier`);
   }

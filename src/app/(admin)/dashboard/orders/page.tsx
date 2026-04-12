@@ -44,13 +44,20 @@ export default async function AdminOrdersPage({
   return (
     <AdminOrdersClient
       orders={orders.map((o) => ({
-        ...o,
+        id: o.id,
+        status: o.status,
+        paymentMethod: o.paymentMethod,
         subtotal: parseFloat(o.subtotal.toString()),
         tax: parseFloat(o.tax.toString()),
         shipping: parseFloat(o.shipping.toString()),
         total: parseFloat(o.total.toString()),
+        createdAt: o.createdAt,
+        trackingNumber: o.trackingNumber,
+        user: o.user,
         items: o.items.map((i) => ({
-          ...i,
+          id: i.id,
+          product: i.product,
+          quantity: i.quantity,
           unitPrice: parseFloat(i.unitPrice.toString()),
           total: parseFloat(i.total.toString()),
         })),
@@ -59,7 +66,10 @@ export default async function AdminOrdersPage({
       page={page}
       totalPages={totalPages}
       currentStatus={status ?? "all"}
-      stats={stats}
+      stats={stats.map(s => ({
+        status: s.status,
+        _count: { _all: Number(s._count._all) }
+      }))}
       formatPrice={formatPrice}
     />
   );

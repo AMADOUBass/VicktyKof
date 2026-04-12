@@ -41,7 +41,8 @@ export function ShopGrid() {
       price: parseFloat(product.displayPrice),
       image: product.images[0] ?? "",
       slug: product.slug,
-    });
+      stock: product.stock,
+    }, product.stock);
     toast.success(`${product.name} ajouté au panier`);
   };
 
