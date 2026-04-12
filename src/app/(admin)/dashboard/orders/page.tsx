@@ -70,7 +70,6 @@ export default async function AdminOrdersPage({
         status: s.status,
         _count: { _all: Number(s._count._all) }
       }))}
-      formatPrice={formatPrice}
     />
   );
 }

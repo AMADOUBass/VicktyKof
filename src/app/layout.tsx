@@ -55,9 +55,12 @@ export const metadata: Metadata = {
   },
   robots: { index: true, follow: true },
   metadataBase: new URL("https://vicktykof.com"),
+  manifest: "/manifest.json",
   icons: {
     icon: "/favicon.png",
-    apple: "/favicon.png",
+    apple: [
+      { url: "/favicon.png", sizes: "180x180", type: "image/png" },
+    ],
   },
   appleWebApp: {
     capable: true,

@@ -7,6 +7,7 @@ import { useRouter } from "next/navigation";
 import {
   Package, ChevronLeft, ChevronRight, ShoppingBag, Filter, RefreshCw,
 } from "lucide-react";
+import { formatPrice } from "@/lib/utils";
 import toast from "react-hot-toast";
 
 type OrderStatus = "PENDING" | "PROCESSING" | "SHIPPED" | "DELIVERED" | "CANCELLED" | "REFUNDED";
@@ -51,10 +52,9 @@ interface Props {
   totalPages: number;
   currentStatus: string;
   stats: { status: string; _count: { _all: number } }[];
-  formatPrice: (v: number) => string;
 }
 
-export function AdminOrdersClient({ orders, total, page, totalPages, currentStatus, stats, formatPrice }: Props) {
+export function AdminOrdersClient({ orders, total, page, totalPages, currentStatus, stats }: Props) {
   const router = useRouter();
   const [expanded, setExpanded] = useState<string | null>(null);
   const [updating, setUpdating] = useState<string | null>(null);
