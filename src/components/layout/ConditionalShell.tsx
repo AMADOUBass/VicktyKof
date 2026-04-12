@@ -4,7 +4,7 @@ import { usePathname } from "next/navigation";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
 
-const SHELL_HIDDEN_PREFIXES = ["/dashboard", "/portal"];
+const SHELL_HIDDEN_PREFIXES = ["/dashboard", "/portal", "/post-login"];
 
 export function ConditionalShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
