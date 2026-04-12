@@ -33,8 +33,8 @@ export default async function AccountPage() {
 
   const { appointments, orders } = await getUserData(session.user.id);
 
-  // Fetch phone from DB since it's not in the session
-  const dbUser = await prisma.user.findUnique({ where: { id: session.user.id }, select: { phone: true } });
+  // Fetch missing info from DB since it's not all in the session
+  const dbUser = await prisma.user.findUnique({ where: { id: session.user.id }, select: { phone: true, loyaltyPoints: true } });
 
   const serialized = {
     userId: session.user.id,
@@ -44,11 +44,13 @@ export default async function AccountPage() {
       image: session.user.image ?? null,
       isMember: session.user.isMember,
       phone: dbUser?.phone ?? null,
+      loyaltyPoints: dbUser?.loyaltyPoints ?? 0,
     },
     appointments: appointments.map((a) => ({
       id: a.id,
       status: a.status,
       scheduledAt: a.scheduledAt.toISOString(),
+      durationMins: a.durationMins,
       totalPrice: parseFloat(a.totalPrice.toString()),
       depositAmount: parseFloat(a.depositAmount.toString()),
       notes: a.notes,

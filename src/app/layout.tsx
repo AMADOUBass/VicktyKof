@@ -1,19 +1,20 @@
 import type { Metadata, Viewport } from "next";
-import { Playfair_Display, Inter } from "next/font/google";
+import { Cormorant_Garamond, Outfit } from "next/font/google";
 import "@/styles/globals.css";
 import { Providers } from "@/components/layout/Providers";
 import { ConditionalShell } from "@/components/layout/ConditionalShell";
 import { Toaster } from "react-hot-toast";
 
-const playfair = Playfair_Display({
+const cormorant = Cormorant_Garamond({
+  weight: ["300", "400", "500", "600", "700"],
   subsets: ["latin"],
-  variable: "--font-playfair",
+  variable: "--font-cormorant",
   display: "swap",
 });
 
-const inter = Inter({
+const outfit = Outfit({
   subsets: ["latin"],
-  variable: "--font-inter",
+  variable: "--font-outfit",
   display: "swap",
 });
 
@@ -58,6 +59,11 @@ export const metadata: Metadata = {
     icon: "/favicon.png",
     apple: "/favicon.png",
   },
+  appleWebApp: {
+    capable: true,
+    title: "VicktyKof",
+    statusBarStyle: "black-translucent",
+  },
 };
 
 export const viewport: Viewport = {
@@ -68,7 +74,7 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="fr" className={`${playfair.variable} ${inter.variable}`}>
+    <html lang="fr" className={`${cormorant.variable} ${outfit.variable}`}>
       <body className="min-h-screen flex flex-col">
         <Providers>
           <ConditionalShell>{children}</ConditionalShell>

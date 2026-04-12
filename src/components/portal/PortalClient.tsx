@@ -6,9 +6,11 @@ import { motion, AnimatePresence } from "framer-motion";
 import {
   Calendar, CheckCircle2, TrendingUp, ImageIcon, Clock,
   User, Phone, Mail, Plus, X, Trash2, Star, Save, Edit3, Settings,
+  CalendarOff, History, CheckSquare,
 } from "lucide-react";
 import { formatPrice } from "@/lib/utils";
 import toast from "react-hot-toast";
+import { UploadDropzone } from "@/lib/uploadthing";
 
 type Specialty = "RETWIST" | "INTERLOCKS" | "WOMENS_STYLING" | "STARTER_LOCS" | "LOC_MAINTENANCE" | "BRAIDING" | "NATURAL_STYLES";
 
@@ -27,6 +29,10 @@ interface Appointment {
 
 interface PortfolioPhoto { id: string; url: string; caption: string | null; tags: string[]; createdAt: string }
 
+interface BlockedSlot {
+  id: string; date: string; startTime: string; endTime: string; reason: string | null;
+}
+
 interface Props {
   stylist: {
     id: string; bio: string | null; yearsExp: number; specialties: Specialty[];
@@ -35,7 +41,13 @@ interface Props {
     portfolio: PortfolioPhoto[];
   };
   appointments: Appointment[];
-  stats: { completedTotal: number; completedThisMonth: number; upcomingCount: number; portfolioCount: number };
+  pastAppointments: Appointment[];
+  blockedSlots: BlockedSlot[];
+  stats: {
+    completedTotal: number; completedThisMonth: number;
+    upcomingCount: number; portfolioCount: number;
+    revenueTotal: number; revenueThisMonth: number;
+  };
   defaultTab?: "agenda" | "portfolio";
 }
 
@@ -44,13 +56,20 @@ function getInitials(name: string | null) {
   return name.split(" ").map((n) => n[0]).join("").toUpperCase().slice(0, 2);
 }
 
-export function PortalClient({ stylist, appointments, stats, defaultTab = "agenda" }: Props) {
-  const [tab, setTab] = useState<"agenda" | "portfolio" | "settings">(defaultTab as "agenda" | "portfolio" | "settings");
+export function PortalClient({ stylist, appointments: initialAppts, pastAppointments, blockedSlots: initialBlocked, stats, defaultTab = "agenda" }: Props) {
+  const [tab, setTab] = useState<"agenda" | "portfolio" | "settings" | "history">(defaultTab as "agenda" | "portfolio" | "settings" | "history");
   const [portfolio, setPortfolio] = useState(stylist.portfolio);
   const [showAddPhoto, setShowAddPhoto] = useState(false);
   const [photoForm, setPhotoForm] = useState({ url: "", caption: "", tags: "" });
   const [saving, setSaving] = useState(false);
   const [expandedAppt, setExpandedAppt] = useState<string | null>(null);
+  const [appointments, setAppointments] = useState(initialAppts);
+
+  // Blocked slots
+  const [blockedSlots, setBlockedSlots] = useState(initialBlocked);
+  const [showAddBlock, setShowAddBlock] = useState(false);
+  const [blockForm, setBlockForm] = useState({ date: "", startTime: "09:00", endTime: "17:00", reason: "" });
+  const [savingBlock, setSavingBlock] = useState(false);
 
   // Editable availability
   const [editAvailability, setEditAvailability] = useState(
@@ -111,9 +130,9 @@ export function PortalClient({ stylist, appointments, stats, defaultTab = "agend
 
   const statCards = [
     { label: "RDV ce mois", value: stats.completedThisMonth, icon: TrendingUp, color: "text-brand-gold" },
-    { label: "RDV à venir", value: stats.upcomingCount, icon: Calendar, color: "text-blue-400" },
-    { label: "Services rendus", value: stats.completedTotal, icon: CheckCircle2, color: "text-green-400" },
-    { label: "Photos portfolio", value: stats.portfolioCount, icon: ImageIcon, color: "text-purple-400" },
+    { label: "Revenus (mois)", value: formatPrice(stats.revenueThisMonth), icon: TrendingUp, color: "text-green-400" },
+    { label: "Revenus (total)", value: formatPrice(stats.revenueTotal), icon: TrendingUp, color: "text-green-400" },
+    { label: "Photos", value: stats.portfolioCount, icon: ImageIcon, color: "text-purple-400" },
   ];
 
   async function saveAvailability() {
@@ -157,6 +176,54 @@ export function PortalClient({ stylist, appointments, stats, defaultTab = "agend
     setEditAvailability((prev) =>
       prev.map((a, i) => (i === index ? { ...a, [field]: value } : a))
     );
+  }
+
+  async function addBlockedSlot() {
+    if (!blockForm.date) { toast.error("Date requise"); return; }
+    setSavingBlock(true);
+    try {
+      const res = await fetch("/api/blocked-slots", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(blockForm),
+      });
+      if (!res.ok) throw new Error();
+      const slot = await res.json() as BlockedSlot;
+      setBlockedSlots((prev) => [...prev, slot].sort((a, b) => a.date.localeCompare(b.date)));
+      setBlockForm({ date: "", startTime: "09:00", endTime: "17:00", reason: "" });
+      setShowAddBlock(false);
+      toast.success("Créneau bloqué ajouté");
+    } catch {
+      toast.error("Erreur");
+    } finally {
+      setSavingBlock(false);
+    }
+  }
+
+  async function deleteBlockedSlot(id: string) {
+    if (!confirm("Supprimer ce créneau bloqué ?")) return;
+    try {
+      await fetch(`/api/blocked-slots?id=${id}`, { method: "DELETE" });
+      setBlockedSlots((prev) => prev.filter((s) => s.id !== id));
+      toast.success("Créneau supprimé");
+    } catch {
+      toast.error("Erreur");
+    }
+  }
+
+  async function markCompleted(apptId: string) {
+    try {
+      const res = await fetch(`/api/appointments/${apptId}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ status: "COMPLETED" }),
+      });
+      if (!res.ok) throw new Error();
+      setAppointments((prev) => prev.filter((a) => a.id !== apptId));
+      toast.success("Rendez-vous marqué comme terminé");
+    } catch {
+      toast.error("Erreur");
+    }
   }
 
   return (
@@ -216,7 +283,7 @@ export function PortalClient({ stylist, appointments, stats, defaultTab = "agend
 
       {/* Tabs */}
       <div className="flex gap-1 bg-brand-charcoal rounded-xl p-1 w-fit overflow-x-auto">
-        {(["agenda", "portfolio", "settings"] as const).map((t) => (
+        {(["agenda", "history", "portfolio", "settings"] as const).map((t) => (
           <button
             key={t}
             onClick={() => setTab(t)}
@@ -225,8 +292,9 @@ export function PortalClient({ stylist, appointments, stats, defaultTab = "agend
             }`}
           >
             {t === "agenda" ? <><Calendar className="w-4 h-4" />Agenda ({appointments.length})</>
+              : t === "history" ? <><History className="w-4 h-4" />Historique ({pastAppointments.length})</>
               : t === "portfolio" ? <><ImageIcon className="w-4 h-4" />Portfolio ({portfolio.length})</>
-              : <><Settings className="w-4 h-4" />Mon profil</>}
+              : <><Settings className="w-4 h-4" />Paramètres</>}
           </button>
         ))}
       </div>
@@ -289,9 +357,53 @@ export function PortalClient({ stylist, appointments, stats, defaultTab = "agend
                             Note : {appt.notes}
                           </p>
                         )}
+                        <button
+                          onClick={(e) => { e.stopPropagation(); void markCompleted(appt.id); }}
+                          className="inline-flex items-center gap-1.5 text-xs bg-green-400/10 text-green-400 px-3 py-1.5 rounded-lg hover:bg-green-400/20 transition-colors mt-1"
+                        >
+                          <CheckSquare className="w-3.5 h-3.5" /> Marquer termin\u00e9
+                        </button>
                       </motion.div>
                     )}
                   </AnimatePresence>
+                </div>
+              );
+            })
+          )}
+        </motion.div>
+      )}
+
+      {/* History */}
+      {tab === "history" && (
+        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-3">
+          {pastAppointments.length === 0 ? (
+            <div className="card text-center py-10">
+              <History className="w-8 h-8 text-brand-muted mx-auto mb-2" />
+              <p className="text-brand-muted">Aucun rendez-vous passé</p>
+            </div>
+          ) : (
+            pastAppointments.map((appt) => {
+              const date = new Date(appt.scheduledAt);
+              const statusColor = appt.status === "COMPLETED" ? "text-green-400 bg-green-400/10" : appt.status === "CANCELLED" ? "text-red-400 bg-red-400/10" : "text-brand-muted bg-brand-muted/10";
+              const statusLabel = appt.status === "COMPLETED" ? "Terminé" : appt.status === "CANCELLED" ? "Annulé" : appt.status;
+              return (
+                <div key={appt.id} className="card opacity-75 hover:opacity-100 transition-opacity">
+                  <div className="flex items-center gap-4">
+                    <div className="w-12 h-12 bg-brand-charcoal rounded-xl flex flex-col items-center justify-center text-brand-muted shrink-0">
+                      <span className="text-xs font-bold leading-none">{date.toLocaleDateString("fr-CA",{month:"short"}).toUpperCase()}</span>
+                      <span className="font-display text-lg font-bold leading-none">{date.getDate()}</span>
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="font-medium text-brand-beige">{appt.service.name}</p>
+                      <p className="text-sm text-brand-muted">
+                        {appt.client.name ?? "Cliente"} · {date.toLocaleTimeString("fr-CA",{hour:"2-digit",minute:"2-digit"})}
+                      </p>
+                    </div>
+                    <div className="text-right shrink-0">
+                      <p className="font-semibold text-brand-muted">{formatPrice(appt.totalPrice)}</p>
+                      <span className={`text-xs px-2 py-0.5 rounded-full ${statusColor}`}>{statusLabel}</span>
+                    </div>
+                  </div>
                 </div>
               );
             })
@@ -436,6 +548,72 @@ export function PortalClient({ stylist, appointments, stats, defaultTab = "agend
               </div>
             </div>
           </div>
+
+          {/* Blocked time slots */}
+          <div className="card space-y-4">
+            <div className="flex items-center justify-between">
+              <h2 className="font-semibold text-brand-beige flex items-center gap-2">
+                <CalendarOff className="w-4 h-4 text-brand-gold" />
+                Créneaux bloqués
+              </h2>
+              <button onClick={() => setShowAddBlock(!showAddBlock)} className="btn-outline text-sm gap-2 px-3 py-1.5">
+                <Plus className="w-3.5 h-3.5" /> Ajouter
+              </button>
+            </div>
+            <p className="text-xs text-brand-muted">Bloquez des créneaux pour les vacances, jours de maladie, etc.</p>
+
+            {showAddBlock && (
+              <div className="bg-brand-black/40 rounded-xl p-4 space-y-3 border border-white/5">
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                  <div>
+                    <label className="label">Date</label>
+                    <input type="date" className="input text-sm" value={blockForm.date} onChange={(e) => setBlockForm((f) => ({ ...f, date: e.target.value }))} />
+                  </div>
+                  <div>
+                    <label className="label">De</label>
+                    <input type="time" className="input text-sm" value={blockForm.startTime} onChange={(e) => setBlockForm((f) => ({ ...f, startTime: e.target.value }))} />
+                  </div>
+                  <div>
+                    <label className="label">À</label>
+                    <input type="time" className="input text-sm" value={blockForm.endTime} onChange={(e) => setBlockForm((f) => ({ ...f, endTime: e.target.value }))} />
+                  </div>
+                </div>
+                <div>
+                  <label className="label">Raison (optionnel)</label>
+                  <input className="input text-sm" placeholder="Vacances, rendez-vous médical..." value={blockForm.reason} onChange={(e) => setBlockForm((f) => ({ ...f, reason: e.target.value }))} />
+                </div>
+                <div className="flex gap-2">
+                  <button onClick={() => setShowAddBlock(false)} className="btn-outline text-sm flex-1">Annuler</button>
+                  <button onClick={addBlockedSlot} disabled={savingBlock} className="btn-primary text-sm flex-1 gap-2">
+                    {savingBlock ? "Ajout..." : "Bloquer ce créneau"}
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {blockedSlots.length === 0 && !showAddBlock && (
+              <p className="text-sm text-brand-muted text-center py-4">Aucun créneau bloqué.</p>
+            )}
+
+            {blockedSlots.length > 0 && (
+              <div className="space-y-2">
+                {blockedSlots.map((slot) => (
+                  <div key={slot.id} className="flex items-center justify-between bg-brand-black/40 rounded-lg p-3 border border-white/5">
+                    <div>
+                      <p className="text-sm font-medium text-brand-beige">
+                        {new Date(slot.date + "T00:00:00").toLocaleDateString("fr-CA", { weekday: "short", day: "numeric", month: "short" })}
+                        <span className="text-brand-muted ml-2">{slot.startTime} – {slot.endTime}</span>
+                      </p>
+                      {slot.reason && <p className="text-xs text-brand-muted">{slot.reason}</p>}
+                    </div>
+                    <button onClick={() => void deleteBlockedSlot(slot.id)} className="text-red-400 hover:text-red-300 p-1">
+                      <Trash2 className="w-4 h-4" />
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
         </motion.div>
       )}
 
@@ -456,8 +634,28 @@ export function PortalClient({ stylist, appointments, stats, defaultTab = "agend
                 <button onClick={() => setShowAddPhoto(false)} className="text-brand-muted hover:text-brand-beige"><X className="w-5 h-5" /></button>
               </div>
               <div>
-                <label className="label">URL de la photo *</label>
-                <input className="input w-full" placeholder="https://..." value={photoForm.url} onChange={(e) => setPhotoForm((f) => ({ ...f, url: e.target.value }))} />
+                <label className="label mb-2 block">Photo complète *</label>
+                {!photoForm.url ? (
+                  <UploadDropzone
+                    endpoint="portfolioUploader"
+                    onClientUploadComplete={(res) => {
+                      const uploadedUrl = res?.[0]?.url;
+                      if (uploadedUrl) {
+                        setPhotoForm((f) => ({ ...f, url: uploadedUrl }));
+                        toast.success("Photo uploadée avec succès !");
+                      }
+                    }}
+                    onUploadError={(error) => {
+                      toast.error(`Erreur: ${error.message}`);
+                    }}
+                    appearance={{
+                      button: "bg-brand-gold text-brand-black hover:bg-brand-gold-light",
+                      container: "border-brand-gold/20 bg-brand-black/50 p-4 border-dashed",
+                    }}
+                  />
+                ) : (
+                  <p className="text-sm text-green-400 flex items-center gap-1"><CheckCircle2 className="w-4 h-4" /> Photo prête</p>
+                )}
               </div>
               {photoForm.url && (
                 <div className="relative h-40 rounded-xl overflow-hidden bg-brand-black">

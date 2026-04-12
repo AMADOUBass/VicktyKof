@@ -44,9 +44,37 @@ export default async function PortalPage({
     );
   }
 
-  const [completedCount, thisMonthCount] = await Promise.all([
+  const [completedCount, thisMonthCount, pastAppts, blockedSlots, revenueTotalAgg, revenueThisMonthAgg] = await Promise.all([
     prisma.appointment.count({ where: { stylistId: stylist.id, status: "COMPLETED" } }),
     prisma.appointment.count({
+      where: {
+        stylistId: stylist.id,
+        status: "COMPLETED",
+        scheduledAt: { gte: new Date(new Date().getFullYear(), new Date().getMonth(), 1) },
+      },
+    }),
+    prisma.appointment.findMany({
+      where: {
+        stylistId: stylist.id,
+        status: { in: ["COMPLETED", "CANCELLED", "DECLINED"] },
+      },
+      include: {
+        client: { select: { name: true, email: true, phone: true, image: true } },
+        service: { select: { name: true, durationMins: true } },
+      },
+      orderBy: { scheduledAt: "desc" },
+      take: 50,
+    }),
+    prisma.blockedSlot.findMany({
+      where: { stylistId: stylist.id },
+      orderBy: { date: "asc" },
+    }),
+    prisma.appointment.aggregate({
+      _sum: { totalPrice: true },
+      where: { stylistId: stylist.id, status: "COMPLETED" },
+    }),
+    prisma.appointment.aggregate({
+      _sum: { totalPrice: true },
       where: {
         stylistId: stylist.id,
         status: "COMPLETED",
@@ -75,9 +103,28 @@ export default async function PortalPage({
       client: a.client,
       service: a.service,
     })),
+    pastAppointments: pastAppts.map((a) => ({
+      id: a.id,
+      status: a.status,
+      scheduledAt: a.scheduledAt.toISOString(),
+      durationMins: a.durationMins,
+      totalPrice: parseFloat(a.totalPrice.toString()),
+      notes: a.notes,
+      client: a.client,
+      service: a.service,
+    })),
+    blockedSlots: blockedSlots.map((s) => ({
+      id: s.id,
+      date: s.date.toISOString().split("T")[0]!,
+      startTime: s.startTime,
+      endTime: s.endTime,
+      reason: s.reason,
+    })),
     stats: {
       completedTotal: completedCount,
       completedThisMonth: thisMonthCount,
+      revenueTotal: Number(revenueTotalAgg._sum.totalPrice ?? 0),
+      revenueThisMonth: Number(revenueThisMonthAgg._sum.totalPrice ?? 0),
       upcomingCount: stylist.appointments.length,
       portfolioCount: stylist.portfolio.length,
     },

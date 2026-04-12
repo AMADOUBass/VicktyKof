@@ -69,12 +69,14 @@ export function ShopGrid() {
           <Link href={`/shop/${product.slug}`}>
             <div className="relative aspect-square rounded-lg overflow-hidden mb-4 bg-brand-black">
               {product.images[0] ? (
-                <Image
-                  src={product.images[0]}
-                  alt={product.name}
-                  fill
-                  className="object-cover group-hover:scale-105 transition-transform duration-500"
-                />
+                  <Image
+                    src={product.images[0]}
+                    alt={product.name}
+                    fill
+                    quality={100}
+                    unoptimized
+                    className="object-cover group-hover:scale-105 transition-transform duration-500"
+                  />
               ) : (
                 <div className="w-full h-full flex items-center justify-center">
                   <span className="text-brand-gold/20 font-display text-lg italic">VicktyKof</span>

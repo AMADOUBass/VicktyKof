@@ -81,6 +81,8 @@ export function GalleryGrid({ photos, tags }: Props) {
                     alt={photo.altText ?? photo.caption ?? "VicktyKof création"}
                     width={400}
                     height={500}
+                    quality={100}
+                    unoptimized
                     className="w-full object-cover group-hover:scale-105 transition-transform duration-500"
                   />
                   {photo.caption && (
@@ -125,6 +127,8 @@ export function GalleryGrid({ photos, tags }: Props) {
                 alt={lightbox.altText ?? ""}
                 width={1200}
                 height={900}
+                quality={100}
+                unoptimized
                 className="max-h-[85vh] w-auto object-contain rounded-xl"
               />
               {lightbox.caption && (

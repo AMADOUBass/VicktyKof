@@ -11,11 +11,16 @@ export const authConfig = {
   session: { strategy: "jwt" as const },
   secret: process.env.AUTH_SECRET,
   callbacks: {
-    async jwt({ token, user }) {
+    async jwt({ token, user, trigger, session }) {
       if (user) {
         token.id = (user as { id?: string }).id ?? "";
         token.role = (user as { role: Role }).role;
         token.isMember = (user as { isMember: boolean }).isMember;
+        token.picture =
+          (user as { image?: string | null }).image ?? token.picture;
+      }
+      if (trigger === "update" && session?.image) {
+        token.picture = session.image;
       }
       return token;
     },
@@ -24,6 +29,7 @@ export const authConfig = {
         session.user.id = token.id as string;
         session.user.role = token.role as Role;
         session.user.isMember = token.isMember as boolean;
+        if (token.picture) session.user.image = token.picture;
       }
       return session;
     },

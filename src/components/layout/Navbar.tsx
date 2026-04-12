@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useSession, signOut } from "next-auth/react";
 import { usePathname } from "next/navigation";
+import Image from "next/image";
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ShoppingBag, Menu, X, User, LogOut, LayoutDashboard, ChevronDown, Scissors } from "lucide-react";
@@ -89,8 +90,12 @@ export function Navbar() {
                 onClick={() => setUserMenuOpen(!userMenuOpen)}
                 className="flex items-center gap-2 btn-ghost px-3 py-2 rounded-lg"
               >
-                <div className="w-8 h-8 bg-brand-gold/20 border border-brand-gold/40 rounded-full flex items-center justify-center text-brand-gold text-sm font-semibold">
-                  {session.user.name?.[0]?.toUpperCase() ?? "?"}
+                <div className="w-8 h-8 bg-brand-gold/20 border border-brand-gold/40 rounded-full flex items-center justify-center text-brand-gold text-sm font-semibold overflow-hidden">
+                  {session.user.image ? (
+                    <Image src={session.user.image} alt="" width={32} height={32} className="object-cover w-full h-full" />
+                  ) : (
+                    session.user.name?.[0]?.toUpperCase() ?? "?"
+                  )}
                 </div>
                 <ChevronDown className="w-4 h-4 text-brand-muted" />
               </button>
@@ -126,15 +131,13 @@ export function Navbar() {
                           <Scissors className="w-4 h-4" /> Mon portail
                         </Link>
                       )}
-                      {session.user.role === "CLIENT" && (
-                        <Link
-                          href="/account"
-                          onClick={() => setUserMenuOpen(false)}
-                          className="flex items-center gap-3 px-4 py-2.5 text-sm text-brand-beige hover:bg-brand-gold/10 hover:text-brand-gold transition-colors"
-                        >
-                          <User className="w-4 h-4" /> Mon compte
-                        </Link>
-                      )}
+                      <Link
+                        href="/account"
+                        onClick={() => setUserMenuOpen(false)}
+                        className="flex items-center gap-3 px-4 py-2.5 text-sm text-brand-beige hover:bg-brand-gold/10 hover:text-brand-gold transition-colors"
+                      >
+                        <User className="w-4 h-4" /> Mon compte
+                      </Link>
                       <button
                         onClick={() => { setUserMenuOpen(false); signOut(); }}
                         className="flex items-center gap-3 w-full px-4 py-2.5 text-sm text-red-400 hover:bg-red-400/10 transition-colors"
@@ -220,12 +223,10 @@ export function Navbar() {
                         <Scissors className="w-5 h-5" /> Mon portail
                       </Link>
                     )}
-                    {session.user.role === "CLIENT" && (
-                      <Link href="/account" onClick={() => setMobileOpen(false)}
-                        className="flex items-center gap-3 px-2 py-3 rounded-lg text-base text-brand-beige hover:text-brand-gold hover:bg-white/5 transition-colors">
-                        <User className="w-5 h-5" /> Mon compte
-                      </Link>
-                    )}
+                    <Link href="/account" onClick={() => setMobileOpen(false)}
+                      className="flex items-center gap-3 px-2 py-3 rounded-lg text-base text-brand-beige hover:text-brand-gold hover:bg-white/5 transition-colors">
+                      <User className="w-5 h-5" /> Mon profil
+                    </Link>
                     <button
                       onClick={() => { setMobileOpen(false); void signOut({ callbackUrl: "/" }); }}
                       className="flex items-center gap-3 w-full px-2 py-3 rounded-lg text-base text-red-400 hover:bg-red-400/10 transition-colors"

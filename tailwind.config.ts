@@ -24,8 +24,8 @@ const config: Config = {
         },
       },
       fontFamily: {
-        display: ["var(--font-playfair)", "serif"],
-        sans: ["var(--font-inter)", "sans-serif"],
+        display: ["var(--font-cormorant)", "serif"],
+        sans: ["var(--font-outfit)", "sans-serif"],
       },
       backgroundImage: {
         "gold-gradient": "linear-gradient(135deg, #C9A84C 0%, #E8C97A 50%, #A8882E 100%)",

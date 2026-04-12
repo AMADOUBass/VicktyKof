@@ -44,7 +44,7 @@ export function HeroSection() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.1 }}
-            className="font-display text-5xl md:text-6xl lg:text-7xl font-bold text-brand-beige leading-[1.1] text-balance"
+            className="font-display text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold text-brand-beige leading-[1.1] text-balance"
           >
             L&apos;art des{" "}
             <span className="text-brand-gold italic">locs</span>
@@ -55,7 +55,7 @@ export function HeroSection() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.2 }}
-            className="mt-6 text-lg text-brand-muted leading-relaxed max-w-lg"
+            className="mt-6 text-base sm:text-lg text-brand-muted leading-relaxed max-w-lg"
           >
             Salon premium spécialisé en locs, interlocks et coiffures afro à Québec.
             Vicky et son équipe vous accueillent dans un espace élégant dédié à votre beauté naturelle.
@@ -65,13 +65,13 @@ export function HeroSection() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.3 }}
-            className="mt-10 flex flex-wrap gap-4"
+            className="mt-8 flex flex-col sm:flex-row gap-4"
           >
-            <Link href="/booking" className="btn-primary gap-2 text-base px-8 py-4">
+            <Link href="/booking" className="btn-primary w-full sm:w-auto justify-center gap-2 text-base px-8 py-4">
               <Calendar className="w-5 h-5" />
               Réserver maintenant
             </Link>
-            <Link href="/gallery" className="btn-outline text-base px-8 py-4">
+            <Link href="/gallery" className="btn-outline w-full sm:w-auto justify-center text-base px-8 py-4">
               Voir la galerie <ArrowRight className="w-5 h-5" />
             </Link>
           </motion.div>
@@ -81,7 +81,7 @@ export function HeroSection() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.4 }}
-            className="mt-16 flex gap-10"
+            className="mt-12 sm:mt-16 flex flex-wrap gap-6 sm:gap-10"
           >
             {[
               { value: "15+", label: "Années d'expérience" },
@@ -110,6 +110,7 @@ export function HeroSection() {
               alt="Salon VicktyKof — ambiance et expertise"
               fill
               className="object-cover"
+              quality={100}
               priority
             />
             <div className="absolute inset-0 bg-gradient-to-t from-brand-black/40 to-transparent" />

@@ -32,42 +32,77 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Service introuvable" }, { status: 404 });
   }
 
-  // Resolve stylist
-  let resolvedStylistId = stylistId;
-  if (!resolvedStylistId) {
-    const available = await prisma.stylist.findFirst({ where: { isActive: true } });
-    if (!available) {
-      return NextResponse.json({ error: "Aucune styliste disponible" }, { status: 400 });
+  const scheduledDate = new Date(scheduledAt);
+  const dayOfWeek = scheduledDate.getDay();
+  const endTime = new Date(scheduledDate.getTime() + service.durationMins * 60_000);
+
+  // Resolve target stylists
+  let targetStylistIds: string[] = [];
+  if (!stylistId || stylistId === "any") {
+    // Find all active stylists who work on this day
+    const availableStylists = await prisma.availability.findMany({
+      where: { dayOfWeek, isActive: true, stylist: { isActive: true } },
+      select: { stylistId: true },
+    });
+    targetStylistIds = Array.from(new Set(availableStylists.map(a => a.stylistId)));
+    
+    if (targetStylistIds.length === 0) {
+      return NextResponse.json({ error: "Aucun styliste n'est disponible ce jour-là" }, { status: 400 });
     }
-    resolvedStylistId = available.id;
   } else {
-    const stylist = await prisma.stylist.findUnique({ where: { id: resolvedStylistId, isActive: true } });
+    const stylist = await prisma.stylist.findUnique({ where: { id: stylistId, isActive: true } });
     if (!stylist) {
       return NextResponse.json({ error: "Styliste introuvable" }, { status: 404 });
     }
+    targetStylistIds = [stylist.id];
   }
 
-  // Check for conflicts
-  const scheduledDate = new Date(scheduledAt);
-  const endTime = new Date(scheduledDate.getTime() + service.durationMins * 60_000);
+  // Find the first stylist without conflicts
+  let resolvedStylistId: string | null = null;
 
-  const conflict = await prisma.appointment.findFirst({
-    where: {
-      stylistId: resolvedStylistId,
-      status: { in: ["CONFIRMED", "ACCEPTED"] },
-      scheduledAt: { lt: endTime },
-      AND: [
-        {
-          scheduledAt: {
-            gte: new Date(scheduledDate.getTime() - service.durationMins * 60_000),
+  for (const tId of targetStylistIds) {
+    // Check appointments
+    const conflict = await prisma.appointment.findFirst({
+      where: {
+        stylistId: tId,
+        status: { in: ["CONFIRMED", "ACCEPTED"] },
+        scheduledAt: { lt: endTime },
+        AND: [
+          {
+            scheduledAt: {
+              gte: new Date(scheduledDate.getTime() - service.durationMins * 60_000),
+            },
           },
-        },
-      ],
-    },
-  });
+        ],
+      },
+    });
 
-  if (conflict) {
-    return NextResponse.json({ error: "Ce créneau n'est plus disponible" }, { status: 409 });
+    if (conflict) continue;
+
+    // Check block slots
+    const blocked = await prisma.blockedSlot.findFirst({
+      where: {
+        stylistId: tId,
+        date: { equals: new Date(scheduledDate.toISOString().split("T")[0]!) },
+      },
+    });
+
+    if (blocked) {
+      const dateStr = scheduledDate.toISOString().split("T")[0];
+      const blockStart = new Date(`${dateStr}T${blocked.startTime}:00Z`);
+      const blockEnd = new Date(`${dateStr}T${blocked.endTime}:00Z`);
+      if (scheduledDate < blockEnd && endTime > blockStart) {
+        continue;
+      }
+    }
+
+    // No conflicts found for this stylist
+    resolvedStylistId = tId;
+    break;
+  }
+
+  if (!resolvedStylistId) {
+    return NextResponse.json({ error: "Ce créneau n'est plus disponible (conflit d'horaire)" }, { status: 409 });
   }
 
   const totalPrice = service.basePrice;

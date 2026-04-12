@@ -29,7 +29,7 @@ export function StepDateTime({ booking, updateBooking, onNext, onBack }: Props) 
     queryKey: ["slots", booking.stylistId, selectedDate?.toISOString()],
     queryFn: () =>
       fetch(
-        `/api/availability?stylistId=${booking.stylistId}&date=${format(selectedDate!, "yyyy-MM-dd")}&duration=${booking.serviceDuration}`
+        `/api/availability?stylistId=${booking.stylistId}&serviceId=${booking.serviceId}&date=${format(selectedDate!, "yyyy-MM-dd")}&duration=${booking.serviceDuration}`
       ).then((r) => r.json()),
     enabled: !!selectedDate && !!booking.stylistId,
   });

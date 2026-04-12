@@ -19,9 +19,14 @@ const stylistSchema = z.object({
   adminNotes: z.string().optional(),
 });
 
-const clientSchema = z.object({
+const clientCancelSchema = z.object({
   status: z.literal("CANCELLED"),
   cancelReason: z.string().min(1, "Une raison est requise"),
+});
+
+const clientRescheduleSchema = z.object({
+  status: z.literal("RESCHEDULED"),
+  scheduledAt: z.string().datetime(),
 });
 
 // PATCH /api/appointments/[id] — admin + stylist (limited) + client (cancel only)
@@ -43,8 +48,16 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
   const body = await req.json() as unknown;
 
   // Pick the right schema based on role
-  const schema = isAdmin ? adminSchema : isStylist ? stylistSchema : clientSchema;
-  const parsed = schema.safeParse(body);
+  let parsed;
+  if (isAdmin) {
+    parsed = adminSchema.safeParse(body);
+  } else if (isStylist) {
+    parsed = stylistSchema.safeParse(body);
+  } else {
+    // Try cancel first, then reschedule
+    const cancelParsed = clientCancelSchema.safeParse(body);
+    parsed = cancelParsed.success ? cancelParsed : clientRescheduleSchema.safeParse(body);
+  }
   if (!parsed.success) {
     return NextResponse.json({ error: "Données invalides" }, { status: 400 });
   }
@@ -67,13 +80,13 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
     return NextResponse.json({ error: "Introuvable" }, { status: 404 });
   }
 
-  // Client can only cancel their own appointments in a cancellable state
+  // Client can only modify their own appointments in a modifiable state
   if (isClient) {
     if (appointment.clientId !== session.user.id) {
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
     if (!["PENDING", "CONFIRMED", "ACCEPTED"].includes(appointment.status)) {
-      return NextResponse.json({ error: "Ce rendez-vous ne peut plus être annulé" }, { status: 400 });
+      return NextResponse.json({ error: "Ce rendez-vous ne peut plus être modifié" }, { status: 400 });
     }
   }
 
@@ -85,9 +98,17 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
     }
   }
 
+  // Build update data
+  const updateData: Record<string, unknown> = { status, adminNotes, cancelReason };
+  if (status === "RESCHEDULED" && "scheduledAt" in parsed.data) {
+    updateData.rescheduleFrom = appointment.scheduledAt;
+    updateData.scheduledAt = new Date(parsed.data.scheduledAt as string);
+    updateData.status = "PENDING"; // Reset status so admin re-confirms
+  }
+
   const updated = await prisma.appointment.update({
     where: { id },
-    data: { status, adminNotes, cancelReason },
+    data: updateData,
   });
 
   const dateStr = format(appointment.scheduledAt, "EEEE d MMMM yyyy 'à' HH:mm", { locale: fr });

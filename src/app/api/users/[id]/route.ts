@@ -7,6 +7,7 @@ import bcrypt from "bcryptjs";
 const updateProfileSchema = z.object({
   name: z.string().min(1).max(100).optional(),
   phone: z.string().max(20).optional().nullable(),
+  image: z.string().url().optional().nullable(),
   currentPassword: z.string().optional(),
   newPassword: z.string().min(8).optional(),
 });
@@ -31,7 +32,7 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
     return NextResponse.json({ error: "Données invalides", details: parsed.error.flatten() }, { status: 400 });
   }
 
-  const { name, phone, currentPassword, newPassword } = parsed.data;
+  const { name, phone, image, currentPassword, newPassword } = parsed.data;
 
   // If changing password, verify current password first
   if (newPassword) {
@@ -54,6 +55,7 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
   const updateData: Record<string, unknown> = {};
   if (name !== undefined) updateData.name = name;
   if (phone !== undefined) updateData.phone = phone;
+  if (image !== undefined) updateData.image = image;
   if (newPassword) {
     updateData.passwordHash = await bcrypt.hash(newPassword, 12);
   }
@@ -61,7 +63,7 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
   const updated = await prisma.user.update({
     where: { id },
     data: updateData,
-    select: { id: true, name: true, phone: true, email: true },
+    select: { id: true, name: true, phone: true, email: true, image: true },
   });
 
   return NextResponse.json(updated);
