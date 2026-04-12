@@ -72,12 +72,15 @@ export const viewport: Viewport = {
   initialScale: 1,
 };
 
+import { WhatsAppButton } from "@/components/ui/WhatsAppButton";
+
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="fr" className={`${cormorant.variable} ${outfit.variable}`}>
       <body className="min-h-screen flex flex-col">
         <Providers>
           <ConditionalShell>{children}</ConditionalShell>
+          <WhatsAppButton />
           <Toaster
             position="top-right"
             toastOptions={{

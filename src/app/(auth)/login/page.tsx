@@ -97,8 +97,8 @@ function LoginForm() {
             <div>
               <div className="flex justify-between mb-1.5">
                 <label className="label mb-0">Mot de passe</label>
-                <Link href="/contact" className="text-xs text-brand-gold hover:underline">
-                  Oublié ?
+                <Link href="/forgot-password" className="text-xs text-brand-gold hover:underline">
+                  Mot de passe oublié ?
                 </Link>
               </div>
               <div className="relative">

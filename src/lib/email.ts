@@ -147,3 +147,8 @@ export async function sendEmail({ to, template, data }: SendEmailOptions) {
     throw error;
   }
 }
+
+// Raw email helper (no template required)
+export async function sendRawEmail({ to, subject, html }: { to: string; subject: string; html: string }) {
+  await transporter.sendMail({ from: process.env.EMAIL_FROM, to, subject, html });
+}

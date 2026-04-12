@@ -98,6 +98,20 @@ export default function ContactPage() {
             <ContactForm />
           </div>
         </div>
+
+        {/* Google Map */}
+        <div className="mt-10 rounded-2xl overflow-hidden border border-brand-charcoal h-72 shadow-lg">
+          <iframe
+            title="VicktyKof — Carte"
+            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2732.1234567890!2d-71.3456!3d46.8523!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x4cb896a4a45e7d3f%3A0x1234567890abcdef!2s2177+Rue+du+Carrousel%2C+Qu%C3%A9bec%2C+QC+G2B+5B5!5e0!3m2!1sfr!2sca!4v1234567890"
+            width="100%"
+            height="100%"
+            style={{ border: 0, filter: "invert(90%) hue-rotate(180deg)" }}
+            allowFullScreen
+            loading="lazy"
+            referrerPolicy="no-referrer-when-downgrade"
+          />
+        </div>
       </div>
     </div>
   );

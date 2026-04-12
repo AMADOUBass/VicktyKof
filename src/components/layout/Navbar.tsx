@@ -12,10 +12,12 @@ import { useCartStore } from "@/hooks/useCartStore";
 
 const navLinks = [
   { href: "/", label: "Accueil" },
+  { href: "/services", label: "Services" },
   { href: "/booking", label: "Réserver" },
   { href: "/shop", label: "Boutique" },
   { href: "/gallery", label: "Galerie" },
   { href: "/team", label: "L'équipe" },
+  { href: "/faq", label: "FAQ" },
   { href: "/contact", label: "Contact" },
 ];
 

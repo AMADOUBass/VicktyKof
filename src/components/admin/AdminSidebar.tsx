@@ -6,13 +6,14 @@ import { usePathname } from "next/navigation";
 import { signOut, useSession } from "next-auth/react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
-  LayoutDashboard, Calendar, Package, Users, Scissors, Image, Settings, LogOut, Menu, X,
+  LayoutDashboard, Calendar, Package, Users, Scissors, Image, Settings, LogOut, Menu, X, ShoppingBag,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const navItems = [
   { href: "/dashboard",             label: "Vue d'ensemble", icon: LayoutDashboard, exact: true },
   { href: "/dashboard/appointments", label: "Rendez-vous",   icon: Calendar },
+  { href: "/dashboard/orders",       label: "Commandes",     icon: ShoppingBag },
   { href: "/dashboard/products",     label: "Produits",      icon: Package },
   { href: "/dashboard/users",        label: "Clientes",      icon: Users },
   { href: "/dashboard/stylists",     label: "Stylistes",     icon: Scissors },

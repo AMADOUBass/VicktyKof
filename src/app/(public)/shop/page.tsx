@@ -3,6 +3,7 @@ import { Suspense } from "react";
 import { ShopGrid } from "@/components/shop/ShopGrid";
 import { ShopFilters } from "@/components/shop/ShopFilters";
 import { prisma } from "@/lib/prisma";
+import { ScrollReveal } from "@/components/ui/ScrollReveal";
 
 export const metadata: Metadata = {
   title: "Boutique",
@@ -18,14 +19,16 @@ export default async function ShopPage() {
     <div className="min-h-screen pt-24 pb-16 bg-brand-black">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
-        <div className="text-center mb-12">
-          <p className="text-brand-gold text-sm font-medium uppercase tracking-widest mb-3">Boutique</p>
-          <h1 className="section-title">Produits capillaires</h1>
-          <div className="divider-gold" />
-          <p className="mt-4 text-brand-muted max-w-xl mx-auto">
-            Produits soigneusement sélectionnés pour l&apos;entretien de vos locs et cheveux naturels.
-          </p>
-        </div>
+        <ScrollReveal>
+          <div className="text-center mb-12">
+            <p className="text-brand-gold text-sm font-medium uppercase tracking-widest mb-3">Boutique</p>
+            <h1 className="section-title">Produits capillaires</h1>
+            <div className="divider-gold" />
+            <p className="mt-4 text-brand-muted max-w-xl mx-auto">
+              Produits soigneusement sélectionnés pour l&apos;entretien de vos locs et cheveux naturels.
+            </p>
+          </div>
+        </ScrollReveal>
 
         {/* Mobile & tablet: filters above grid. Desktop: sidebar + grid */}
         <div className="flex flex-col lg:flex-row gap-8">

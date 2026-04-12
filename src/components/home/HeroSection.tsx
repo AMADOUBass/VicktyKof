@@ -2,8 +2,35 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { motion } from "framer-motion";
+import { motion, useMotionValue, useSpring, useInView } from "framer-motion";
 import { ArrowRight, Star, Calendar } from "lucide-react";
+import { useEffect, useRef } from "react";
+
+function AnimatedCounter({ value, suffix = "" }: { value: number; suffix?: string }) {
+  const ref = useRef<HTMLSpanElement>(null);
+  const motionValue = useMotionValue(0);
+  const springValue = useSpring(motionValue, {
+    damping: 30,
+    stiffness: 100,
+  });
+  const isInView = useInView(ref, { once: true, margin: "-100px" });
+
+  useEffect(() => {
+    if (isInView) {
+      motionValue.set(value);
+    }
+  }, [motionValue, value, isInView]);
+
+  useEffect(() => {
+    return springValue.on("change", (latest) => {
+      if (ref.current) {
+        ref.current.textContent = Math.round(latest).toString() + suffix;
+      }
+    });
+  }, [springValue, suffix]);
+
+  return <span ref={ref}>0{suffix}</span>;
+}
 
 export function HeroSection() {
   return (
@@ -84,12 +111,14 @@ export function HeroSection() {
             className="mt-12 sm:mt-16 flex flex-wrap gap-6 sm:gap-10"
           >
             {[
-              { value: "15+", label: "Années d'expérience" },
-              { value: "500+", label: "Clientes satisfaites" },
-              { value: "4", label: "Stylistes expertes" },
+              { value: 15, suffix: "+", label: "Années d'expérience" },
+              { value: 500, suffix: "+", label: "Clientes satisfaites" },
+              { value: 4, suffix: "", label: "Stylistes expertes" },
             ].map((stat) => (
               <div key={stat.label}>
-                <p className="font-display text-3xl font-bold text-brand-gold">{stat.value}</p>
+                <p className="font-display text-3xl font-bold text-brand-gold">
+                  <AnimatedCounter value={stat.value} suffix={stat.suffix} />
+                </p>
                 <p className="text-xs text-brand-muted mt-1">{stat.label}</p>
               </div>
             ))}
