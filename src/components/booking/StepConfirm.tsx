@@ -9,6 +9,7 @@ import { ArrowLeft, CreditCard, Calendar, User, Scissors, Clock, AlertCircle } f
 import { formatPrice, calculateDeposit } from "@/lib/utils";
 import type { BookingState } from "./BookingWizard";
 import toast from "react-hot-toast";
+import { motion } from "framer-motion";
 
 interface Props {
   booking: BookingState;
@@ -19,6 +20,7 @@ export function StepConfirm({ booking, onBack }: Props) {
   const { data: session, status } = useSession();
   const router = useRouter();
   const [loading, setLoading] = useState(false);
+  const [paymentMethod, setPaymentMethod] = useState<"CARD" | "INTERAC">("CARD");
 
   const totalCents = Math.round(booking.servicePrice * 100);
   const depositCents = calculateDeposit(totalCents, booking.depositPct);
@@ -42,6 +44,7 @@ export function StepConfirm({ booking, onBack }: Props) {
             `${format(booking.date!, "yyyy-MM-dd")}T${booking.timeSlot}:00`
           ).toISOString(),
           notes: booking.notes,
+          paymentMethod,
         }),
       });
 
@@ -50,8 +53,12 @@ export function StepConfirm({ booking, onBack }: Props) {
         throw new Error(err.error ?? "Erreur lors de la création du rendez-vous");
       }
 
-      const { checkoutUrl } = await res.json() as { checkoutUrl: string };
-      window.location.href = checkoutUrl;
+      const data = await res.json() as { checkoutUrl?: string; success?: boolean; appointmentId: string };
+      if (data.success || !data.checkoutUrl) {
+        router.push(`/booking/success?appointmentId=${data.appointmentId}`);
+      } else {
+        window.location.href = data.checkoutUrl;
+      }
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "Une erreur est survenue");
       setLoading(false);
@@ -139,6 +146,58 @@ export function StepConfirm({ booking, onBack }: Props) {
           </p>
         </div>
       )}
+
+      {/* Payment Method Selection */}
+      <div className="space-y-4">
+        <label className="text-sm font-medium text-brand-muted uppercase tracking-wider">
+          Mode de paiement du dépôt
+        </label>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <button
+            onClick={() => setPaymentMethod("CARD")}
+            className={`flex flex-col items-center gap-3 p-4 rounded-xl border-2 transition-all text-left ${
+              paymentMethod === "CARD"
+                ? "border-brand-gold bg-brand-gold/10"
+                : "border-white/5 bg-brand-black/40 hover:border-brand-gold/20"
+            }`}
+          >
+            <CreditCard className={`w-8 h-8 ${paymentMethod === "CARD" ? "text-brand-gold" : "text-brand-muted"}`} />
+            <div className="text-center">
+              <p className="font-semibold text-brand-beige">Carte de crédit</p>
+              <p className="text-[10px] text-brand-muted mt-1 uppercase">Stripe sécurisé</p>
+            </div>
+          </button>
+
+          <button
+            onClick={() => setPaymentMethod("INTERAC")}
+            className={`flex flex-col items-center gap-3 p-4 rounded-xl border-2 transition-all text-left ${
+              paymentMethod === "INTERAC"
+                ? "border-brand-gold bg-brand-gold/10"
+                : "border-white/5 bg-brand-black/40 hover:border-brand-gold/20"
+            }`}
+          >
+            <div className="w-8 h-8 flex items-center justify-center rounded-full bg-brand-gold/10 text-brand-gold font-bold text-xs">
+              $
+            </div>
+            <div className="text-center">
+              <p className="font-semibold text-brand-beige">Virement Interac</p>
+              <p className="text-[10px] text-brand-muted mt-1 uppercase">VictyKof@yahoo.fr</p>
+            </div>
+          </button>
+        </div>
+
+        {paymentMethod === "INTERAC" && (
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="p-4 bg-brand-gold/5 border border-brand-gold/20 rounded-xl"
+          >
+            <p className="text-xs text-brand-muted leading-relaxed">
+              <strong className="text-brand-gold">Instructions :</strong> Veuillez envoyer votre dépôt de <strong className="text-brand-beige">{formatPrice(depositCents / 100)}</strong> à l&apos;adresse <strong className="text-brand-beige">VictyKof@yahoo.fr</strong> après avoir confirmé. Votre rendez-vous sera validé manuellement dès réception.
+            </p>
+          </motion.div>
+        )}
+      </div>
 
       <div className="flex justify-between pt-2">
         <button onClick={onBack} className="btn-ghost gap-2">

@@ -5,7 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
-import { ShoppingBag, Minus, Plus, Trash2, ArrowRight, Tag, ChevronLeft } from "lucide-react";
+import { ShoppingBag, Minus, Plus, Trash2, ArrowRight, Tag, ChevronLeft, CreditCard, Mail } from "lucide-react";
 import { useCartStore } from "@/hooks/useCartStore";
 import { formatPrice } from "@/lib/utils";
 import { useSession } from "next-auth/react";
@@ -14,8 +14,9 @@ import toast from "react-hot-toast";
 export default function CartPage() {
   const router = useRouter();
   const { data: session } = useSession();
-  const { items, updateQuantity, removeItem, totalPrice, totalItems } = useCartStore();
+  const { items, updateQuantity, removeItem, totalPrice, totalItems, clearCart } = useCartStore();
   const [loading, setLoading] = useState(false);
+  const [paymentMethod, setPaymentMethod] = useState<"CARD" | "INTERAC">("CARD");
 
   async function handleCheckout() {
     if (!session) {
@@ -31,17 +32,21 @@ export default function CartPage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           items: items.map((i) => ({ productId: i.id, quantity: i.quantity })),
+          paymentMethod,
         }),
       });
 
-      const data = await res.json() as { url?: string; error?: string };
+      const data = await res.json() as { url?: string; error?: string; success?: boolean; orderId?: string };
 
       if (!res.ok) {
         toast.error(data.error ?? "Une erreur est survenue");
         return;
       }
 
-      if (data.url) {
+      clearCart();
+      if (data.success || !data.url) {
+        router.push(`/shop/cart/success?orderId=${data.orderId}`);
+      } else if (data.url) {
         window.location.href = data.url;
       }
     } catch {
@@ -205,6 +210,44 @@ export default function CartPage() {
                   </span>
                 </div>
               )}
+
+              {/* Payment Method Selection */}
+              <div className="space-y-3 pt-2">
+                <p className="text-xs font-medium text-brand-muted uppercase tracking-wider">Mode de paiement</p>
+                <div className="grid grid-cols-2 gap-2">
+                  <button
+                    onClick={() => setPaymentMethod("CARD")}
+                    className={`flex flex-col items-center gap-2 p-3 rounded-lg border transition-all text-center ${
+                      paymentMethod === "CARD"
+                        ? "border-brand-gold bg-brand-gold/10"
+                        : "border-white/5 bg-brand-black/40 hover:border-brand-gold/20"
+                    }`}
+                  >
+                    <CreditCard className={`w-5 h-5 ${paymentMethod === "CARD" ? "text-brand-gold" : "text-brand-muted"}`} />
+                    <span className="text-xs font-medium text-brand-beige">Carte</span>
+                  </button>
+
+                  <button
+                    onClick={() => setPaymentMethod("INTERAC")}
+                    className={`flex flex-col items-center gap-2 p-3 rounded-lg border transition-all text-center ${
+                      paymentMethod === "INTERAC"
+                        ? "border-brand-gold bg-brand-gold/10"
+                        : "border-white/5 bg-brand-black/40 hover:border-brand-gold/20"
+                    }`}
+                  >
+                    <Mail className={`w-5 h-5 ${paymentMethod === "INTERAC" ? "text-brand-gold" : "text-brand-muted"}`} />
+                    <span className="text-xs font-medium text-brand-beige">Interac</span>
+                  </button>
+                </div>
+
+                {paymentMethod === "INTERAC" && (
+                  <div className="p-3 bg-brand-gold/5 border border-brand-gold/20 rounded-lg">
+                    <p className="text-[10px] text-brand-muted leading-relaxed">
+                      Envoyez le total à <strong className="text-brand-gold">VictyKof@yahoo.fr</strong>. Votre commande sera expédiée après réception.
+                    </p>
+                  </div>
+                )}
+              </div>
 
               <button
                 onClick={handleCheckout}

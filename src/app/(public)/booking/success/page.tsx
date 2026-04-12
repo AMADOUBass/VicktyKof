@@ -1,10 +1,22 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { CheckCircle, Calendar, Home } from "lucide-react";
+import { CheckCircle, Calendar, Home, Mail } from "lucide-react";
+import { prisma } from "@/lib/prisma";
+import { formatPrice } from "@/lib/utils";
 
 export const metadata: Metadata = { title: "Réservation confirmée" };
 
-export default function BookingSuccessPage() {
+export default async function BookingSuccessPage(props: { searchParams: Promise<{ appointmentId?: string }> }) {
+  const searchParams = await props.searchParams;
+  const appointmentId = searchParams.appointmentId;
+
+  const appointment = appointmentId
+    ? await prisma.appointment.findUnique({
+        where: { id: appointmentId },
+      })
+    : null;
+
+  const isInterac = appointment?.paymentMethod === "INTERAC";
   return (
     <div className="min-h-screen pt-24 pb-16 bg-brand-black flex items-center justify-center">
       <div className="max-w-md mx-auto px-4 text-center">
@@ -13,18 +25,51 @@ export default function BookingSuccessPage() {
         </div>
 
         <h1 className="font-display text-3xl font-bold text-brand-beige mb-3">
-          Dépôt reçu !
+          {isInterac ? "Réservation demandée !" : "Dépôt reçu !"}
         </h1>
         <p className="text-brand-muted mb-8">
-          Votre dépôt a été encaissé avec succès. Notre équipe va confirmer votre
-          rendez-vous et vous enverrez un email de confirmation sous peu.
+          {isInterac ? (
+            <>
+              Votre rendez-vous a été pré-réservé. Veuillez envoyer votre dépôt par{" "}
+              <span className="text-brand-gold font-semibold">Virement Interac</span> pour confirmer
+              votre place.
+            </>
+          ) : (
+            "Votre dépôt a été encaissé avec succès. Notre équipe va confirmer votre rendez-vous et vous enverrez un email de confirmation sous peu."
+          )}
         </p>
+
+        {isInterac && appointment && (
+          <div className="card bg-brand-gold/5 border-brand-gold/30 mb-8 text-left">
+            <h3 className="flex items-center gap-2 text-brand-gold font-bold mb-4 uppercase tracking-widest text-xs">
+              <Mail className="w-4 h-4" /> Instructions Interac
+            </h3>
+            <div className="space-y-4">
+              <div className="flex justify-between items-center bg-brand-black/40 p-3 rounded-lg border border-white/5">
+                <span className="text-xs text-brand-muted uppercase">Montant du dépôt</span>
+                <span className="text-brand-gold font-bold">{formatPrice(Number(appointment.depositAmount))}</span>
+              </div>
+              <div className="flex justify-between items-center bg-brand-black/40 p-3 rounded-lg border border-white/5">
+                <span className="text-xs text-brand-muted uppercase">Courriel</span>
+                <span className="text-brand-gold font-bold">VictyKof@yahoo.fr</span>
+              </div>
+              <div className="p-3 bg-blue-500/5 border border-blue-500/10 rounded-lg text-xs text-brand-muted leading-relaxed">
+                Le dépôt automatique est activé. Votre rendez-vous sera validé manuellement dès réception du virement.
+              </div>
+            </div>
+          </div>
+        )}
 
         <div className="card border-brand-gold/20 mb-8">
           <p className="text-sm text-brand-muted">
-            Vous recevrez un email de confirmation à l&apos;adresse associée à votre compte.
-            En cas de question, contactez-nous au{" "}
-            <a href="tel:+15817457409" className="text-brand-gold">(581) 745-7409</a>.
+            {isInterac
+              ? "Une fois le virement reçu, vous recevrez un email de confirmation."
+              : "Vous recevrez un email de confirmation à l'adresse associée à votre compte."}
+            {" "}En cas de question, contactez-nous au{" "}
+            <a href="tel:+15817457409" className="text-brand-gold">
+              (581) 745-7409
+            </a>
+            .
           </p>
         </div>
 

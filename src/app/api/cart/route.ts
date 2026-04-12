@@ -8,6 +8,7 @@ const checkoutSchema = z.object({
   items: z
     .array(z.object({ productId: z.string(), quantity: z.number().int().positive() }))
     .min(1),
+  paymentMethod: z.enum(["CARD", "INTERAC"]).default("CARD"),
 });
 
 export async function POST(req: NextRequest) {
@@ -22,7 +23,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Données invalides" }, { status: 400 });
   }
 
-  const { items } = parsed.data;
+  const { items, paymentMethod } = parsed.data;
   const productIds = items.map((i) => i.productId);
 
   const products = await prisma.product.findMany({
@@ -63,6 +64,7 @@ export async function POST(req: NextRequest) {
     data: {
       userId: session.user.id,
       status: "PENDING",
+      paymentMethod,
       subtotal,
       tax,
       shipping,
@@ -77,6 +79,10 @@ export async function POST(req: NextRequest) {
       },
     },
   });
+
+  if (paymentMethod === "INTERAC") {
+    return NextResponse.json({ success: true, orderId: order.id });
+  }
 
   const origin =
     req.headers.get("origin") ??

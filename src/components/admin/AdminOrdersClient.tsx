@@ -22,6 +22,7 @@ interface OrderItem {
 interface Order {
   id: string;
   status: OrderStatus;
+  paymentMethod: string;
   subtotal: number;
   tax: number;
   shipping: number;
@@ -129,6 +130,11 @@ export function AdminOrdersClient({ orders, total, page, totalPages, currentStat
                     <div className="flex flex-wrap items-center gap-2 mb-1">
                       <p className="font-medium text-brand-beige text-sm">#{order.id.slice(-8).toUpperCase()}</p>
                       <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${s.color}`}>{s.label}</span>
+                      <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-[10px] uppercase font-bold border ${
+                        order.paymentMethod === "INTERAC" ? "text-brand-gold border-brand-gold/30" : "text-brand-muted border-white/10"
+                      }`}>
+                        {order.paymentMethod === "INTERAC" ? "Interac" : "Stripe"}
+                      </span>
                     </div>
                     <p className="text-xs text-brand-muted">
                       {order.user.name ?? order.user.email} ·{" "}
@@ -141,6 +147,15 @@ export function AdminOrdersClient({ orders, total, page, totalPages, currentStat
                   </div>
                   <div className="flex items-center gap-4 shrink-0">
                     <p className="font-semibold text-brand-gold">{formatPrice(order.total)}</p>
+                    {order.status === "PENDING" && order.paymentMethod === "INTERAC" && (
+                      <button
+                        onClick={() => handleStatusChange(order.id, "PROCESSING")}
+                        disabled={updating === order.id}
+                        className="px-2 py-1.5 rounded-lg bg-brand-gold/10 text-brand-gold text-[10px] sm:text-xs hover:bg-brand-gold/20 transition-colors disabled:opacity-50 whitespace-nowrap uppercase font-bold"
+                      >
+                        Confirmer Interac
+                      </button>
+                    )}
                     <select
                       value={order.status}
                       disabled={updating === order.id}

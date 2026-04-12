@@ -237,6 +237,7 @@ model Appointment {
   depositAmount   Decimal           @db.Decimal(10, 2)
   depositPct      Int
   status          AppointmentStatus @default(PENDING)
+  paymentMethod   String            @default("CARD") // CARD or INTERAC
   notes           String?           @db.Text
   adminNotes      String?           @db.Text
   cancelReason    String?
@@ -332,6 +333,7 @@ model Order {
   id              String      @id @default(cuid())
   userId          String
   status          OrderStatus @default(PENDING)
+  paymentMethod   String      @default("CARD") // CARD or INTERAC
   subtotal        Decimal     @db.Decimal(10, 2)
   tax             Decimal     @db.Decimal(10, 2)
   shipping        Decimal     @db.Decimal(10, 2)

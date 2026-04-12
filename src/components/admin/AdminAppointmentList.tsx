@@ -13,6 +13,7 @@ interface Appointment {
   id: string;
   scheduledAt: Date;
   status: AppointmentStatus;
+  paymentMethod: string;
   totalPrice: string | number;
   depositAmount: string | number;
   client: { name: string | null; email: string };
@@ -48,7 +49,7 @@ export function AdminAppointmentList({ appointments: initial }: Props) {
   const [appointments, setAppointments] = useState(initial);
   const [actionLoading, setActionLoading] = useState<string | null>(null);
 
-  const updateStatus = async (id: string, status: "ACCEPTED" | "DECLINED", reason?: string) => {
+  const updateStatus = async (id: string, status: AppointmentStatus, reason?: string) => {
     setActionLoading(id);
     try {
       const res = await fetch(`/api/appointments/${id}`, {
@@ -61,7 +62,11 @@ export function AdminAppointmentList({ appointments: initial }: Props) {
       setAppointments((prev) =>
         prev.map((a) => (a.id === id ? { ...a, status } : a))
       );
-      toast.success(status === "ACCEPTED" ? "Rendez-vous confirmé ✓" : "Rendez-vous refusé");
+      toast.success(
+        status === "CONFIRMED" ? "Paiement confirmé ✓" : 
+        status === "ACCEPTED" ? "Rendez-vous confirmé ✓" : 
+        "Rendez-vous refusé"
+      );
     } catch {
       toast.error("Une erreur est survenue");
     } finally {
@@ -106,23 +111,39 @@ export function AdminAppointmentList({ appointments: initial }: Props) {
                 <p className="text-xs text-brand-gold">Dépôt: {formatPrice(parseFloat(appt.depositAmount.toString()))}</p>
               </td>
               <td className="py-4 pr-4">
-                <span
-                  className={cn(
-                    "inline-flex px-2.5 py-1 rounded-full text-xs font-medium border",
-                    STATUS_STYLES[appt.status]
-                  )}
-                >
-                  {STATUS_LABELS[appt.status]}
-                </span>
+                <div className="flex flex-col gap-1">
+                  <span
+                    className={cn(
+                      "inline-flex px-2.5 py-1 rounded-full text-xs font-medium border w-fit",
+                      STATUS_STYLES[appt.status]
+                    )}
+                  >
+                    {STATUS_LABELS[appt.status]}
+                  </span>
+                  <span className={`text-[10px] uppercase font-bold px-1.5 py-0.5 rounded border w-fit ${
+                    appt.paymentMethod === "INTERAC" ? "text-brand-gold border-brand-gold/30 bg-brand-gold/5" : "text-brand-muted border-white/5 bg-white/5"
+                  }`}>
+                    {appt.paymentMethod === "INTERAC" ? "Interac" : "Stripe"}
+                  </span>
+                </div>
               </td>
               <td className="py-4">
+                {appt.status === "PENDING" && appt.paymentMethod === "INTERAC" && (
+                  <button
+                    onClick={() => updateStatus(appt.id, "CONFIRMED")}
+                    disabled={actionLoading === appt.id}
+                    className="btn-primary text-[10px] px-3 py-1.5 h-auto uppercase tracking-wider"
+                  >
+                    Confirmer Interac
+                  </button>
+                )}
                 {appt.status === "CONFIRMED" && (
                   <div className="flex gap-2">
                     <button
                       onClick={() => updateStatus(appt.id, "ACCEPTED")}
                       disabled={actionLoading === appt.id}
                       className="w-8 h-8 bg-green-500/10 border border-green-500/20 rounded-lg flex items-center justify-center text-green-400 hover:bg-green-500/20 transition-colors"
-                      title="Confirmer"
+                      title="Accepter le RDV"
                     >
                       <Check className="w-4 h-4" />
                     </button>
@@ -136,7 +157,7 @@ export function AdminAppointmentList({ appointments: initial }: Props) {
                     </button>
                   </div>
                 )}
-                {appt.status !== "CONFIRMED" && (
+                {appt.status !== "CONFIRMED" && appt.status !== "PENDING" && (
                   <button className="btn-ghost p-2">
                     <MoreHorizontal className="w-4 h-4" />
                   </button>

@@ -19,6 +19,7 @@ type AppointmentStatus =
 interface Appointment {
   id: string;
   status: AppointmentStatus;
+  paymentMethod: string;
   scheduledAt: string;
   totalPrice: number;
   depositAmount: number;
@@ -230,11 +231,27 @@ export default function AdminAppointmentsPage() {
                       <p className="text-xs text-brand-muted">Dépôt : {formatPrice(appt.depositAmount)}</p>
                     </td>
                     <td className="px-4 py-3">
-                      <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${STATUS_STYLES[appt.status]}`}>
-                        {STATUS_LABELS[appt.status]}
-                      </span>
+                      <div className="flex flex-col gap-1">
+                        <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] sm:text-xs font-medium ${STATUS_STYLES[appt.status]}`}>
+                          {STATUS_LABELS[appt.status]}
+                        </span>
+                        <span className={`inline-flex items-center px-2 py-0.5 rounded text-[10px] uppercase font-bold border w-fit ${
+                          appt.paymentMethod === "INTERAC" ? "text-brand-gold border-brand-gold/30 bg-brand-gold/5" : "text-brand-muted border-white/5 bg-white/5"
+                        }`}>
+                          {appt.paymentMethod === "INTERAC" ? "Interac" : "Stripe"}
+                        </span>
+                      </div>
                     </td>
                     <td className="px-4 py-3">
+                      {appt.status === "PENDING" && appt.paymentMethod === "INTERAC" && (
+                        <button
+                          onClick={() => updateStatus(appt.id, "CONFIRMED")}
+                          disabled={actionLoading !== null}
+                          className="px-2 py-1 rounded-lg bg-brand-gold/10 text-brand-gold text-xs hover:bg-brand-gold/20 transition-colors disabled:opacity-50 whitespace-nowrap"
+                        >
+                          Confirmer Interac
+                        </button>
+                      )}
                       {appt.status === "CONFIRMED" && (
                         <div className="flex gap-1">
                           <button

@@ -29,6 +29,8 @@ export default async function OrderSuccessPage({ searchParams }: Props) {
 
   if (!order || order.userId !== session.user.id) notFound();
 
+  const isInterac = order.paymentMethod === "INTERAC";
+
   const statusLabel: Record<string, string> = {
     PENDING: "En attente de paiement",
     PROCESSING: "Paiement confirmé — en préparation",
@@ -48,9 +50,14 @@ export default async function OrderSuccessPage({ searchParams }: Props) {
             <CheckCircle className="w-10 h-10 text-green-400" />
           </div>
           <div>
-            <h1 className="font-display text-3xl font-bold text-brand-beige">Commande confirmée !</h1>
+            <h1 className="font-display text-3xl font-bold text-brand-beige">
+              {isInterac ? "Commande enregistrée !" : "Commande confirmée !"}
+            </h1>
             <p className="text-brand-muted mt-2">
-              Merci pour votre achat. Vous recevrez un email de confirmation sous peu.
+              {isInterac 
+                ? "Veuillez envoyer votre virement Interac pour finaliser votre commande."
+                : "Merci pour votre achat. Vous recevrez un email de confirmation sous peu."
+              }
             </p>
           </div>
           <div className="inline-flex items-center gap-2 bg-brand-charcoal px-4 py-2 rounded-lg text-sm">
@@ -59,6 +66,28 @@ export default async function OrderSuccessPage({ searchParams }: Props) {
             <span className="text-brand-beige font-mono font-medium">#{order.id.slice(-8).toUpperCase()}</span>
           </div>
         </div>
+
+        {/* Interac Instructions */}
+        {isInterac && (
+          <div className="card bg-brand-gold/5 border-brand-gold/30 text-left">
+            <h3 className="flex items-center gap-2 text-brand-gold font-bold mb-4 uppercase tracking-widest text-xs">
+              Instructions Virement Interac
+            </h3>
+            <div className="space-y-4">
+              <div className="flex justify-between items-center bg-brand-black/40 p-3 rounded-lg border border-white/5">
+                <span className="text-xs text-brand-muted uppercase">Montant total</span>
+                <span className="text-brand-gold font-bold">{formatPrice(parseFloat(order.total.toString()))}</span>
+              </div>
+              <div className="flex justify-between items-center bg-brand-black/40 p-3 rounded-lg border border-white/5">
+                <span className="text-xs text-brand-muted uppercase">Courriel</span>
+                <span className="text-brand-gold font-bold">VictyKof@yahoo.fr</span>
+              </div>
+              <div className="p-3 bg-blue-500/5 border border-blue-500/10 rounded-lg text-xs text-brand-muted leading-relaxed">
+                Le dépôt automatique est activé. Votre commande sera traitée dès réception du virement.
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* Status */}
         <div className="card">

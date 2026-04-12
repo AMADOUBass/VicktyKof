@@ -9,6 +9,7 @@ const createSchema = z.object({
   stylistId: z.string().nullable(),
   scheduledAt: z.string().datetime(),
   notes: z.string().max(1000).optional(),
+  paymentMethod: z.enum(["CARD", "INTERAC"]).default("CARD"),
 });
 
 // POST /api/appointments — create appointment + Stripe checkout
@@ -24,7 +25,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Données invalides", details: parsed.error.flatten() }, { status: 400 });
   }
 
-  const { serviceId, stylistId, scheduledAt, notes } = parsed.data;
+  const { serviceId, stylistId, scheduledAt, notes, paymentMethod } = parsed.data;
 
   // Validate service exists
   const service = await prisma.service.findUnique({ where: { id: serviceId, isActive: true } });
@@ -121,6 +122,7 @@ export async function POST(req: NextRequest) {
       totalPrice,
       depositAmount: depositAmount.toFixed(2),
       depositPct,
+      paymentMethod,
       notes,
       status: "PENDING",
     },
@@ -129,6 +131,10 @@ export async function POST(req: NextRequest) {
       stylist: { include: { user: true } },
     },
   });
+
+  if (paymentMethod === "INTERAC") {
+    return NextResponse.json({ success: true, appointmentId: appointment.id });
+  }
 
   // Create Stripe checkout
   const baseUrl = process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000";
