@@ -1,11 +1,16 @@
 import { createUploadthing, type FileRouter } from "uploadthing/next";
 import { auth } from "@/lib/auth";
 
-const f = createUploadthing();
+const f = createUploadthing({
+  errorFormatter: (err) => {
+    console.error("UploadThing Error:", err);
+    return { message: err.message };
+  },
+});
 
 export const ourFileRouter = {
   portfolioUploader: f({
-    image: { maxFileSize: "8MB", maxFileCount: 1 },
+    image: { maxFileSize: "16MB", maxFileCount: 1 },
   })
     .middleware(async () => {
       const session = await auth();
@@ -21,7 +26,7 @@ export const ourFileRouter = {
     }),
 
   avatarUploader: f({
-    image: { maxFileSize: "4MB", maxFileCount: 1 },
+    image: { maxFileSize: "16MB", maxFileCount: 1 },
   })
     .middleware(async () => {
       const session = await auth();
@@ -34,7 +39,7 @@ export const ourFileRouter = {
     }),
 
   galleryUploader: f({
-    image: { maxFileSize: "8MB", maxFileCount: 1 },
+    image: { maxFileSize: "16MB", maxFileCount: 1 },
   })
     .middleware(async () => {
       const session = await auth();
