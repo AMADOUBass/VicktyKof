@@ -68,6 +68,7 @@ export function GalleryPreview() {
                       alt={photo.caption || "Création VicktyKof"}
                       fill
                       className="object-cover transition-transform duration-500 group-hover:scale-105"
+                      sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                     />
                   </div>
                   {/* Hover overlay */}

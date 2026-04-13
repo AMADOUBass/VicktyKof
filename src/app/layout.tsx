@@ -124,6 +124,10 @@ import PostHogPageView from "@/components/layout/PostHogPageView";
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="fr" className={`${cormorant.variable} ${outfit.variable}`}>
+      <head>
+        <link rel="preconnect" href="https://us-assets.i.posthog.com" />
+        <link rel="preconnect" href="https://us.i.posthog.com" />
+      </head>
       <body className="min-h-screen flex flex-col">
         <PostHogPageView />
         <script
