@@ -1,11 +1,11 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
-import { ShoppingBag, Minus, Plus, Trash2, ArrowRight, Tag, ChevronLeft, CreditCard, Mail } from "lucide-react";
+import { ShoppingBag, Minus, Plus, Trash2, ArrowRight, Tag, ChevronLeft, CreditCard, Mail, Loader2 } from "lucide-react";
 import { useCartStore } from "@/hooks/useCartStore";
 import { formatPrice } from "@/lib/utils";
 import { useSession } from "next-auth/react";
@@ -16,7 +16,12 @@ export default function CartPage() {
   const { data: session } = useSession();
   const { items, updateQuantity, removeItem, totalPrice, totalItems, clearCart } = useCartStore();
   const [loading, setLoading] = useState(false);
+  const [mounted, setMounted] = useState(false);
   const [paymentMethod, setPaymentMethod] = useState<"CARD" | "INTERAC">("CARD");
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   async function handleCheckout() {
     if (!session) {
@@ -54,6 +59,14 @@ export default function CartPage() {
     } finally {
       setLoading(false);
     }
+  }
+
+  if (!mounted) {
+    return (
+      <div className="min-h-screen bg-brand-black pt-24 pb-16 flex items-center justify-center">
+        <Loader2 className="w-8 h-8 text-brand-gold animate-spin" />
+      </div>
+    );
   }
 
   if (items.length === 0) {
