@@ -40,7 +40,7 @@ export const metadata: Metadata = {
   openGraph: {
     type: "website",
     locale: "fr_CA",
-    url: "https://vicktykof.com",
+    url: "https://vicktykof.beauty",
     siteName: "VicktyKof",
     title: "VicktyKof — Salon Spécialisé Locs & Coiffures Afro",
     description:
@@ -54,7 +54,7 @@ export const metadata: Metadata = {
     images: ["/og-image-premium.png"],
   },
   robots: { index: true, follow: true },
-  metadataBase: new URL("https://vicktykof.com"),
+  metadataBase: new URL("https://vicktykof.beauty"),
   manifest: "/manifest.json",
   icons: {
     icon: "/favicon.png",
@@ -73,9 +73,9 @@ const jsonLd = {
   "@context": "https://schema.org",
   "@type": "HairSalon",
   "name": "VicktyKof",
-  "image": "https://vicktykof.com/og-image-premium.png",
-  "@id": "https://vicktykof.com",
-  "url": "https://vicktykof.com",
+  "image": "https://vicktykof.beauty/og-image-premium.png",
+  "@id": "https://vicktykof.beauty",
+  "url": "https://vicktykof.beauty",
   "telephone": "+15817457409",
   "address": {
     "@type": "PostalAddress",

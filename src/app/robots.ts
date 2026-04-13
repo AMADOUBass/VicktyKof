@@ -7,6 +7,6 @@ export default function robots(): MetadataRoute.Robots {
       allow: '/',
       disallow: ['/dashboard/', '/portal/', '/api/'],
     },
-    sitemap: 'https://vicktykof.com/sitemap.xml',
+    sitemap: 'https://vicktykof.beauty/sitemap.xml',
   }
 }
