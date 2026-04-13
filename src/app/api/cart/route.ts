@@ -56,7 +56,7 @@ export async function POST(req: NextRequest) {
   });
 
   const subtotal = lineItems.reduce((sum, li) => sum + li.unitPrice * li.quantity, 0);
-  const shipping = subtotal >= 75 ? 0 : 9.99;
+  const shipping = 0; // Temporairement gratuit pour les tests (au lieu de 9.99$)
   const tax = parseFloat((subtotal * 0.14975).toFixed(2)); // QC TPS+TVQ
   const total = parseFloat((subtotal + shipping + tax).toFixed(2));
 

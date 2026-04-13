@@ -83,7 +83,7 @@ export default function CartPage() {
   }
 
   const subtotal = totalPrice();
-  const shipping = subtotal >= 75 ? 0 : 9.99;
+  const shipping = 0; // Temporairement gratuit pour les tests (au lieu de 9.99$)
   const total = subtotal + shipping;
 
   return (
