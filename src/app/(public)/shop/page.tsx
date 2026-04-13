@@ -6,7 +6,7 @@ import { prisma } from "@/lib/prisma";
 import { ScrollReveal } from "@/components/ui/ScrollReveal";
 
 export const metadata: Metadata = {
-  title: "Boutique",
+  title: "Boutique | VicktyKof",
   description: "Découvrez nos produits capillaires premium : huiles, brosses et accessoires pour l'entretien de vos locs à Québec.",
 };
 

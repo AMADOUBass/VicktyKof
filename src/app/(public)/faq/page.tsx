@@ -4,7 +4,6 @@ import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ChevronDown, HelpCircle } from "lucide-react";
 import Link from "next/link";
-import type { Metadata } from "next";
 
 const FAQ_SECTIONS = [
   {

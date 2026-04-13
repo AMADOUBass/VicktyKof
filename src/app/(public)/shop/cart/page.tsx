@@ -48,7 +48,6 @@ export default function CartPage() {
         return;
       }
 
-      clearCart();
       if (data.success || !data.url) {
         router.push(`/shop/cart/success?orderId=${data.orderId}`);
       } else if (data.url) {
@@ -111,7 +110,20 @@ export default function CartPage() {
           <span className="text-brand-beige">Panier ({totalItems()} article{totalItems() > 1 ? "s" : ""})</span>
         </div>
 
-        <h1 className="font-display text-3xl font-bold text-brand-beige mb-8">Mon panier</h1>
+        <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-8">
+          <h1 className="font-display text-3xl font-bold text-brand-beige">Mon panier</h1>
+          {items.length > 0 && (
+            <button
+              onClick={() => {
+                if (confirm("Voulez-vous vraiment vider votre panier ?")) clearCart();
+              }}
+              className="text-xs text-brand-muted hover:text-red-400 transition-colors flex items-center gap-1.5"
+            >
+              <Trash2 className="w-3.5 h-3.5" />
+              Vider le panier
+            </button>
+          )}
+        </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Cart items */}

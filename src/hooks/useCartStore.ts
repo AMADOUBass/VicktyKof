@@ -18,6 +18,7 @@ interface CartStore {
   removeItem: (id: string) => void;
   updateQuantity: (id: string, quantity: number, max?: number) => void;
   clearCart: () => void;
+  setItems: (items: CartItem[]) => void;
   totalItems: () => number;
   totalPrice: () => number;
 }
@@ -63,7 +64,9 @@ export const useCartStore = create<CartStore>()(
     }));
   },
 
-      clearCart: () => set({ items: [] }),
+  clearCart: () => set({ items: [] }),
+
+  setItems: (items: CartItem[]) => set({ items }),
 
       totalItems: () => get().items.reduce((sum, i) => sum + i.quantity, 0),
 
@@ -72,7 +75,7 @@ export const useCartStore = create<CartStore>()(
     }),
     { 
       name: "vicktykof-cart",
-      storage: createJSONStorage(() => sessionStorage)
+      storage: createJSONStorage(() => localStorage)
     }
   )
 );

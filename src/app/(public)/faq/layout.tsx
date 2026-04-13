@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Questions Fréquentes",
+  title: "FAQ | VicktyKof",
   description: "Tout savoir sur l'entretien des locs, les prises de rendez-vous et nos politiques de salon VicktyKof.",
 };
 

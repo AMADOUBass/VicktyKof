@@ -48,8 +48,16 @@ async function handleProductOrderPaid(session: Stripe.Checkout.Session, orderId:
   });
   if (existing) return;
 
-  await prisma.$transaction([
-    prisma.order.update({
+  const order = await prisma.order.findUnique({
+    where: { id: orderId },
+    include: { items: true },
+  });
+
+  if (!order) return;
+
+  await prisma.$transaction(async (tx) => {
+    // 1. Update order status
+    await tx.order.update({
       where: { id: orderId },
       data: {
         status: "PROCESSING",
@@ -66,8 +74,10 @@ async function handleProductOrderPaid(session: Stripe.Checkout.Session, orderId:
             }
           : undefined,
       },
-    }),
-    prisma.payment.create({
+    });
+
+    // 2. Create payment record
+    await tx.payment.create({
       data: {
         orderId,
         stripePaymentId: paymentIntentId,
@@ -76,8 +86,25 @@ async function handleProductOrderPaid(session: Stripe.Checkout.Session, orderId:
         status: "SUCCEEDED",
         metadata: { stripeSessionId: session.id },
       },
-    }),
-  ]);
+    });
+
+    // 3. Decrement stock
+    for (const item of order.items) {
+      const product = await tx.product.findUnique({
+        where: { id: item.productId },
+        select: { name: true, stock: true },
+      });
+
+      if (product && product.stock < item.quantity) {
+        console.error(`[STOCK_CRITICAL] Order ${orderId} paid but stock insufficient for "${product.name}". Remaining: ${product.stock}, Wanted: ${item.quantity}`);
+      }
+
+      await tx.product.update({
+        where: { id: item.productId },
+        data: { stock: { decrement: item.quantity } },
+      });
+    }
+  });
 }
 
 async function handleAppointmentDepositPaid(session: Stripe.Checkout.Session, appointmentId: string) {

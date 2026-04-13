@@ -1,4 +1,5 @@
 import { prisma } from "@/lib/prisma";
+import Image from "next/image";
 import Link from "next/link";
 import { Clock, DollarSign, ChevronRight, Scissors, Sparkles } from "lucide-react";
 import { formatPrice } from "@/lib/utils";
@@ -95,11 +96,11 @@ export default async function ServicesPage() {
                       {/* Image or placeholder */}
                       {service.imageUrl ? (
                         <div className="relative h-44 -mx-5 -mt-5 mb-5 overflow-hidden rounded-t-2xl">
-                          {/* eslint-disable-next-line @next/next/no-img-element */}
-                          <img
+                          <Image
                             src={service.imageUrl}
                             alt={service.name}
-                            className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                            fill
+                            className="object-cover transition-transform duration-500 group-hover:scale-105"
                           />
                           <div className="absolute inset-0 bg-gradient-to-t from-brand-black/60 to-transparent" />
                         </div>

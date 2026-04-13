@@ -95,12 +95,14 @@ export async function POST(req: NextRequest) {
         },
       });
 
-      // 2. Decrement stock
-      for (const item of items) {
-        await tx.product.update({
-          where: { id: item.productId },
-          data: { stock: { decrement: item.quantity } },
-        });
+      // 2. Decrement stock ONLY for INTERAC (Stripe handles it in webhook)
+      if (paymentMethod === "INTERAC") {
+        for (const item of items) {
+          await tx.product.update({
+            where: { id: item.productId },
+            data: { stock: { decrement: item.quantity } },
+          });
+        }
       }
 
       return o;

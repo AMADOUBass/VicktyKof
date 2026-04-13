@@ -3,7 +3,7 @@ import { prisma } from "@/lib/prisma";
 import { GalleryGrid } from "@/components/gallery/GalleryGrid";
 
 export const metadata: Metadata = {
-  title: "Galerie",
+  title: "Galerie | VicktyKof",
   description: "Découvrez nos créations : locs, interlocks, retwist et coiffures afro par VicktyKof à Québec.",
 };
 

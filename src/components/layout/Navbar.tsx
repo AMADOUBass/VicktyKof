@@ -10,6 +10,7 @@ import { ShoppingBag, Menu, X, User, LogOut, LayoutDashboard, ChevronDown, Sciss
 import { cn } from "@/lib/utils";
 import { useCartStore } from "@/hooks/useCartStore";
 import { UserAvatar } from "@/components/ui/UserAvatar";
+import { CartSync } from "@/components/cart/CartSync";
 
 const navLinks = [
   { href: "/", label: "Accueil" },
@@ -51,6 +52,7 @@ export function Navbar() {
           : "bg-transparent py-5"
       )}
     >
+      <CartSync />
       <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between">
         {/* Logo */}
         <Link href="/" className="font-display text-2xl font-bold text-brand-gold tracking-wide">

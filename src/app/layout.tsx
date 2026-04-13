@@ -67,6 +67,9 @@ export const metadata: Metadata = {
     title: "VicktyKof",
     statusBarStyle: "black-translucent",
   },
+  verification: {
+    google: "BD8g4gg6BkZJzfjsj5o1MyGB8TKit30ejFhRmvJL6nQ",
+  },
 };
 
 const jsonLd = {
@@ -116,11 +119,13 @@ export const viewport: Viewport = {
 
 import { Analytics } from "@vercel/analytics/next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
+import PostHogPageView from "@/components/layout/PostHogPageView";
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="fr" className={`${cormorant.variable} ${outfit.variable}`}>
       <body className="min-h-screen flex flex-col">
+        <PostHogPageView />
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}

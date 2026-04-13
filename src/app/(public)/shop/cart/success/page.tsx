@@ -5,6 +5,7 @@ import { CheckCircle, Package, ShoppingBag, ArrowRight } from "lucide-react";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { formatPrice } from "@/lib/utils";
+import { CartClearer } from "@/components/cart/CartClearer";
 
 interface Props {
   searchParams: Promise<{ orderId?: string }>;
@@ -42,6 +43,7 @@ export default async function OrderSuccessPage({ searchParams }: Props) {
 
   return (
     <div className="min-h-screen bg-brand-black pt-24 pb-16">
+      <CartClearer />
       <div className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
 
         {/* Hero */}
