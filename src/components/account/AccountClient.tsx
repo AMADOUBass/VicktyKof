@@ -623,8 +623,9 @@ export function AccountClient({
               <UploadDropzone
                 endpoint="avatarUploader"
                 onClientUploadComplete={async (res) => {
-                  if (res?.[0]) {
-                    const newUrl = res[0].url;
+                  const file = res?.[0];
+                  if (file) {
+                    const newUrl = file.url;
                     setAvatarUrl(newUrl);
                     toast.success("Photo téléversée !");
                     // Save to user api immediately
