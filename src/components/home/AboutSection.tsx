@@ -39,6 +39,7 @@ export function AboutSection() {
               alt="Vicky Kof — Fondatrice & Maître Loctician"
               fill
               className="object-cover object-top"
+              sizes="(max-width: 1024px) 100vw, 50vw"
             />
             <div className="absolute inset-0 bg-gradient-to-t from-brand-black/30 to-transparent" />
           </div>

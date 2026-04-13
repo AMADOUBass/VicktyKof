@@ -139,8 +139,9 @@ export function HeroSection() {
               alt="Salon VicktyKof — ambiance et expertise"
               fill
               className="object-cover"
-              quality={100}
+              quality={90}
               priority
+              sizes="(max-width: 1024px) 100vw, 50vw"
             />
             <div className="absolute inset-0 bg-gradient-to-t from-brand-black/40 to-transparent" />
           </div>

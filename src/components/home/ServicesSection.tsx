@@ -91,12 +91,13 @@ export function ServicesSection() {
                 className="card-hover group flex flex-col h-full p-0 overflow-hidden relative min-h-[420px] sm:min-h-0 sm:p-6">
                 {/* Image Background for Mobile / Top for Desktop */}
                 <div className="absolute inset-0 sm:relative sm:h-48 sm:-mx-6 sm:-mt-6 sm:mb-6 overflow-hidden">
-                  <Image
-                    src={service.image}
-                    alt={service.title}
-                    fill
-                    className="object-cover transition-transform duration-700 group-hover:scale-110"
-                  />
+                    <Image
+                      src={service.image}
+                      alt={service.title}
+                      fill
+                      className="object-cover transition-transform duration-700 group-hover:scale-110"
+                      sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
+                    />
                   {/* Overlay for mobile (full) and desktop (bottom of image) */}
                   <div className="absolute inset-0 bg-gradient-to-t from-brand-black via-brand-black/80 to-brand-black/20 sm:from-brand-black/80 sm:via-transparent group-hover:opacity-40 transition-opacity" />
 
