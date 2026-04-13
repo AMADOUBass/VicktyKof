@@ -50,11 +50,15 @@ export default async function BookingSuccessPage(props: { searchParams: Promise<
                 <span className="text-brand-gold font-bold">{formatPrice(Number(appointment.depositAmount))}</span>
               </div>
               <div className="flex justify-between items-center bg-brand-black/40 p-3 rounded-lg border border-white/5">
-                <span className="text-xs text-brand-muted uppercase">Courriel</span>
-                <span className="text-brand-gold font-bold">VictyKof@yahoo.fr</span>
+                <span className="text-xs text-brand-muted uppercase">Virement par SMS</span>
+                <span className="text-brand-gold font-bold">(581) 745-7409</span>
               </div>
-              <div className="p-3 bg-blue-500/5 border border-blue-500/10 rounded-lg text-xs text-brand-muted leading-relaxed">
-                Le dépôt automatique est activé. Votre rendez-vous sera validé manuellement dès réception du virement.
+              <div className="flex justify-between items-center bg-brand-black/40 p-3 rounded-lg border border-white/5">
+                <span className="text-xs text-brand-muted uppercase">Virement par Courriel</span>
+                <span className="text-brand-gold font-bold">vicktykoff@gmail.com</span>
+              </div>
+              <div className="p-3 bg-brand-gold/5 border border-brand-gold/10 rounded-lg text-xs text-brand-muted leading-relaxed">
+                Le dépôt automatique est activé sur les deux options. Votre rendez-vous sera validé dès réception du virement.
               </div>
             </div>
           </div>

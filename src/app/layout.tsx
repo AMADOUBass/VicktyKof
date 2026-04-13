@@ -112,7 +112,7 @@ export const viewport: Viewport = {
   initialScale: 1,
 };
 
-import { WhatsAppButton } from "@/components/ui/WhatsAppButton";
+
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
@@ -124,7 +124,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         />
         <Providers>
           <ConditionalShell>{children}</ConditionalShell>
-          <WhatsAppButton />
+
           <Toaster
             position="top-right"
             toastOptions={{

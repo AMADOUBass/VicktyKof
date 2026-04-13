@@ -8,7 +8,7 @@ export default function ReturnsPage() {
     <div className="min-h-screen pt-24 pb-16 bg-brand-black">
       <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
         <h1 className="font-display text-4xl font-bold text-brand-beige mb-2">Retours & Échanges</h1>
-        <p className="text-brand-muted mb-8">Politique en vigueur depuis janvier 2025</p>
+        <p className="text-brand-muted mb-8">Politique en vigueur depuis janvier 2026</p>
 
         <div className="space-y-8 text-brand-muted leading-relaxed">
           <section className="card">
@@ -20,7 +20,7 @@ export default function ReturnsPage() {
             </p>
             <h3 className="font-semibold text-brand-beige mt-4 mb-2">Procédure :</h3>
             <ol className="list-decimal list-inside space-y-1">
-              <li>Contactez-nous à victykoff@gmail.com avec votre numéro de commande</li>
+              <li>Contactez-nous à vicktykoff@gmail.com avec votre numéro de commande</li>
               <li>Attendez notre confirmation de retour sous 48h</li>
               <li>Expédiez le produit à vos frais à notre adresse</li>
               <li>Remboursement sous 5-10 jours ouvrables après réception</li>

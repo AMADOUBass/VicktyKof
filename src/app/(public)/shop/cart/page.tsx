@@ -250,7 +250,7 @@ export default function CartPage() {
                 {paymentMethod === "INTERAC" && (
                   <div className="p-3 bg-brand-gold/5 border border-brand-gold/20 rounded-lg">
                     <p className="text-[10px] text-brand-muted leading-relaxed">
-                      Envoyez le total à <strong className="text-brand-gold">VictyKof@yahoo.fr</strong>. Votre commande sera expédiée après réception.
+                      Envoyez votre virement à <strong className="text-brand-gold">vicktykoff@gmail.com</strong>. Votre commande sera expédiée après réception.
                     </p>
                   </div>
                 )}

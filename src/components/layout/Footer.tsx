@@ -54,11 +54,11 @@ export function Footer() {
                 (581) 745-7409
               </a>
               <a
-                href="mailto:victykoff@gmail.com"
+                href="mailto:vicktykoff@gmail.com"
                 className="flex items-center gap-3 text-sm text-brand-muted hover:text-brand-gold transition-colors"
               >
                 <Mail className="w-4 h-4 flex-shrink-0 text-brand-gold" />
-                victykoff@gmail.com
+                vicktykoff@gmail.com
               </a>
             </div>
             {/* Social */}

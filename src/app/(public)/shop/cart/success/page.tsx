@@ -79,10 +79,10 @@ export default async function OrderSuccessPage({ searchParams }: Props) {
                 <span className="text-brand-gold font-bold">{formatPrice(parseFloat(order.total.toString()))}</span>
               </div>
               <div className="flex justify-between items-center bg-brand-black/40 p-3 rounded-lg border border-white/5">
-                <span className="text-xs text-brand-muted uppercase">Courriel</span>
-                <span className="text-brand-gold font-bold">VictyKof@yahoo.fr</span>
+                <span className="text-xs text-brand-muted uppercase">Virement par Courriel</span>
+                <span className="text-brand-gold font-bold">vicktykoff@gmail.com</span>
               </div>
-              <div className="p-3 bg-blue-500/5 border border-blue-500/10 rounded-lg text-xs text-brand-muted leading-relaxed">
+              <div className="p-3 bg-brand-gold/5 border border-brand-gold/10 rounded-lg text-xs text-brand-muted leading-relaxed">
                 Le dépôt automatique est activé. Votre commande sera traitée dès réception du virement.
               </div>
             </div>

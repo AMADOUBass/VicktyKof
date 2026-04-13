@@ -9,7 +9,7 @@ export default function TermsPage() {
         <h1 className="font-display text-4xl font-bold text-brand-beige mb-2">
           Conditions d&apos;utilisation
         </h1>
-        <p className="text-brand-muted mb-8">Dernière mise à jour : avril 2025</p>
+        <p className="text-brand-muted mb-8">Dernière mise à jour : avril 2026</p>
 
         <div className="space-y-8 text-brand-muted leading-relaxed">
           {[

@@ -180,8 +180,8 @@ export function StepConfirm({ booking, onBack }: Props) {
               $
             </div>
             <div className="text-center">
-              <p className="font-semibold text-brand-beige">Virement Interac</p>
-              <p className="text-[10px] text-brand-muted mt-1 uppercase">VictyKof@yahoo.fr</p>
+                <p className="font-semibold text-brand-beige">Virement Interac</p>
+                <p className="text-[10px] text-brand-muted mt-1 uppercase">(581) 745-7409</p>
             </div>
           </button>
         </div>
@@ -193,7 +193,7 @@ export function StepConfirm({ booking, onBack }: Props) {
             className="p-4 bg-brand-gold/5 border border-brand-gold/20 rounded-xl"
           >
             <p className="text-xs text-brand-muted leading-relaxed">
-              <strong className="text-brand-gold">Instructions :</strong> Veuillez envoyer votre dépôt de <strong className="text-brand-beige">{formatPrice(depositCents / 100)}</strong> à l&apos;adresse <strong className="text-brand-beige">VictyKof@yahoo.fr</strong> après avoir confirmé. Votre rendez-vous sera validé manuellement dès réception.
+              <strong className="text-brand-gold">Instructions :</strong> Veuillez envoyer votre dépôt de <strong className="text-brand-beige">{formatPrice(depositCents / 100)}</strong> par virement Interac au numéro <strong className="text-brand-beige">(581) 745-7409</strong> (recommandé) ou à <strong className="text-brand-beige">vicktykoff@gmail.com</strong>. Votre rendez-vous sera validé dès réception.
             </p>
           </motion.div>
         )}

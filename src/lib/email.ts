@@ -60,9 +60,15 @@ const templates: Record<EmailTemplate, (data: Record<string, string | number>) =
         <p>Nous avons bien reçu votre demande de réservation. Pour la valider, veuillez effectuer votre virement Interac :</p>
         
         <div style="background:#1A1A1A;border:1px solid #C9A84C33;border-radius:8px;padding:20px;margin:24px 0;">
-          <p style="margin:4px 0;"><strong>Montant du d\u00e9p\u00f4t :</strong> <span style="color:#C9A84C;font-size:18px;">${d.depositAmount} CAD</span></p>
-          <p style="margin:4px 0;"><strong>Email pour le virement :</strong> <strong style="color:#F5EDD6;">VictyKof@yahoo.fr</strong></p>
-          <p style="margin:4px 0;font-size:12px;color:#6B6B6B;">(Veuillez inclure votre nom dans les notes du virement)</p>
+          <p style="margin:4px 0;"><strong>Montant du dépôt :</strong> <span style="color:#C9A84C;font-size:18px;">${d.depositAmount} CAD</span></p>
+          <div style="margin-top:16px;padding-top:16px;border-top:1px solid #333;">
+            <p style="margin:4px 0;"><strong>Option 1 — Par SMS (Recommandé) :</strong></p>
+            <p style="margin:4px 0;color:#F5EDD6;font-size:16px;font-weight:bold;">(581) 745-7409</p>
+            
+            <p style="margin:16px 0 4px 0;"><strong>Option 2 — Par Courriel :</strong></p>
+            <p style="margin:4px 0;color:#F5EDD6;font-size:16px;">vicktykoff@gmail.com</p>
+          </div>
+          <p style="margin:16px 0 0 0;font-size:12px;color:#6B6B6B;">(Note : Le dépôt automatique est activé sur les deux options)</p>
         </div>
 
         <div style="font-size:14px;color:#brand-muted;">

@@ -7,7 +7,7 @@ export default function RefundsPage() {
     <div className="min-h-screen pt-24 pb-16 bg-brand-black">
       <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
         <h1 className="font-display text-4xl font-bold text-brand-beige mb-2">Politique de remboursement</h1>
-        <p className="text-brand-muted mb-8">En vigueur depuis janvier 2025</p>
+        <p className="text-brand-muted mb-8">En vigueur depuis janvier 2026</p>
 
         <div className="space-y-6 text-brand-muted leading-relaxed">
           <section className="card border-brand-gold/10">
@@ -49,7 +49,7 @@ export default function RefundsPage() {
           <section className="card">
             <h2 className="font-display text-xl font-semibold text-brand-gold mb-3">Comment demander un remboursement</h2>
             <p>Contactez-nous par email à{" "}
-              <a href="mailto:victykoff@gmail.com" className="text-brand-gold hover:underline">victykoff@gmail.com</a>
+              <a href="mailto:vicktykoff@gmail.com" className="text-brand-gold hover:underline">vicktykoff@gmail.com</a>
               {" "}avec votre numéro de réservation ou de commande. Nous traitons toutes les demandes sous 48h.
             </p>
           </section>
