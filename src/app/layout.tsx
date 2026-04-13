@@ -114,6 +114,8 @@ export const viewport: Viewport = {
 
 
 
+import { Analytics } from "@vercel/analytics/next";
+
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="fr" className={`${cormorant.variable} ${outfit.variable}`}>
@@ -136,6 +138,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             }}
           />
         </Providers>
+        <Analytics />
       </body>
     </html>
   );
