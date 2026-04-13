@@ -68,6 +68,7 @@ export function Footer() {
                 target="_blank"
                 rel="noopener noreferrer"
                 className="w-10 h-10 rounded-full border border-brand-gold/30 flex items-center justify-center text-brand-gold hover:bg-brand-gold hover:text-brand-black transition-all duration-300"
+                aria-label="Suivre VicktyKof sur Instagram"
               >
                 <Instagram className="w-4 h-4" />
               </a>
@@ -76,6 +77,7 @@ export function Footer() {
                 target="_blank"
                 rel="noopener noreferrer"
                 className="w-10 h-10 rounded-full border border-brand-gold/30 flex items-center justify-center text-brand-gold hover:bg-brand-gold hover:text-brand-black transition-all duration-300"
+                aria-label="Suivre VicktyKof sur Facebook"
               >
                 <Facebook className="w-4 h-4" />
               </a>
@@ -84,6 +86,7 @@ export function Footer() {
                 target="_blank"
                 rel="noopener noreferrer"
                 className="w-10 h-10 rounded-full border border-brand-gold/30 flex items-center justify-center text-brand-gold hover:bg-brand-gold hover:text-brand-black transition-all duration-300"
+                aria-label="Suivre VicktyKof sur TikTok"
               >
                 <svg
                   className="w-4 h-4 fill-current"

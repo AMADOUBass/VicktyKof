@@ -29,9 +29,11 @@ export function Navbar() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [userMenuOpen, setUserMenuOpen] = useState(false);
+  const [hasHydrated, setHasHydrated] = useState(false);
   const cartCount = useCartStore((s) => s.totalItems());
 
   useEffect(() => {
+    setHasHydrated(true);
     const handleScroll = () => setScrolled(window.scrollY > 20);
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
@@ -86,9 +88,9 @@ export function Navbar() {
         <div className="hidden lg:flex items-center gap-4">
           {/* Cart (Hidden for staff) */}
           {!isStaff && (
-            <Link href="/shop/cart" className="relative btn-ghost p-2">
+            <Link href="/shop/cart" className="relative btn-ghost p-2" aria-label={`Voir le panier, ${hasHydrated ? cartCount : 0} articles`}>
               <ShoppingBag className="w-5 h-5" />
-              {cartCount > 0 && (
+              {hasHydrated && cartCount > 0 && (
                 <span className="absolute -top-1 -right-1 w-5 h-5 bg-brand-gold text-brand-black text-xs font-bold rounded-full flex items-center justify-center">
                   {cartCount}
                 </span>
@@ -102,6 +104,7 @@ export function Navbar() {
               <button
                 onClick={() => setUserMenuOpen(!userMenuOpen)}
                 className="flex items-center gap-2 btn-ghost px-3 py-2 rounded-lg"
+                aria-label="Menu utilisateur"
               >
                 <UserAvatar 
                   src={session.user.image} 
@@ -171,9 +174,14 @@ export function Navbar() {
         {/* Mobile: cart + hamburger */}
         <div className="lg:hidden flex items-center gap-2">
           {!isStaff && (
-            <Link href="/shop/cart" className="relative btn-ghost p-2" onClick={() => setMobileOpen(false)}>
+            <Link 
+              href="/shop/cart" 
+              className="relative btn-ghost p-2" 
+              onClick={() => setMobileOpen(false)}
+              aria-label={`Voir le panier, ${hasHydrated ? cartCount : 0} articles`}
+            >
               <ShoppingBag className="w-5 h-5" />
-              {cartCount > 0 && (
+              {hasHydrated && cartCount > 0 && (
                 <span className="absolute -top-1 -right-1 w-5 h-5 bg-brand-gold text-brand-black text-xs font-bold rounded-full flex items-center justify-center">
                   {cartCount}
                 </span>

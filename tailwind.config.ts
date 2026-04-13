@@ -20,7 +20,7 @@ const config: Config = {
           "beige-dark": "#E8D9B8",
           cream: "#FDFAF3",
           charcoal: "#1A1A1A",
-          muted: "#6B6B6B",
+          muted: "#919191",
         },
       },
       fontFamily: {
