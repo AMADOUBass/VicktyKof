@@ -7,6 +7,7 @@ import { Users, Plus, Pencil, X, Star, Calendar } from "lucide-react";
 import toast from "react-hot-toast";
 
 import { UserAvatar } from "@/components/ui/UserAvatar";
+import { UploadButton } from "@/lib/uploadthing";
 
 type Specialty = "RETWIST" | "INTERLOCKS" | "WOMENS_STYLING" | "STARTER_LOCS" | "LOC_MAINTENANCE" | "BRAIDING" | "NATURAL_STYLES";
 
@@ -41,6 +42,7 @@ interface Stylist {
 interface FormData {
   bio: string;
   yearsExp: string;
+  avatarUrl: string;
   specialties: Specialty[];
   availability: { dayOfWeek: number; startTime: string; endTime: string; enabled: boolean }[];
 }
@@ -56,7 +58,7 @@ export default function AdminStylistsPage() {
   const [stylists, setStylists] = useState<Stylist[]>([]);
   const [loading, setLoading] = useState(true);
   const [editStylist, setEditStylist] = useState<Stylist | null>(null);
-  const [form, setForm] = useState<FormData>({ bio: "", yearsExp: "0", specialties: [], availability: DEFAULT_AVAIL });
+  const [form, setForm] = useState<FormData>({ bio: "", yearsExp: "0", avatarUrl: "", specialties: [], availability: DEFAULT_AVAIL });
   const [saving, setSaving] = useState(false);
   const [isAdding, setIsAdding] = useState(false);
   const [addForm, setAddForm] = useState({ 
@@ -89,6 +91,7 @@ export default function AdminStylistsPage() {
     setForm({
       bio: stylist.bio ?? "",
       yearsExp: stylist.yearsExp.toString(),
+      avatarUrl: stylist.avatarUrl ?? stylist.user.image ?? "",
       specialties: stylist.specialties,
       availability: DEFAULT_AVAIL.map((d) => {
         const existing = stylist.availability.find((a) => a.dayOfWeek === d.dayOfWeek);
@@ -109,6 +112,7 @@ export default function AdminStylistsPage() {
         body: JSON.stringify({
           bio: form.bio || undefined,
           yearsExp: parseInt(form.yearsExp, 10),
+          avatarUrl: form.avatarUrl || undefined,
           specialties: form.specialties,
           availability: form.availability
             .filter((a) => a.enabled)
@@ -386,6 +390,23 @@ export default function AdminStylistsPage() {
                 <button onClick={() => setEditStylist(null)} className="text-brand-muted hover:text-brand-beige transition-colors">
                   <X className="w-5 h-5" />
                 </button>
+              </div>
+
+              <div className="flex items-center gap-6 p-4 rounded-xl bg-brand-black/40 border border-white/5">
+                <UserAvatar src={form.avatarUrl} name={editStylist.user.name} size="xl" />
+                <div className="space-y-2">
+                  <p className="text-xs text-brand-muted uppercase font-medium">Photo de profil</p>
+                  <UploadButton
+                    endpoint="avatarUploader"
+                    onClientUploadComplete={(res) => {
+                      if (res?.[0]) {
+                        setForm(f => ({ ...f, avatarUrl: res[0].url }));
+                        toast.success("Image téléchargée");
+                      }
+                    }}
+                    onUploadError={(err) => toast.error(err.message)}
+                  />
+                </div>
               </div>
 
               <div>

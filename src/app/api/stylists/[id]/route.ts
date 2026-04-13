@@ -62,6 +62,14 @@ export async function PUT(req: NextRequest, { params }: RouteParams) {
       },
     });
 
+    // Sync User image if avatarUrl is provided
+    if (stylistData.avatarUrl) {
+      await tx.user.update({
+        where: { id: stylist.userId },
+        data: { image: stylistData.avatarUrl },
+      });
+    }
+
     if (availability) {
       // Upsert all provided availability, deactivate the rest
       const providedDays = availability.map((a) => a.dayOfWeek);
