@@ -13,12 +13,11 @@ export const ourFileRouter = {
     image: { maxFileSize: "16MB", maxFileCount: 1 },
   })
     .middleware(async () => {
-      // Temporairement désactivé pour débogage production
-      // const session = await auth();
-      // if (!session || (session.user.role !== "STYLIST" && session.user.role !== "ADMIN")) {
-      //   throw new Error("Non autorisé");
-      // }
-      return { userId: "VICKY_ADMIN" };
+      const session = await auth();
+      if (!session || (session.user.role !== "STYLIST" && session.user.role !== "ADMIN")) {
+        throw new Error("Non autorisé");
+      }
+      return { userId: session.user.id };
     })
     .onUploadComplete(async ({ metadata, file }) => {
       console.log("Upload complete for userId:", metadata.userId);
@@ -30,12 +29,13 @@ export const ourFileRouter = {
     image: { maxFileSize: "16MB", maxFileCount: 1 },
   })
     .middleware(async () => {
-      // const session = await auth();
-      // if (!session) throw new Error("Non autorisé");
-      return { userId: "VICKY_ADMIN" };
+      const session = await auth();
+      if (!session) throw new Error("Non autorisé");
+      return { userId: session.user.id };
     })
     .onUploadComplete(async ({ metadata, file }) => {
       console.log("Avatar upload for userId:", metadata.userId);
+      console.log("file url", file.ufsUrl);
       return { url: file.ufsUrl };
     }),
 
@@ -43,14 +43,15 @@ export const ourFileRouter = {
     image: { maxFileSize: "16MB", maxFileCount: 1 },
   })
     .middleware(async () => {
-      // const session = await auth();
-      // if (!session || session.user.role !== "ADMIN") {
-      //   throw new Error("Non autorisé");
-      // }
-      return { userId: "VICKY_ADMIN" };
+      const session = await auth();
+      if (!session || session.user.role !== "ADMIN") {
+        throw new Error("Non autorisé");
+      }
+      return { userId: session.user.id };
     })
     .onUploadComplete(async ({ metadata, file }) => {
       console.log("Gallery upload for userId:", metadata.userId);
+      console.log("file url", file.ufsUrl);
       return { url: file.ufsUrl };
     }),
 } satisfies FileRouter;
