@@ -1,6 +1,6 @@
 /**
- * VicktyKof — Seed de Production (Restauration Photos IA Nanobana)
- * Initialise le compte administrateur officiel et les visuels premium générés.
+ * VicktyKof — SUPER-FULL MASTER SEED (Testing & Demo Ready)
+ * Version finale : Galerie complète (12+ photos) avec TAGS et FILTRES.
  */
 
 import { PrismaClient } from "@prisma/client";
@@ -15,7 +15,7 @@ const adapter = new PrismaPg({ connectionString: process.env.DATABASE_URL! });
 const prisma = new PrismaClient({ adapter });
 
 async function main() {
-  console.log("🌱  Restauration des visuels PREMIUM (IA Nanobana)...\n");
+  console.log("🌱  Restauration finale de la Galerie Complète (12+ photos) avec Filtres...\n");
 
   // ── 1. Nettoyage Complet ──────────────────────────────────────────────────────
   await prisma.$transaction([
@@ -38,150 +38,78 @@ async function main() {
     prisma.user.deleteMany(),
   ]);
 
-  // ── 2. Administrateur Unique (Vicky) ──────────────────────────────────────────
-  const vicky = await prisma.user.create({
-    data: {
-      email: "vicktykoff@gmail.com",
-      name: "Vicky Koffi",
-      phone: "(581) 745-7409",
-      emailVerified: new Date(),
-      passwordHash: await bcrypt.hash("VicktyKof2026!", 12),
-      role: "ADMIN",
-      isMember: true,
-      memberSince: new Date(),
-      loyaltyPoints: 0,
-      image: "/images/vicky-portrait.png", 
-    },
-  });
+  const hash = await bcrypt.hash("VicktyKof2026!", 12);
+  const testPass = await bcrypt.hash("Test2024!", 12);
 
-  const vickyStylist = await prisma.stylist.create({
-    data: {
-      userId: vicky.id,
-      bio: "Fondatrice de VicktyKof, Vicky pratique son art depuis plus de 15 ans. Reconnue pour sa précision en retwist et sa maîtrise des interlocks, elle accompagne chaque cliente vers des locs saines et élégantes.",
-      yearsExp: 15,
-      isActive: true,
-      avatarUrl: "/images/vicky-portrait.png",
-      specialties: ["RETWIST", "INTERLOCKS", "STARTER_LOCS", "LOC_MAINTENANCE"],
-    },
-  });
+  // ── 2. Équipe & Portraits PNG ────────────────────────────────────────────────
+  const vicky = await prisma.user.create({ data: { email: "vicktykoff@gmail.com", name: "Vicky Koffi", passwordHash: hash, role: "ADMIN", image: "/images/users/vicky.png", emailVerified: new Date() } });
+  const naomi = await prisma.user.create({ data: { email: "naomi@vicktykof.com", name: "Naomi Diallo", passwordHash: testPass, role: "STYLIST", image: "/images/users/naomi.png", emailVerified: new Date() } });
+  const sarra = await prisma.user.create({ data: { email: "sarra@vicktykof.com", name: "Sarra Ben", passwordHash: testPass, role: "STYLIST", image: "/images/users/sarra.png", emailVerified: new Date() } });
+  const miriam = await prisma.user.create({ data: { email: "miriam@vicktykof.com", name: "Miriam K.", passwordHash: testPass, role: "STYLIST", image: "/images/users/miriam.png", emailVerified: new Date() } });
 
-  for (const day of [1, 2, 3, 4, 5]) {
-    await prisma.availability.create({
-      data: { stylistId: vickyStylist.id, dayOfWeek: day, startTime: "09:00", endTime: "18:00", isActive: true },
+  const client = await prisma.user.create({ data: { email: "aissatou@gmail.com", name: "Aissatou Sow", passwordHash: testPass, role: "CLIENT", image: "/images/users/aissatou.png", emailVerified: new Date() } });
+
+  const dbStylists = [];
+  for (const u of [vicky, naomi, sarra, miriam]) {
+    const st = await prisma.stylist.create({ data: { userId: u.id, bio: "Expertise VicktyKof.", yearsExp: 10, isActive: true, avatarUrl: u.image } });
+    dbStylists.push(st);
+  }
+
+  // ── 3. Services ─────────────────────────────────────────────────────────────
+  const services = [
+    { name: "Retwist", slug: "retwist", durationMins: 90, basePrice: 85, imageUrl: "/images/services/retwist.png", category: "Entretien" },
+    { name: "Starter Locs", slug: "starter-locs", durationMins: 180, basePrice: 200, imageUrl: "/images/services/starter-locs.png", category: "Création" },
+    { name: "Interlocks", slug: "interlocks", durationMins: 150, basePrice: 150, imageUrl: "/images/services/interlocks.png", category: "Entretien" },
+    { name: "Tresses African", slug: "tresses-africaines", durationMins: 240, basePrice: 180, imageUrl: "/images/services/braids.png", category: "Tresses" },
+    { name: "Soin Profond", slug: "soin-profond", durationMins: 60, basePrice: 65, imageUrl: "/images/services/hair-care.png", category: "Soin" },
+    { name: "Styles Naturels", slug: "styles-naturels", durationMins: 75, basePrice: 70, imageUrl: "/images/services/natural-styles.png", category: "Naturel" },
+  ];
+
+  const dbSvc = [];
+  for (const s of services) {
+    const ds = await prisma.service.create({ data: { ...s, description: "Service premium.", depositPct: 30 } });
+    dbSvc.push(ds);
+    await prisma.stylistService.create({ data: { stylistId: dbStylists[0].id, serviceId: ds.id } });
+  }
+
+  // ── 4. Galerie Remise à Neuf (12+ photos PNG avec TAGS) ──────────────────────
+  const gallery = [
+    { url: "/og-image-premium.png", caption: "L'art de la coiffure afro", tags: ["Premium", "Style"], isFeatured: true },
+    { url: "/images/gallery/retwist-signature.png", caption: "Retwist de précision", tags: ["Locs", "Entretien"], isFeatured: true },
+    { url: "/images/gallery/starter-locs.png", caption: "Nouveau départ Locs", tags: ["Locs", "Création"], isFeatured: true },
+    { url: "/images/gallery/interlocks.png", caption: "Technique Interlocks", tags: ["Locs", "Technique"], isFeatured: true },
+    { url: "/images/gallery/braids.png", caption: "Tresses protectrices", tags: ["Tresses", "Naturel"], isFeatured: true },
+    { url: "/images/gallery/updo.png", caption: "Style de cérémonie", tags: ["Style", "Mariage"], isFeatured: true },
+    { url: "/images/services/retwist.png", caption: "Soin complet", tags: ["Locs", "Soin"], isFeatured: false },
+    { url: "/images/services/hair-care.png", caption: "Nutrition des boucles", tags: ["Soin"], isFeatured: false },
+    { url: "/images/services/natural-styles.png", caption: "Beauté authentique", tags: ["Naturel"], isFeatured: false },
+    { url: "/images/services/starter-locs.png", caption: "Starter Locs — Jour 1", tags: ["Locs", "Création"], isFeatured: false },
+    { url: "/images/services/interlocks.png", caption: "Entretien régulier", tags: ["Locs", "Entretien"], isFeatured: false },
+    { url: "/images/services/braids.png", caption: "Tresses & Cornrows", tags: ["Tresses"], isFeatured: false },
+  ];
+
+  for (const p of gallery) {
+    await prisma.galleryPhoto.create({ data: { ...p, uploadedBy: vicky.id, altText: p.caption } });
+  }
+
+  // ── 5. RDV Dashboard ───────────────────────────────────────────────────────
+  for (let i = 0; i < 15; i++) {
+    await prisma.appointment.create({
+      data: {
+        stylistId: dbStylists[i % 4].id,
+        serviceId: dbSvc[i % 6].id,
+        clientId: client.id,
+        scheduledAt: new Date(),
+        durationMins: 90,
+        totalPrice: 120,
+        depositAmount: 40,
+        depositPct: 30,
+        status: "COMPLETED",
+      }
     });
   }
 
-  // ── 4. Services (IMAGES IA) ──────────────────────────────────────────────────
-  const svcRetwist = await prisma.service.create({ data: {
-    name: "Retwist Régulier", slug: "retwist-regulier",
-    description: "Entretien complet de vos locs avec retwist professionnel pour un résultat net et durable. Inclut lavage et séchage.",
-    durationMins: 90, basePrice: 85, depositPct: 30, category: "Entretien",
-    imageUrl: "/images/services/retwist.png",
-  }});
-
-  const svcRetwistSoin = await prisma.service.create({ data: {
-    name: "Retwist + Soin Profond", slug: "retwist-soin",
-    description: "Retwist accompagné d'un masque hydratant en profondeur à base d'huiles naturelles. Locs nourries et brillantes.",
-    durationMins: 120, basePrice: 120, depositPct: 30, category: "Entretien",
-    imageUrl: "/images/services/hair-care.png",
-  }});
-
-  const svcStarterLocs = await prisma.service.create({ data: {
-    name: "Starter Locs", slug: "starter-locs",
-    description: "Création de vos locs de zéro : consultation, nettoyage, installation professionnelle. Inclut suivi 1 mois.",
-    durationMins: 180, basePrice: 200, depositPct: 40, category: "Création",
-    imageUrl: "/images/services/starter-locs.png",
-  }});
-
-  const svcInterlocks = await prisma.service.create({ data: {
-    name: "Interlocks", slug: "interlocks",
-    description: "Technique interlocking pour un entretien à long terme. Résultat structuré, tenue parfaite.",
-    durationMins: 150, basePrice: 150, depositPct: 30, category: "Entretien",
-    imageUrl: "/images/services/interlocks.png",
-  }});
-
-  const svcTresses = await prisma.service.create({ data: {
-    name: "Tresses Africaines", slug: "tresses-africaines",
-    description: "Tresses traditionnelles africaines et box braids réalisées avec soin et précision. Extensions disponibles.",
-    durationMins: 240, basePrice: 180, depositPct: 40, category: "Tresses",
-    imageUrl: "/images/services/braids.png",
-  }});
-
-  const svcCoiffure = await prisma.service.create({ data: {
-    name: "Coiffure Style & Occasion", slug: "coiffure-style",
-    description: "Mise en beauté, up-do ou style créatif pour mariage, graduation, événement. Consultation incluse.",
-    durationMins: 90, basePrice: 95, depositPct: 30, category: "Style",
-    imageUrl: "/images/gallery/updo.png",
-  }});
-
-  const svcNaturel = await prisma.service.create({ data: {
-    name: "Styles Naturels", slug: "styles-naturels",
-    description: "Valorisez votre texture naturelle : twist out, wash and go, bantu knots, flexi rods.",
-    durationMins: 75, basePrice: 70, depositPct: 30, category: "Style",
-    imageUrl: "/images/services/natural-styles.png",
-  }});
-
-  const services = [svcRetwist, svcRetwistSoin, svcStarterLocs, svcInterlocks, svcTresses, svcCoiffure, svcNaturel];
-  for (const service of services) {
-    await prisma.stylistService.create({ data: { stylistId: vickyStylist.id, serviceId: service.id } });
-  }
-
-  // ── 5. Produits ──────────────────────────────────────────────────────────────
-  const catSoins = await prisma.productCategory.create({ data: { name: "Soins capillaires", slug: "soins-capillaires" } });
-  const catHuiles = await prisma.productCategory.create({ data: { name: "Huiles & Beurres", slug: "huiles-beurres" } });
-  const catAccessoires = await prisma.productCategory.create({ data: { name: "Accessoires", slug: "accessoires" } });
-  const catKits = await prisma.productCategory.create({ data: { name: "Kits & Coffrets", slug: "kits-coffrets" } });
-
-  await prisma.product.createMany({
-    data: [
-      {
-        name: "Crème Hydratante Locs VK", slug: "creme-hydratante-locs-vk",
-        description: "Formule exclusive VicktyKof à base d'aloe vera et beurre de karité. Hydrate en profondeur, définit et donne de l'éclat à vos locs.",
-        price: 28, comparePrice: 35, memberPrice: 22, stock: 45, sku: "VK-CHL-001",
-        images: ["/images/products/shampoing-locs.svg"],
-        categoryId: catSoins.id, isFeatured: true,
-      },
-      {
-        name: "Huile de Ricin Extra-Pure", slug: "huile-ricin-extra-pure",
-        description: "Huile de ricin 100% pure, pressée à froid. Stimule la croissance et renforce les locs.",
-        price: 24, comparePrice: 30, memberPrice: 19, stock: 25, sku: "VK-HRP-005",
-        images: ["/images/products/huile-ricin.svg"],
-        categoryId: catHuiles.id, isFeatured: true,
-      },
-      {
-        name: "Kit Starter Locs Complet", slug: "kit-starter-locs-complet",
-        description: "Tout ce qu'il faut pour démarrer vos locs : crème, shampoing, huile et bonnet.",
-        price: 68, comparePrice: 90, memberPrice: 55, stock: 15, sku: "VK-KSL-011",
-        images: ["/images/products/coffret-entretien.svg"],
-        categoryId: catKits.id, isFeatured: true,
-      },
-    ],
-  });
-
-  // ── 6. Galerie (IMAGES IA) ──────────────────────────────────────────────────
-  const galleryPhotos = [
-    { url: "/images/gallery/retwist-signature.png", caption: "Retwist Signature", isFeatured: true },
-    { url: "/images/gallery/starter-locs.png", caption: "Installation Starter Locs", isFeatured: true },
-    { url: "/images/gallery/interlocks.png", caption: "Finition Interlocks", isFeatured: true },
-    { url: "/images/gallery/braids.png", caption: "Styles Naturels", isFeatured: true },
-    { url: "/images/gallery/updo.png", caption: "Style Coiffure Up-do", isFeatured: true },
-    { url: "/images/services/hair-care.png", caption: "Soin Profond", isFeatured: true },
-  ];
-
-  for (const photo of galleryPhotos) {
-    await prisma.galleryPhoto.create({ data: { ...photo, uploadedBy: vicky.id, altText: photo.caption } });
-  }
-
-  // ── 7. Portfolio Vicky (IMAGES IA) ──────────────────────────────────────────
-  await prisma.portfolioPhoto.createMany({
-    data: [
-      { stylistId: vickyStylist.id, url: "/images/services/retwist.png", caption: "Maîtrise du retwist", tags: ["retwist"] },
-      { stylistId: vickyStylist.id, url: "/images/services/starter-locs.png", caption: "Installation Professionnelle", tags: ["starter-locs"] },
-      { stylistId: vickyStylist.id, url: "/images/services/interlocks.png", caption: "Entretien Interlocks", tags: ["interlocks"] },
-    ],
-  });
-
-  console.log("\n🚀  BASE DE DONNÉES RESTAURÉE AVEC LES VISUELS PREMIUM !");
+  console.log("\n🚀  RESTORE COMPLET TERMINÉ : 12 photos avec Tags & Filtres réactivés !");
 }
 
 main()
