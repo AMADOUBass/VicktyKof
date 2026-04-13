@@ -38,9 +38,6 @@ export default withSentryConfig(nextConfig, {
   // This can increase your server load as well as your Sentry bill.
   tunnelRoute: "/monitoring",
 
-  // Hides source maps from generated client bundles
-  hideSourceMaps: true,
-
   // Automatically tree-shake Sentry logger statements to reduce bundle size
   disableLogger: true,
 
@@ -49,4 +46,7 @@ export default withSentryConfig(nextConfig, {
   // https://docs.sentry.io/product/crons/
   // https://vercel.com/docs/cron-jobs
   automaticVercelMonitors: true,
+
+  // IMPORTANT: In v8, deleteSourcemapsAfterUpload is the default and hideSourceMaps is removed.
+  // The SDK automatically handles source map deletion now.
 });
