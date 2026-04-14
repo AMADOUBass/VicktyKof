@@ -12,7 +12,18 @@ export default function ForgotPasswordPage() {
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    if (!email.trim()) return;
+
+    // Validations
+    if (!email.trim()) {
+      toast.error("Veuillez entrer votre adresse email");
+      return;
+    }
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      toast.error("Format d'email invalide");
+      return;
+    }
+
     setLoading(true);
     try {
       await fetch("/api/auth/forgot-password", {
@@ -70,7 +81,7 @@ export default function ForgotPasswordPage() {
                 </p>
               </div>
 
-              <form onSubmit={handleSubmit} className="space-y-4">
+              <form onSubmit={handleSubmit} noValidate className="space-y-4">
                 <div>
                   <label className="label">Adresse email</label>
                   <div className="relative">

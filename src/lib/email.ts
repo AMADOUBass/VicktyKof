@@ -18,7 +18,8 @@ type EmailTemplate =
   | "appointment_declined"
   | "appointment_reminder"
   | "order_shipped"
-  | "welcome";
+  | "welcome"
+  | "reset_password";
 
 interface SendEmailOptions {
   to: string;
@@ -158,6 +159,27 @@ const templates: Record<EmailTemplate, (data: Record<string, string | number>) =
       </div>
     `,
   }),
+  reset_password: (d) => ({
+    subject: "Réinitialisation de votre mot de passe — VicktyKof",
+    html: `
+      <div style="font-family:sans-serif;max-width:600px;margin:0 auto;background:#0A0A0A;color:#F5EDD6;padding:40px;border-radius:12px;border:1px solid #C9A84C33;">
+        <h1 style="color:#C9A84C;font-size:24px;margin-bottom:8px;">VicktyKof</h1>
+        <h2 style="font-size:20px;">Réinitialisation de mot de passe</h2>
+        <p>Bonjour,</p>
+        <p>Nous avons reçu une demande de réinitialisation de mot de passe pour votre compte.</p>
+        <div style="text-align:center;margin:32px 0;">
+          <a href="${d.resetUrl}" style="display:inline-block;background:#C9A84C;color:#0A0A0A;padding:14px 28px;border-radius:6px;text-decoration:none;font-weight:bold;font-size:16px;">
+            Réinitialiser mon mot de passe
+          </a>
+        </div>
+        <p style="color:#6B6B6B;font-size:13px;line-height:1.5;">
+          Ce lien expire dans <strong>1 heure</strong>. Si vous n'avez pas fait cette demande, vous pouvez ignorer cet email en toute sécurité. Votre mot de passe restera inchangé.
+        </p>
+        <hr style="border-color:#333;margin:32px 0;">
+        <p style="font-size:12px;color:#6B6B6B;">Ceci est un message automatique, veuillez ne pas y répondre.</p>
+      </div>
+    `,
+  }),
 };
 
 export async function sendEmail({ to, template, data }: SendEmailOptions) {
@@ -183,7 +205,18 @@ export async function sendEmail({ to, template, data }: SendEmailOptions) {
   }
 }
 
-// Raw email helper (no template required)
+// Raw email helper (logged to DB)
 export async function sendRawEmail({ to, subject, html }: { to: string; subject: string; html: string }) {
-  await transporter.sendMail({ from: process.env.EMAIL_FROM, to, subject, html });
+  try {
+    await transporter.sendMail({ from: process.env.EMAIL_FROM, to, subject, html });
+    await prisma.emailLog.create({
+      data: { to, subject, template: "raw", metadata: { html: "raw_content" } },
+    });
+  } catch (error) {
+    const errMsg = error instanceof Error ? error.message : "Unknown error";
+    await prisma.emailLog.create({
+      data: { to, subject, template: "raw", metadata: { html: "raw_content" }, error: errMsg },
+    });
+    throw error;
+  }
 }

@@ -23,8 +23,9 @@ export default function ResetPasswordPage() {
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
+    if (!password) { toast.error("Veuillez entrer un mot de passe"); return; }
+    if (password.length < 8) { toast.error("Le mot de passe doit contenir au moins 8 caractères"); return; }
     if (password !== confirm) { toast.error("Les mots de passe ne correspondent pas"); return; }
-    if (password.length < 8) { toast.error("Minimum 8 caractères"); return; }
     setLoading(true);
     try {
       const res = await fetch("/api/auth/reset-password", {
@@ -74,7 +75,7 @@ export default function ResetPasswordPage() {
                 <p className="text-brand-muted text-sm mt-1">Choisissez un mot de passe sécurisé d&apos;au moins 8 caractères.</p>
               </div>
 
-              <form onSubmit={handleSubmit} className="space-y-4">
+              <form onSubmit={handleSubmit} noValidate className="space-y-4">
                 <div>
                   <label className="label">Nouveau mot de passe</label>
                   <div className="relative">

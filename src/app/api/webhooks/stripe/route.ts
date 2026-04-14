@@ -1,6 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
 import { stripe } from "@/lib/stripe";
 import { prisma } from "@/lib/prisma";
+import { sendEmail } from "@/lib/email";
+import { formatPrice } from "@/lib/utils";
+import { format } from "date-fns";
+import { fr } from "date-fns/locale";
 import type Stripe from "stripe";
 
 export const runtime = "nodejs";
@@ -137,4 +141,35 @@ async function handleAppointmentDepositPaid(session: Stripe.Checkout.Session, ap
       },
     }),
   ]);
+
+  // Send confirmation email
+  const appointment = await prisma.appointment.findUnique({
+    where: { id: appointmentId },
+    include: {
+      client: true,
+      service: true,
+      stylist: { include: { user: true } },
+    },
+  });
+
+  if (appointment && appointment.client.email) {
+    try {
+      const remainingAmount = parseFloat(appointment.totalPrice.toString()) - parseFloat(appointment.depositAmount.toString());
+      
+      await sendEmail({
+        to: appointment.client.email,
+        template: "appointment_confirmed",
+        data: {
+          clientName: appointment.client.name ?? "Cliente",
+          serviceName: appointment.service.name,
+          stylistName: appointment.stylist.user.name ?? "Styliste",
+          appointmentDate: format(appointment.scheduledAt, "EEEE d MMMM yyyy 'à' HH:mm", { locale: fr }),
+          depositAmount: formatPrice(parseFloat(appointment.depositAmount.toString())),
+          remainingAmount: formatPrice(remainingAmount),
+        },
+      });
+    } catch (err) {
+      console.error("[webhook-stripe] Confirmation email failed:", err);
+    }
+  }
 }

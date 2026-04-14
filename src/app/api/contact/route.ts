@@ -1,19 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
-import nodemailer from "nodemailer";
+import { sendRawEmail } from "@/lib/email";
 
 const contactSchema = z.object({
   name: z.string().min(2).max(100),
   email: z.string().email(),
   subject: z.string().min(1),
   message: z.string().min(10).max(2000),
-});
-
-const transporter = nodemailer.createTransport({
-  host: process.env.SMTP_HOST,
-  port: Number(process.env.SMTP_PORT ?? 587),
-  secure: false,
-  auth: { user: process.env.SMTP_USER, pass: process.env.SMTP_PASS },
 });
 
 export async function POST(req: NextRequest) {
@@ -26,21 +19,27 @@ export async function POST(req: NextRequest) {
 
   const { name, email, subject, message } = parsed.data;
 
-  await transporter.sendMail({
-    from: process.env.EMAIL_FROM,
-    to: "vicktykoff@gmail.com",
-    replyTo: email,
-    subject: `[VicktyKof Contact] ${subject} — ${name}`,
-    html: `
-      <div style="font-family:sans-serif;max-width:600px;background:#0A0A0A;color:#F5EDD6;padding:32px;border-radius:12px;">
-        <h2 style="color:#C9A84C;">Nouveau message de contact</h2>
-        <p><strong>De :</strong> ${name} (${email})</p>
-        <p><strong>Sujet :</strong> ${subject}</p>
-        <hr style="border-color:#333;margin:16px 0;">
-        <p>${message.replace(/\n/g, "<br>")}</p>
-      </div>
-    `,
-  });
+  try {
+    await sendRawEmail({
+      to: "vicktykoff@gmail.com",
+      subject: `[VicktyKof Contact] ${subject} — ${name}`,
+      html: `
+        <div style="font-family:sans-serif;max-width:600px;background:#0A0A0A;color:#F5EDD6;padding:32px;border-radius:12px;border:1px solid #C9A84C33;">
+          <h2 style="color:#C9A84C;margin-top:0;">Nouveau message de contact</h2>
+          <p><strong>De :</strong> ${name} (${email})</p>
+          <p><strong>Sujet :</strong> ${subject}</p>
+          <hr style="border-color:#333;margin:24px 0;">
+          <div style="line-height:1.6;font-size:15px;">
+            ${message.replace(/\n/g, "<br>")}
+          </div>
+          <hr style="border-color:#333;margin:24px 0;">
+          <p style="font-size:12px;color:#6B6B6B;">Vous pouvez répondre directement à cet email pour contacter la cliente.</p>
+        </div>
+      `,
+    });
+  } catch (err) {
+    console.error("[contact-api] Email failed:", err);
+  }
 
   return NextResponse.json({ success: true });
 }

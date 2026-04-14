@@ -19,10 +19,26 @@ function LoginForm() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    // Validations
+    if (!email.trim()) {
+      toast.error("Veuillez entrer votre adresse email");
+      return;
+    }
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      toast.error("Format d'email invalide");
+      return;
+    }
+    if (!password) {
+      toast.error("Veuillez entrer votre mot de passe");
+      return;
+    }
+
     setLoading(true);
 
     const result = await signIn("credentials", {
-      email,
+      email: email.toLowerCase().trim(),
       password,
       redirect: false,
     });
@@ -80,7 +96,7 @@ function LoginForm() {
             <div className="flex-1 h-px bg-white/10" />
           </div>
 
-          <form onSubmit={handleSubmit} className="space-y-4">
+          <form onSubmit={handleSubmit} noValidate className="space-y-4">
             <div>
               <label className="label">Email</label>
               <input

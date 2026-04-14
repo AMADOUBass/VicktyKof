@@ -110,7 +110,7 @@ export default function SignupPage() {
             <div className="flex-1 h-px bg-white/10" />
           </div>
 
-          <form onSubmit={handleSubmit} className="space-y-4">
+          <form onSubmit={handleSubmit} noValidate className="space-y-4">
             <div>
               <label className="label">Nom complet</label>
               <input type="text" className="input" value={form.name} onChange={update("name")}

@@ -1,7 +1,7 @@
 import { prisma } from "@/lib/prisma";
 import { NextResponse } from "next/server";
 import { randomBytes } from "crypto";
-import { sendRawEmail } from "@/lib/email";
+import { sendEmail } from "@/lib/email";
 
 export async function POST(req: Request) {
   try {
@@ -25,21 +25,15 @@ export async function POST(req: Request) {
 
     const resetUrl = `${process.env.NEXT_PUBLIC_APP_URL}/reset-password?token=${token}`;
 
-    await sendRawEmail({
-      to: email,
-      subject: "Réinitialisation de votre mot de passe — VicktyKof",
-      html: `
-        <div style="font-family:sans-serif;max-width:500px;margin:auto;padding:24px">
-          <h2 style="color:#C9A84C">VicktyKof</h2>
-          <p>Bonjour,</p>
-          <p>Nous avons reçu une demande de réinitialisation de mot de passe pour votre compte.</p>
-          <a href="${resetUrl}" style="display:inline-block;margin:16px 0;padding:12px 24px;background:#C9A84C;color:#111;font-weight:bold;border-radius:8px;text-decoration:none">
-            Réinitialiser mon mot de passe
-          </a>
-          <p style="color:#888;font-size:13px">Ce lien expire dans <strong>1 heure</strong>. Si vous n'avez pas fait cette demande, ignorez cet email.</p>
-        </div>
-      `,
-    });
+    try {
+      await sendEmail({
+        to: email,
+        template: "reset_password",
+        data: { resetUrl },
+      });
+    } catch (emailErr) {
+      console.error("[forgot-password] Email failed:", emailErr);
+    }
 
     return NextResponse.json({ ok: true });
   } catch (err) {
