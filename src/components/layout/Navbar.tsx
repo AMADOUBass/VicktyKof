@@ -171,31 +171,24 @@ export function Navbar() {
           )}
         </div>
 
-        {/* Mobile: cart + hamburger */}
-        <div className="lg:hidden flex items-center gap-2">
-          {!isStaff && (
-            <Link 
-              href="/shop/cart" 
-              className="relative btn-ghost p-2" 
-              onClick={() => setMobileOpen(false)}
-              aria-label={`Voir le panier, ${hasHydrated ? cartCount : 0} articles`}
-            >
-              <ShoppingBag className="w-5 h-5" />
-              {hasHydrated && cartCount > 0 && (
-                <span className="absolute -top-1 -right-1 w-5 h-5 bg-brand-gold text-brand-black text-xs font-bold rounded-full flex items-center justify-center">
-                  {cartCount}
-                </span>
-              )}
-            </Link>
-          )}
-          <button
-            className="btn-ghost p-2 text-brand-gold"
-            onClick={() => setMobileOpen(!mobileOpen)}
-            aria-label="Menu"
-          >
-            {mobileOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
-          </button>
-        </div>
+          {/* Mobile: cart only (hamburger removed because of bottom nav) */}
+          <div className="lg:hidden flex items-center gap-2">
+            {!isStaff && (
+              <Link 
+                href="/shop/cart" 
+                className="relative btn-ghost p-2" 
+                onClick={() => setMobileOpen(false)}
+                aria-label={`Voir le panier, ${hasHydrated ? cartCount : 0} articles`}
+              >
+                <ShoppingBag className="w-5 h-5" />
+                {hasHydrated && cartCount > 0 && (
+                  <span className="absolute -top-1 -right-1 w-5 h-5 bg-brand-gold text-brand-black text-xs font-bold rounded-full flex items-center justify-center">
+                    {cartCount}
+                  </span>
+                )}
+              </Link>
+            )}
+          </div>
       </nav>
 
       {/* Mobile menu */}

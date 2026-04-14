@@ -18,6 +18,8 @@
 
   body {
     @apply bg-brand-black text-brand-beige font-sans antialiased;
+    overflow-x: hidden;
+    overscroll-behavior-y: none;
   }
 
   ::selection {
@@ -96,4 +98,8 @@
   .animate-delay-200 { animation-delay: 200ms; }
   .animate-delay-300 { animation-delay: 300ms; }
   .animate-delay-400 { animation-delay: 400ms; }
+
+  .pb-safe {
+    padding-bottom: env(safe-area-inset-bottom);
+  }
 }
