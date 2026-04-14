@@ -45,7 +45,16 @@ next-env.d.ts
 # Temporary files
 *.tmp
 *.log
+* copy*
 
 # Handover documents
 RECOMMANDATIONS_TECHNIQUES.*
 TODO_VICKTYKOF.md*
+
+# Diagnostic Scripts
+scripts/
+src/scripts/
+
+# Local DB
+*.db
+*.db-journal

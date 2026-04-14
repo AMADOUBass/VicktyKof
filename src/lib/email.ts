@@ -19,7 +19,8 @@ type EmailTemplate =
   | "appointment_reminder"
   | "order_shipped"
   | "welcome"
-  | "reset_password";
+  | "reset_password"
+  | "google_signin_reminder";
 
 interface SendEmailOptions {
   to: string;
@@ -177,6 +178,28 @@ const templates: Record<EmailTemplate, (data: Record<string, string | number>) =
         </p>
         <hr style="border-color:#333;margin:32px 0;">
         <p style="font-size:12px;color:#6B6B6B;">Ceci est un message automatique, veuillez ne pas y répondre.</p>
+      </div>
+    `,
+  }),
+  google_signin_reminder: (d) => ({
+    subject: "Connexion via Google — VicktyKof",
+    html: `
+      <div style="font-family:sans-serif;max-width:600px;margin:0 auto;background:#0A0A0A;color:#F5EDD6;padding:40px;border-radius:12px;border:1px solid #C9A84C33;">
+        <h1 style="color:#C9A84C;font-size:24px;margin-bottom:8px;">VicktyKof</h1>
+        <h2 style="font-size:20px;">Connexion directe Google</h2>
+        <p>Bonjour,</p>
+        <p>Nous avons reçu une demande de réinitialisation de mot de passe pour votre compte.</p>
+        <div style="background:#1A1A1A;padding:24px;border-radius:8px;margin:24px 0;text-align:center;">
+          <p style="margin:0 0 16px 0;">Il semble que vous vous connectez habituellement à VicktyKof via <strong>Google</strong>.</p>
+          <a href="${process.env.NEXT_PUBLIC_APP_URL}/login" style="display:inline-block;background:#C9A84C;color:#0A0A0A;padding:12px 24px;border-radius:6px;text-decoration:none;font-weight:bold;">
+            Se connecter avec Google
+          </a>
+        </div>
+        <p style="color:#6B6B6B;font-size:13px;line-height:1.5;">
+          Comme vous utilisez la connexion Google, vous n'avez pas de mot de passe spécifique à notre site à réinitialiser. Votre compte reste sécurisé par Google.
+        </p>
+        <hr style="border-color:#333;margin:32px 0;">
+        <p style="font-size:12px;color:#6B6B6B;">Ceci est un message automatique de protection de compte.</p>
       </div>
     `,
   }),

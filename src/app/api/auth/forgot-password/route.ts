@@ -10,8 +10,22 @@ export async function POST(req: Request) {
 
     const user = await prisma.user.findUnique({ where: { email } });
 
-    // Always respond 200 to prevent email enumeration
-    if (!user || !user.passwordHash) {
+    // Safety check: if user doesn't exist, we skip silently for security (avoid enumeration)
+    if (!user) {
+      return NextResponse.json({ ok: true });
+    }
+
+    // Google Account detection: send a reminder instead of a reset link
+    if (!user.passwordHash) {
+      try {
+        await sendEmail({
+          to: email,
+          template: "google_signin_reminder",
+          data: {},
+        });
+      } catch (err) {
+        console.error("[forgot-password] Google reminder failed:", err);
+      }
       return NextResponse.json({ ok: true });
     }
 
