@@ -9,22 +9,41 @@ import toast from "react-hot-toast";
 
 export default function SignupPage() {
   const router = useRouter();
-  const [form, setForm] = useState({ name: "", email: "", password: "", confirm: "" });
+  const [form, setForm] = useState({ 
+    name: "", 
+    email: "", 
+    password: "", 
+    confirm: "",
+    marketingConsent: false 
+  });
   const [showPw, setShowPw] = useState(false);
   const [loading, setLoading] = useState(false);
 
   const update = (field: keyof typeof form) => (e: React.ChangeEvent<HTMLInputElement>) =>
-    setForm((p) => ({ ...p, [field]: e.target.value }));
+    setForm((p) => ({ 
+      ...p, 
+      [field]: e.target.type === "checkbox" ? e.target.checked : e.target.value 
+    }));
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (form.password !== form.confirm) {
-      toast.error("Les mots de passe ne correspondent pas");
+    // Validations
+    if (form.name.trim().length < 2) {
+      toast.error("Veuillez entrer votre nom complet");
+      return;
+    }
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(form.email)) {
+      toast.error("Format d'email invalide");
       return;
     }
     if (form.password.length < 8) {
       toast.error("Le mot de passe doit contenir au moins 8 caractères");
+      return;
+    }
+    if (form.password !== form.confirm) {
+      toast.error("Les mots de passe ne correspondent pas");
       return;
     }
 
@@ -33,7 +52,12 @@ export default function SignupPage() {
       const res = await fetch("/api/auth/register", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name: form.name, email: form.email, password: form.password }),
+        body: JSON.stringify({ 
+          name: form.name.trim(), 
+          email: form.email.toLowerCase().trim(), 
+          password: form.password,
+          marketingConsent: form.marketingConsent
+        }),
       });
 
       if (!res.ok) {
@@ -113,6 +137,20 @@ export default function SignupPage() {
               <label className="label">Confirmer le mot de passe</label>
               <input type="password" className="input" value={form.confirm} onChange={update("confirm")}
                 placeholder="••••••••" required autoComplete="new-password" />
+            </div>
+
+            {/* Marketing Consent */}
+            <div className="flex items-start gap-3 py-2">
+              <input
+                id="marketingConsent"
+                type="checkbox"
+                className="mt-1 w-4 h-4 rounded border-white/10 bg-white/5 text-brand-gold focus:ring-brand-gold"
+                checked={form.marketingConsent}
+                onChange={update("marketingConsent")}
+              />
+              <label htmlFor="marketingConsent" className="text-xs text-brand-muted cursor-pointer leading-tight">
+                Je souhaite recevoir les conseils capillaires et les offres exclusives de VicktyKof par email.
+              </label>
             </div>
 
             <button type="submit" disabled={loading} className="btn-primary w-full gap-2 mt-2">

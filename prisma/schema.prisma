@@ -18,6 +18,7 @@ model User {
   isMember      Boolean       @default(false)
   memberSince   DateTime?
   loyaltyPoints Int           @default(0)
+  marketingConsent Boolean      @default(false)
   createdAt     DateTime      @default(now())
   updatedAt     DateTime      @updatedAt
   accounts      Account[]

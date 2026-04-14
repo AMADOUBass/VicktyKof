@@ -132,6 +132,7 @@ export async function POST(req: NextRequest) {
           imageUrl,
         };
       }),
+      taxAmountCents: Math.round(tax * 100),
       clientEmail: session.user.email,
       successUrl: `${origin}/shop/cart/success?orderId=${order.id}`,
       cancelUrl: `${origin}/shop/cart`,

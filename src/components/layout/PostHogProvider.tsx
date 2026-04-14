@@ -17,6 +17,8 @@ export function PHProvider({ children }: { children: React.ReactNode }) {
           person_profiles: "always",
           capture_pageview: false,
           capture_pageleave: true,
+          // Respect privacy by default if no choice is made yet
+          persistence: "localStorage+cookie",
         });
       }, 2000);
       

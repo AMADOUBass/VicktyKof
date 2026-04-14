@@ -8,6 +8,7 @@ const registerSchema = z.object({
   name: z.string().min(2).max(100),
   email: z.string().email(),
   password: z.string().min(8).max(100),
+  marketingConsent: z.boolean().default(false),
 });
 
 export async function POST(req: NextRequest) {
@@ -21,7 +22,7 @@ export async function POST(req: NextRequest) {
     );
   }
 
-  const { name, email, password } = parsed.data;
+  const { name, email, password, marketingConsent } = parsed.data;
 
   const existing = await prisma.user.findUnique({ where: { email } });
   if (existing) {
@@ -31,7 +32,7 @@ export async function POST(req: NextRequest) {
   const passwordHash = await bcrypt.hash(password, 12);
 
   const user = await prisma.user.create({
-    data: { name, email, passwordHash, role: "CLIENT" },
+    data: { name, email, passwordHash, role: "CLIENT", marketingConsent },
   });
 
   // Send welcome email (fire-and-forget)

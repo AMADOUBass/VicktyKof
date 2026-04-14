@@ -14,18 +14,38 @@ export function ContactForm() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    // Validations
+    if (form.name.trim().length < 2) {
+      toast.error("Veuillez entrer votre nom");
+      return;
+    }
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(form.email)) {
+      toast.error("Format d'email invalide");
+      return;
+    }
+    if (form.message.trim().length < 10) {
+      toast.error("Votre message doit contenir au moins 10 caractères");
+      return;
+    }
+
     setLoading(true);
     try {
       const res = await fetch("/api/contact", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(form),
+        body: JSON.stringify({
+          ...form,
+          name: form.name.trim(),
+          email: form.email.toLowerCase().trim(),
+        }),
       });
       if (!res.ok) throw new Error();
-      toast.success("Message envoyé ! Nous vous répondrons sous 24h.");
+      toast.success("Message envoyé ! Vicky vous répondra sous 24h.");
       setForm({ name: "", email: "", subject: "", message: "" });
     } catch {
-      toast.error("Erreur lors de l'envoi. Essayez par email directement.");
+      toast.error("Erreur lors de l'envoi. Veuillez réessayer plus tard.");
     } finally {
       setLoading(false);
     }

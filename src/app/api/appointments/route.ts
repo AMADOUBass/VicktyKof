@@ -106,9 +106,12 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Ce créneau n'est plus disponible (conflit d'horaire)" }, { status: 409 });
   }
 
-  const totalPrice = service.basePrice;
+  const subtotal = parseFloat(service.basePrice.toString());
+  const tax = parseFloat((subtotal * 0.14975).toFixed(2));
+  const totalPrice = subtotal + tax;
+  
   const depositPct = service.depositPct;
-  const depositAmount = parseFloat(totalPrice.toString()) * (depositPct / 100);
+  const depositAmount = totalPrice * (depositPct / 100);
   const depositCents = Math.round(depositAmount * 100);
 
   // Create appointment in PENDING state
@@ -119,7 +122,7 @@ export async function POST(req: NextRequest) {
       serviceId,
       scheduledAt: scheduledDate,
       durationMins: service.durationMins,
-      totalPrice,
+      totalPrice: totalPrice.toFixed(2),
       depositAmount: depositAmount.toFixed(2),
       depositPct,
       paymentMethod,

@@ -120,6 +120,7 @@ export const viewport: Viewport = {
 import { Analytics } from "@vercel/analytics/next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import PostHogPageView from "@/components/layout/PostHogPageView";
+import { CookieConsent } from "@/components/layout/CookieConsent";
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
@@ -130,6 +131,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       </head>
       <body className="min-h-screen flex flex-col">
         <PostHogPageView />
+        <CookieConsent />
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}

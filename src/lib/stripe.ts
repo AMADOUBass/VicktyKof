@@ -71,31 +71,49 @@ export async function createBookingCheckout({
 export async function createProductCheckout({
   orderId,
   lineItems,
+  taxAmountCents,
   clientEmail,
   successUrl,
   cancelUrl,
 }: {
   orderId: string;
   lineItems: { name: string; description?: string; amountCents: number; quantity: number; imageUrl?: string }[];
+  taxAmountCents?: number;
   clientEmail: string;
   successUrl: string;
   cancelUrl: string;
 }) {
-  const session = await stripe.checkout.sessions.create({
-    mode: "payment",
-    customer_email: clientEmail,
-    line_items: lineItems.map((item) => ({
+  const stripeLineItems = lineItems.map((item) => ({
+    price_data: {
+      currency: "cad",
+      product_data: {
+        name: item.name,
+        description: item.description,
+        images: item.imageUrl ? [item.imageUrl] : [],
+      },
+      unit_amount: item.amountCents,
+    },
+    quantity: item.quantity,
+  }));
+
+  if (taxAmountCents && taxAmountCents > 0) {
+    stripeLineItems.push({
       price_data: {
         currency: "cad",
         product_data: {
-          name: item.name,
-          description: item.description,
-          images: item.imageUrl ? [item.imageUrl] : [],
+          name: "Taxes (TPS/TVQ)",
+          description: "Taxes applicables au Québec (14.975%)",
         },
-        unit_amount: item.amountCents,
+        unit_amount: taxAmountCents,
       },
-      quantity: item.quantity,
-    })),
+      quantity: 1,
+    } as any);
+  }
+
+  const session = await stripe.checkout.sessions.create({
+    mode: "payment",
+    customer_email: clientEmail,
+    line_items: stripeLineItems,
     metadata: { orderId, type: "PRODUCT_ORDER" },
     success_url: successUrl,
     cancel_url: cancelUrl,

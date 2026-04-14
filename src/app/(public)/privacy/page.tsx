@@ -63,7 +63,17 @@ export default function PrivacyPage() {
           </section>
 
           <section>
-            <h2 className="font-display text-xl font-semibold text-brand-gold mb-3">6. Contact</h2>
+            <h2 className="font-display text-xl font-semibold text-brand-gold mb-3">6. Responsable de la protection des données</h2>
+            <p>
+              Conformément à la Loi 25, la personne responsable de la protection des renseignements personnels
+              pour VicktyKof est :<br />
+              <strong>Vicky Kof</strong>, Propriétaire<br />
+              Email : <a href="mailto:vicktykoff@gmail.com" className="text-brand-gold hover:underline">vicktykoff@gmail.com</a>
+            </p>
+          </section>
+
+          <section>
+            <h2 className="font-display text-xl font-semibold text-brand-gold mb-3">7. Contact</h2>
             <p>
               VicktyKof · 2177 rue du Carrousel, Québec G2B 5B5<br />
               Email : vicktykoff@gmail.com · Tél : (581) 745-7409
