@@ -30,7 +30,7 @@ export function MobileTabBar() {
 
   return (
     <>
-      <nav className="lg:hidden fixed bottom-0 left-0 right-0 z-[60] bg-brand-black/95 backdrop-blur-xl border-t border-white/10 pb-safe">
+      <nav className="lg:hidden fixed bottom-6 left-4 right-4 z-[60] bg-brand-black/90 backdrop-blur-xl border border-white/10 rounded-2xl shadow-2xl">
         <div className="flex items-center justify-around h-16 md:h-20 px-2 flex-wrap">
           {tabs.map((tab) => {
             const isActive = tab.href !== "#" && pathname === tab.href;

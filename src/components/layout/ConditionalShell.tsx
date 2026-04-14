@@ -19,7 +19,7 @@ export function ConditionalShell({ children }: { children: React.ReactNode }) {
   return (
     <>
       <Navbar />
-      <main className="flex-1 pb-24 lg:pb-0">
+      <main className="flex-1 pb-32 lg:pb-0">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-24 -mb-20 relative z-20 pointer-events-none">
           <div className="pointer-events-auto">
             <Breadcrumbs />
