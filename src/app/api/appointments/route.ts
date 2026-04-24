@@ -3,6 +3,11 @@ import { z } from "zod";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { createBookingCheckout } from "@/lib/stripe";
+import type { Prisma } from "@prisma/client";
+
+type AppointmentWithRelations = Prisma.AppointmentGetPayload<{
+  include: { service: true; stylist: { include: { user: true } } };
+}>;
 
 const createSchema = z.object({
   serviceId: z.string().cuid(),
@@ -58,82 +63,79 @@ export async function POST(req: NextRequest) {
     targetStylistIds = [stylist.id];
   }
 
-  // Find the first stylist without conflicts
-  let resolvedStylistId: string | null = null;
+  // Calculs monétaires en centimes pour éviter les erreurs d'arrondi float
+  const subtotalCents = Math.round(parseFloat(service.basePrice.toString()) * 100);
+  const taxCents = Math.round(subtotalCents * 0.14975);
+  const totalCents = subtotalCents + taxCents;
+  const depositPct = service.depositPct;
+  const depositCents = Math.round(totalCents * depositPct / 100);
+
+  const totalPrice = (totalCents / 100).toFixed(2);
+  const depositAmount = (depositCents / 100).toFixed(2);
+
+  // Vérification de conflit + création dans une seule transaction atomique
+  // pour éviter les race conditions (deux clients qui réservent le même créneau)
+  let appointment: AppointmentWithRelations | null = null;
 
   for (const tId of targetStylistIds) {
-    // Check appointments
-    const conflict = await prisma.appointment.findFirst({
-      where: {
-        stylistId: tId,
-        status: { in: ["CONFIRMED", "ACCEPTED"] },
-        scheduledAt: { lt: endTime },
-        AND: [
-          {
-            scheduledAt: {
-              gte: new Date(scheduledDate.getTime() - service.durationMins * 60_000),
-            },
+    try {
+      appointment = await prisma.$transaction(async (tx) => {
+        const conflict = await tx.appointment.findFirst({
+          where: {
+            stylistId: tId,
+            status: { in: ["CONFIRMED", "ACCEPTED"] },
+            scheduledAt: { lt: endTime },
+            AND: [{ scheduledAt: { gte: new Date(scheduledDate.getTime() - service.durationMins * 60_000) } }],
           },
-        ],
-      },
-    });
+        });
+        if (conflict) throw new Error("CONFLICT");
 
-    if (conflict) continue;
+        const blocked = await tx.blockedSlot.findFirst({
+          where: {
+            stylistId: tId,
+            date: { equals: new Date(scheduledDate.toISOString().split("T")[0]!) },
+          },
+        });
 
-    // Check block slots
-    const blocked = await prisma.blockedSlot.findFirst({
-      where: {
-        stylistId: tId,
-        date: { equals: new Date(scheduledDate.toISOString().split("T")[0]!) },
-      },
-    });
+        if (blocked) {
+          const dateStr = scheduledDate.toISOString().split("T")[0];
+          const blockStart = new Date(`${dateStr}T${blocked.startTime}:00Z`);
+          const blockEnd = new Date(`${dateStr}T${blocked.endTime}:00Z`);
+          if (scheduledDate < blockEnd && endTime > blockStart) {
+            throw new Error("CONFLICT");
+          }
+        }
 
-    if (blocked) {
-      const dateStr = scheduledDate.toISOString().split("T")[0];
-      const blockStart = new Date(`${dateStr}T${blocked.startTime}:00Z`);
-      const blockEnd = new Date(`${dateStr}T${blocked.endTime}:00Z`);
-      if (scheduledDate < blockEnd && endTime > blockStart) {
-        continue;
-      }
+        return tx.appointment.create({
+          data: {
+            clientId: session.user.id,
+            stylistId: tId,
+            serviceId,
+            scheduledAt: scheduledDate,
+            durationMins: service.durationMins,
+            totalPrice,
+            depositAmount,
+            depositPct,
+            paymentMethod,
+            notes,
+            status: "PENDING",
+          },
+          include: {
+            service: true,
+            stylist: { include: { user: true } },
+          },
+        });
+      });
+      break;
+    } catch (err) {
+      if (err instanceof Error && err.message === "CONFLICT") continue;
+      throw err;
     }
-
-    // No conflicts found for this stylist
-    resolvedStylistId = tId;
-    break;
   }
 
-  if (!resolvedStylistId) {
+  if (!appointment) {
     return NextResponse.json({ error: "Ce créneau n'est plus disponible (conflit d'horaire)" }, { status: 409 });
   }
-
-  const subtotal = parseFloat(service.basePrice.toString());
-  const tax = parseFloat((subtotal * 0.14975).toFixed(2));
-  const totalPrice = subtotal + tax;
-  
-  const depositPct = service.depositPct;
-  const depositAmount = totalPrice * (depositPct / 100);
-  const depositCents = Math.round(depositAmount * 100);
-
-  // Create appointment in PENDING state
-  const appointment = await prisma.appointment.create({
-    data: {
-      clientId: session.user.id,
-      stylistId: resolvedStylistId,
-      serviceId,
-      scheduledAt: scheduledDate,
-      durationMins: service.durationMins,
-      totalPrice: totalPrice.toFixed(2),
-      depositAmount: depositAmount.toFixed(2),
-      depositPct,
-      paymentMethod,
-      notes,
-      status: "PENDING",
-    },
-    include: {
-      service: true,
-      stylist: { include: { user: true } },
-    },
-  });
 
   if (paymentMethod === "INTERAC") {
     const { formatPrice } = await import("@/lib/utils");
@@ -162,7 +164,7 @@ export async function POST(req: NextRequest) {
     appointmentId: appointment.id,
     serviceName: service.name,
     stylistName: appointment.stylist.user.name ?? "Styliste",
-    totalAmountCents: Math.round(parseFloat(totalPrice.toString()) * 100),
+    totalAmountCents: totalCents,
     depositPercent: depositPct,
     clientEmail: session.user.email,
     successUrl: `${baseUrl}/booking/success?appointmentId=${appointment.id}`,

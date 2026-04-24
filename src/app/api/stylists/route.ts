@@ -20,14 +20,26 @@ export async function GET(req: NextRequest) {
   const stylists = await prisma.stylist.findMany({
     where: {
       isActive: true,
-      ...(serviceId
-        ? { services: { some: { serviceId } } }
-        : {}),
+      ...(serviceId ? { services: { some: { serviceId } } } : {}),
     },
-    include: {
+    select: {
+      id: true,
+      bio: true,
+      yearsExp: true,
+      avatarUrl: true,
+      specialties: true,
+      isActive: true,
       user: { select: { id: true, name: true, email: true, image: true } },
-      availability: { orderBy: { dayOfWeek: "asc" } },
-      portfolio: { take: 3, orderBy: { createdAt: "desc" } },
+      availability: {
+        where: { isActive: true },
+        select: { dayOfWeek: true, startTime: true, endTime: true },
+        orderBy: { dayOfWeek: "asc" },
+      },
+      portfolio: {
+        take: 3,
+        select: { id: true, url: true, caption: true },
+        orderBy: { createdAt: "desc" },
+      },
       _count: { select: { appointments: true } },
     },
     orderBy: { yearsExp: "desc" },

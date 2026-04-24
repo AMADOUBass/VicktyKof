@@ -92,21 +92,28 @@ async function handleProductOrderPaid(session: Stripe.Checkout.Session, orderId:
       },
     });
 
-    // 3. Decrement stock
+    // 3. Décrémentation atomique du stock — échoue si stock insuffisant
+    const stockIssues: string[] = [];
     for (const item of order.items) {
-      const product = await tx.product.findUnique({
-        where: { id: item.productId },
-        select: { name: true, stock: true },
-      });
-
-      if (product && product.stock < item.quantity) {
-        console.error(`[STOCK_CRITICAL] Order ${orderId} paid but stock insufficient for "${product.name}". Remaining: ${product.stock}, Wanted: ${item.quantity}`);
-      }
-
-      await tx.product.update({
-        where: { id: item.productId },
+      const result = await tx.product.updateMany({
+        where: { id: item.productId, stock: { gte: item.quantity } },
         data: { stock: { decrement: item.quantity } },
       });
+
+      if (result.count === 0) {
+        const product = await tx.product.findUnique({
+          where: { id: item.productId },
+          select: { name: true, stock: true },
+        });
+        console.error(`[STOCK_CRITICAL] Order ${orderId} paid but stock insufficient for "${product?.name}". Remaining: ${product?.stock}, Wanted: ${item.quantity}`);
+        stockIssues.push(item.productId);
+      }
+    }
+
+    if (stockIssues.length > 0) {
+      // Stock insuffisant pour certains articles — l'ordre reste PROCESSING
+      // pour qu'un admin puisse intervenir (rembourser ou livrer en backorder)
+      console.error(`[STOCK_CRITICAL] Order ${orderId}: stock insuffisant pour ${stockIssues.length} article(s). Intervention manuelle requise.`);
     }
   });
 }

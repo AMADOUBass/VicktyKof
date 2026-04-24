@@ -3,6 +3,7 @@ import { z } from "zod";
 import bcrypt from "bcryptjs";
 import { prisma } from "@/lib/prisma";
 import { sendEmail } from "@/lib/email";
+import { rateLimit } from "@/lib/rate-limit";
 
 const registerSchema = z.object({
   name: z.string().min(2).max(100),
@@ -12,6 +13,12 @@ const registerSchema = z.object({
 });
 
 export async function POST(req: NextRequest) {
+  // 5 inscriptions par heure par IP
+  const ip = req.headers.get("x-forwarded-for")?.split(",")[0] ?? "unknown";
+  if (!rateLimit(`register:${ip}`, 5, 60 * 60 * 1000)) {
+    return NextResponse.json({ error: "Trop de tentatives. Réessayez dans une heure." }, { status: 429 });
+  }
+
   const body = await req.json() as unknown;
   const parsed = registerSchema.safeParse(body);
 
