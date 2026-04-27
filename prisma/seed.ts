@@ -71,13 +71,15 @@ async function main() {
   for (const s of [vS, nS, sS, mS]) { for (let d=1; d<=6; d++) await prisma.availability.create({ data: { stylistId: s.id, dayOfWeek: d, startTime: "09:00", endTime: "19:00" } }); }
 
   // 4. Services
-  const ser1 = await prisma.service.create({ data: { name: "Retwist Régulier", slug: "retwist-regulier", durationMins: 90, basePrice: 85, imageUrl: "/images/services/retwist.png", category: "Entretien" } });
-  const ser2 = await prisma.service.create({ data: { name: "Starter Locs", slug: "starter-locs", durationMins: 180, basePrice: 200, imageUrl: "/images/services/starter-locs.png", category: "Création" } });
-  const ser3 = await prisma.service.create({ data: { name: "Interlocks", slug: "interlocks", durationMins: 150, basePrice: 150, imageUrl: "/images/services/interlocks.png", category: "Entretien" } });
-  const ser4 = await prisma.service.create({ data: { name: "Tresses Africaines", slug: "tresses-africaines", durationMins: 240, basePrice: 180, imageUrl: "/images/services/braids.png", category: "Tresses" } });
-  const ser5 = await prisma.service.create({ data: { name: "Soin Profond", slug: "soin-profond", durationMins: 60, basePrice: 65, imageUrl: "/images/services/hair-care.png", category: "Soin" } });
+  const ser1 = await prisma.service.create({ data: { name: "Retwist Régulier", slug: "retwist-regulier", durationMins: 90, basePrice: 85, depositPct: 30, imageUrl: "/images/services/retwist.png", category: "locks" } });
+  const ser2 = await prisma.service.create({ data: { name: "Starter Locs", slug: "starter-locs", durationMins: 240, basePrice: 200, depositPct: 10, imageUrl: "/images/services/starter-locs.png", category: "locks" } }); // 10% of 200 = 20
+  const ser3 = await prisma.service.create({ data: { name: "Interlocks", slug: "interlocks", durationMins: 150, basePrice: 150, depositPct: 13, imageUrl: "/images/services/interlocks.png", category: "locks" } }); // ~20$
+  const ser4 = await prisma.service.create({ data: { name: "Tresses Africaines", slug: "tresses-africaines", durationMins: 240, basePrice: 180, depositPct: 11, imageUrl: "/images/services/braids.png", category: "braids" } }); // ~20$
+  const ser5 = await prisma.service.create({ data: { name: "Soin Profond & Lavage", slug: "soin-profond-lavage", durationMins: 45, basePrice: 25, depositPct: 0, imageUrl: "/images/services/hair-care.png", category: "treatment" } });
+  const ser6 = await prisma.service.create({ data: { name: "Réparation par lock", slug: "reparation-lock", durationMins: 30, basePrice: 10, depositPct: 0, description: "Prix par lock. Juste le montant sera affiché.", category: "other" } });
+  const ser7 = await prisma.service.create({ data: { name: "Style d'événement", slug: "style-evenement", durationMins: 120, basePrice: 100, depositPct: 20, imageUrl: "/images/gallery/updo.png", category: "natural" } }); // 20% of 100 = 20
 
-  for (const s of [ser1, ser2, ser3, ser4, ser5]) await prisma.stylistService.create({ data: { stylistId: vS.id, serviceId: s.id } });
+  for (const s of [ser1, ser2, ser3, ser4, ser5, ser6, ser7]) await prisma.stylistService.create({ data: { stylistId: vS.id, serviceId: s.id } });
 
   // 5. Boutique (Exactement 12 Produits en SVG)
   const catS = await prisma.productCategory.create({ data: { name: "Soins capillaires", slug: "soins-capillaires" } });

@@ -11,7 +11,7 @@ const FAQ_SECTIONS = [
     items: [
       {
         q: "Comment réserver un rendez-vous ?",
-        a: "Vous pouvez réserver directement en ligne via notre page Réserver. Il suffit de choisir votre service, votre styliste, puis une date et heure disponibles. Un dépôt de 30% est requis pour confirmer votre réservation.",
+        a: "Vous pouvez réserver directement en ligne via notre page Réserver. Il suffit de choisir votre service, votre styliste, puis une date et heure disponibles. Un dépôt est requis pour confirmer votre réservation.",
       },
       {
         q: "Quels modes de paiement acceptez-vous ?",
@@ -41,6 +41,27 @@ const FAQ_SECTIONS = [
       {
         q: "Faut-il venir avec les cheveux lavés ?",
         a: "Pour la plupart de services, oui nous recommandons de venir avec les cheveux propres et dénoués. Pour certains services comme le retwist ou les locs, des instructions spécifiques vous seront communiquées.",
+      },
+    ],
+  },
+  {
+    section: "Entretien des Locs & Retwist",
+    items: [
+      {
+        q: "Combien de temps dure un Retwist ?",
+        a: "En moyenne, prévoyez entre 1h30 et 2h30 pour un retwist régulier. Cela dépend de la quantité de locks et de la repousse. Si vous avez besoin d'une réparation ou d'un style complexe, cela peut prendre un peu plus de temps.",
+      },
+      {
+        q: "Puis-je laver mes Starter Locs ?",
+        a: "Nous recommandons d'attendre au moins 4 semaines après l'installation pour votre premier lavage en salon. Pour les lavages à la maison, utilisez toujours un filet (stocking cap) pour éviter que les locks ne se défassent (unravelling).",
+      },
+      {
+        q: "À quelle fréquence dois-je faire mon entretien ?",
+        a: "Pour garder des locks saines et éviter l'amincissement des racines, un entretien toutes les 4 à 6 semaines est idéal. Pour les Interlocks, on peut espacer de 8 à 10 semaines.",
+      },
+      {
+        q: "Quels produits utiliser entre les rendez-vous ?",
+        a: "L'hydratation est la clé. Un spray à base d'eau et d'huiles légères (disponibles dans notre boutique) est parfait. Évitez les cires lourdes et les gels qui causent de l'accumulation (buildup).",
       },
     ],
   },

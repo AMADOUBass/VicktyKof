@@ -39,12 +39,12 @@ export default function ContactPage() {
                       2177 rue du Carrousel<br />Québec, QC G2B 5B5
                     </p>
                     <a
-                      href="https://maps.google.com/?q=2177+rue+du+Carrousel+Quebec"
+                      href="https://www.google.com/maps/dir/?api=1&destination=2177+rue+du+Carrousel+Quebec+QC+G2B+5B5"
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="text-xs text-brand-gold hover:underline mt-1 inline-block"
+                      className="inline-flex items-center gap-2 bg-brand-gold/10 hover:bg-brand-gold/20 text-brand-gold text-xs font-bold py-2 px-4 rounded-full transition-all mt-3 border border-brand-gold/20"
                     >
-                      Voir sur Google Maps →
+                      <MapPin className="w-3.5 h-3.5" /> Obtenir l&apos;itinéraire
                     </a>
                   </div>
                 </div>

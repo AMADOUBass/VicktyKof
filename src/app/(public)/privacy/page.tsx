@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { CookieResetButton } from "@/components/ui/CookieResetButton";
 
 export const metadata: Metadata = {
   title: "Politique de confidentialité",
@@ -168,17 +169,7 @@ export default function PrivacyPage() {
             </ul>
             <p className="mt-3">
               Vous pouvez modifier vos préférences de cookies à tout moment en utilisant le lien{" "}
-              <button
-                className="text-brand-gold hover:underline cursor-pointer bg-transparent border-none p-0"
-                onClick={() => {
-                  if (typeof window !== "undefined") {
-                    localStorage.removeItem("vicktykof_cookie_consent");
-                    window.location.reload();
-                  }
-                }}
-              >
-                Gérer mes cookies
-              </button>.
+              <CookieResetButton />.
             </p>
           </section>
 
